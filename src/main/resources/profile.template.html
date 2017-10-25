@@ -1,0 +1,210 @@
+<!--
+  ~ Copyright 2017 ThoughtWorks, Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<div data-plugin-style-id="kubernetes-plugin">
+
+    <style>
+        [data-plugin-style-id="kubernetes-plugin"] .tooltip-info {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        [data-plugin-style-id="kubernetes-plugin"] .tooltip-info .tooltip-content {
+            font-family: "Open Sans", "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+            cursor: auto;
+            font-size: 0.78rem;
+            text-transform: none;
+            background-color: #efefef;
+            border: 1px solid #cacaca;
+            border-radius: 3px;
+            display: block;
+            padding: 1rem;
+            position: absolute;
+            visibility: hidden;
+            width: 500px;
+            z-index: 10;
+            top: 100%;
+            color: #000;
+        }
+
+        [data-plugin-style-id="kubernetes-plugin"] .tooltip-info:after {
+            font-family: 'FontAwesome';
+            content: "\f05a";
+            font-weight: normal;
+            font-style: normal;
+            display: inline-block;
+            text-decoration: inherit;
+            line-height: 1.8;
+            font-size: 0.875rem;
+            color: #0a0a0a;
+            -webkit-font-smoothing: antialiased;
+            margin: 0 10px;
+        }
+
+        [data-plugin-style-id="kubernetes-plugin"] .tooltip-info:hover .tooltip-content {
+            visibility: visible;
+        }
+
+        [data-plugin-style-id="kubernetes-plugin"] .tooltip-info .tooltip-content-right {
+            right: 0;
+        }
+
+        [data-plugin-style-id="kubernetes-plugin"] code {
+            border: none;
+            background: #ddd;
+            border-radius: 3px;
+            color: inherit;
+        }
+
+        [data-plugin-style-id="kubernetes-plugin"] textarea {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+        }
+
+        [data-plugin-style-id="kubernetes-plugin"] .highlight {
+            background: #f0f0f0;
+        }
+
+        [data-plugin-style-id="kubernetes-plugin"] .code {
+            font-family: Consolas, "Liberation Mono", Courier, monospace;
+            padding: 16px;
+            overflow: auto;
+            font-size: 0.8125rem;
+            line-height: 1.45;
+            background-color: #e6e6e6;
+            border-radius: 3px;
+        }
+    </style>
+
+    <div class="row collapse">
+        <label>Specify Elastic Agent Pod Configuration using</label>
+        <div class="form_item_block row" style="padding-top: 10px">
+            <div class="columns small-9 medium-10 larger-10"
+                 ng-init="SpecifiedUsingPodConfiguration = SpecifiedUsingPodConfiguration || 'false'">
+                <input type="radio" ng-model="SpecifiedUsingPodConfiguration" value="false"
+                       id="login-using-github"/>
+                <label for="login-using-github">Config Properties</label>
+
+                <input type="radio" ng-model="SpecifiedUsingPodConfiguration" value="true"
+                       id="login-using-github-enterprise"/>
+                <label for="login-using-github-enterprise">Pod Yaml</label>
+            </div>
+        </div>
+    </div>
+
+    <div ng-show="SpecifiedUsingPodConfiguration == 'false'">
+        <div class="row">
+            <div class="columns medium-6 large-5">
+                <label ng-class="{'is-invalid-label': GOINPUTNAME[Image].$error.server}">Image:
+                    <span class="asterix">*</span>
+                </label>
+                <input ng-class="{'is-invalid-input': GOINPUTNAME[Image].$error.server}" type="text" ng-model="Image"
+                       ng-required="true" placeholder="alpine:latest"/>
+                <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[Image].$error.server}"
+                      ng-show="GOINPUTNAME[Image].$error.server">{{GOINPUTNAME[Image].$error.server}}</span>
+            </div>
+
+            <div class="columns medium-4 large-3 end">
+                <label ng-class="{'is-invalid-label': GOINPUTNAME[MaxMemory].$error.server}">Maximum Memory limit:
+                    <div class="tooltip-info">
+                  <span class="tooltip-content tooltip-content-right">
+                    The maximum amount of memory the container is allowed to use. This field take a positive integer,
+                    followed by a suffix of B, K, M, G and T to indicate bytes, kilobytes, megabytes, gigabytes or terabytes.<br/>
+                    <a href="https://docs.docker.com/engine/admin/resource_constraints/"
+                       target="_blank">Read more about memory</a>
+                  </span>
+                    </div>
+                </label>
+                <input ng-class="{'is-invalid-input': GOINPUTNAME[MaxMemory].$error.server}" type="text"
+                       ng-model="MaxMemory" ng-required="false"/>
+                <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[MaxMemory].$error.server}"
+                      ng-show="GOINPUTNAME[MaxMemory].$error.server">{{GOINPUTNAME[MaxMemory].$error.server}}</span>
+            </div>
+
+            <div class="columns medium-4 large-3 end">
+                <label ng-class="{'is-invalid-label': GOINPUTNAME[MaxCPU].$error.server}">Maximum CPU limit:
+                    <div class="tooltip-info">
+                  <span class="tooltip-content tooltip-content-right">
+                    The maximum amount of cpu units the container is allowed to use. This field take a positive integer.<br/>
+                    <a href="https://docs.docker.com/engine/admin/resource_constraints/#cpu/"
+                       target="_blank">Read more about memory</a>
+                  </span>
+                    </div>
+                </label>
+                <input ng-class="{'is-invalid-input': GOINPUTNAME[MaxCPU].$error.server}" type="text" ng-model="MaxCPU"
+                       ng-required="false"/>
+                <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[MaxCPU].$error.server}"
+                      ng-show="GOINPUTNAME[MaxCPU].$error.server">{{GOINPUTNAME[MaxCPU].$error.server}}</span>
+            </div>
+        </div>
+        <div class="form_item_block">
+            <label ng-class="{'is-invalid-label': GOINPUTNAME[Environment].$error.server}">Environment Variables
+                <small>(Enter one variable per line)</small>
+                <div class="tooltip-info">
+          <span class="tooltip-content">
+            Specify the environment variables. This allows you to override the <code>ENV</code> that is specified in
+            the <code>Dockerfile</code>, or provide new environment variables in case the <code>Dockerfile</code> does not
+            contain any <code>ENV</code>.
+            <br/>
+            <div class="code">
+              JAVA_HOME=/opt/java<br/>
+              ANT_HOME=/opt/ant
+            </div>
+            <a href="https://docs.docker.com/engine/reference/builder/#env"
+               target="_blank">Read more about <code>ENV</code></a>
+          </span>
+                </div>
+            </label>
+            <textarea ng-class="{'is-invalid-input': GOINPUTNAME[Environment].$error.server}" ng-model="Environment"
+                      ng-required="false" rows="7"></textarea>
+            <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[Environment].$error.server}"
+                  ng-show="GOINPUTNAME[Environment].$error.server">{{GOINPUTNAME[Environment].$error.server}}</span>
+        </div>
+    </div>
+
+    <div ng-show="SpecifiedUsingPodConfiguration == 'true'">
+        <div class="form_item_block">
+            <label ng-class="{'is-invalid-label': GOINPUTNAME[PodConfiguration].$error.server}">Specify Elastic Agent
+                <code>pod.yaml</code> here
+                <div class="tooltip-info">
+                  <span class="tooltip-content">
+                    Specify the pod.yaml configuration. This allows you to specify advance options for elastic agent pod such as
+                      <code>command</code>, <code>args</code>, <code>volumes</code>, <code>secrets</code>, <code>configMaps</code> etc.
+                    <br/>
+                    <a href="https://kubernetes-v1-4.github.io/docs/user-guide/pods/multi-container/#pod-configuration-file"
+                       target="_blank">Read more about <code>Pod Yaml</code></a>
+                  </span>
+                </div>
+            </label>
+            <textarea class="highlight" ng-class="{'is-invalid-input': GOINPUTNAME[PodConfiguration].$error.server}"
+                      ng-model="PodConfiguration"
+                      ng-required="false" rows="9" columns="15" ng-init="PodConfiguration = (PodConfiguration || 'apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-name-prefix-{{ POD_POSTFIX }}
+  labels:
+    app: web
+spec:
+  containers:
+    - name: gocd-agent-container-{{ CONTAINER_POSTFIX }}
+      image: {{ GOCD_AGENT_IMAGE }}:{{ LATEST_VERSION }}')">
+            </textarea>
+            <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[PodConfiguration].$error.server}"
+                  ng-show="GOINPUTNAME[PodConfiguration].$error.server">{{GOINPUTNAME[PodConfiguration].$error.server}}</span>
+        </div>
+    </div>
+
+</div>
