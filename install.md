@@ -24,6 +24,22 @@ on Windows.
 
     !["Kubernetes Plugin settings"][1]
 
+### Configure Autoregister Properties
+
+As per [GoCD docs](https://docs.gocd.org/current/advanced_usage/agent_auto_register.html), you will need to add the following keys to autoregister.properties:
+
+    agent.auto.register.elasticAgent.agentId
+    agent.auto.register.elasticAgent.pluginId
+
+The plugin provides values for both of these keys as environment variables ``GO_EA_AUTO_REGISTER_ELASTIC_AGENT_ID`` and ``GO_EA_AUTO_REGISTER_ELASTIC_PLUGIN_ID`` respectively.
+
+Here is an example of how to dynamically add those values:
+
+    sed -i "s/agent.auto.register.elasticAgent.agentId=\(.*\)/agent.auto.register.elasticAgent.agentId=${GO_EA_AUTO_REGISTER_ELASTIC_AGENT_ID}/g" /var/lib/go-agent/config/autoregister.properties
+    sed -i "s/agent.auto.register.elasticAgent.pluginId=\(.*\)/agent.auto.register.elasticAgent.pluginId=${GO_EA_AUTO_REGISTER_ELASTIC_PLUGIN_ID}/g" /var/lib/go-agent/config/autoregister.properties
+
+**NOTE:** If GoCD is running as a user other than root, ensure to chown the user and group of autoregister.properties back to the non-root user after making the above changes.
+
 ## Create an elastic profile
 
 1. Login to `GoCD server` as admin and navigate to **_Admin_** _>_ **_Elastic Agent Profiles_**
