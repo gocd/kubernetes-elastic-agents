@@ -18,7 +18,6 @@ package cd.go.contrib.elasticagent;
 
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagent.utils.Size;
-import cd.go.contrib.elasticagent.utils.Util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.mustachejava.DefaultMustacheFactory;
@@ -34,10 +33,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static cd.go.contrib.elasticagent.Constants.KUBERNETES_POD_CREATION_TIME_FORMAT;
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.POD_CONFIGURATION;
 import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
@@ -57,7 +54,7 @@ public class KubernetesInstance {
     }
 
     public static KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
-        String containerName = Constants.KUBERNETES_POD_NAME + UUID.randomUUID().toString();
+        String containerName = containerName();
 
         Container container = new Container();
         container.setName(containerName);
@@ -96,6 +93,15 @@ public class KubernetesInstance {
         return createKubernetesPod(client, elasticAgentPod);
     }
 
+    private static String containerName() {
+        String containerName;
+        synchronized (new SynchronizationLock()) {
+            containerName = Constants.KUBERNETES_POD_NAME + UUID.randomUUID().toString();
+            LOG.info("Container name: " + containerName);
+        }
+        return containerName;
+    }
+
     private static void setLabels(Pod pod, CreateAgentRequest request) {
         Map<String, String> existingLabels = (pod.getMetadata().getLabels() != null) ? pod.getMetadata().getLabels() : new HashMap<>();
         existingLabels.putAll(labelsFrom(request));
@@ -121,7 +127,7 @@ public class KubernetesInstance {
             String environment = metadata.getLabels().get(Constants.ENVIRONMENT_LABEL_KEY);
 
             Date date = new Date();
-            if(StringUtils.isNotBlank(metadata.getCreationTimestamp())) {
+            if (StringUtils.isNotBlank(metadata.getCreationTimestamp())) {
                 date = getSimpleDateFormat().parse(metadata.getCreationTimestamp());
             }
             return new KubernetesInstance(containerName, date, environment, metadata.getAnnotations());
@@ -256,5 +262,8 @@ public class KubernetesInstance {
         context.put(Constants.GOCD_AGENT_IMAGE, "gocd/gocd-agent-alpine-3.5");
         context.put(Constants.LATEST_VERSION, "v17.10.0");
         return context;
+    }
+
+    private static class SynchronizationLock {
     }
 }
