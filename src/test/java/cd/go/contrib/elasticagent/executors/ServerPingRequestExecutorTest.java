@@ -32,7 +32,6 @@ import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
