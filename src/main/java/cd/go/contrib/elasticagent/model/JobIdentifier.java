@@ -108,4 +108,12 @@ public class JobIdentifier {
                 ", jobId=" + jobId +
                 '}';
     }
+
+    public Long getJobId() {
+        return jobId;
+    }
+
+    public String getJobName() {
+        return jobName;
+    }
 }

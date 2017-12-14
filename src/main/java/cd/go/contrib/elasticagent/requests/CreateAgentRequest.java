@@ -50,10 +50,15 @@ public class CreateAgentRequest {
     public CreateAgentRequest() {
     }
 
-    public CreateAgentRequest(String autoRegisterKey, Map<String, String> properties, String environment) {
+    private CreateAgentRequest(String autoRegisterKey, Map<String, String> properties, String environment) {
         this.autoRegisterKey = autoRegisterKey;
         this.properties = properties;
         this.environment = environment;
+    }
+
+    public CreateAgentRequest(String autoRegisterKey, Map<String, String> properties, String environment, JobIdentifier identifier) {
+        this(autoRegisterKey, properties, environment);
+        this.jobIdentifier = identifier;
     }
 
     public static CreateAgentRequest fromJSON(String json) {
