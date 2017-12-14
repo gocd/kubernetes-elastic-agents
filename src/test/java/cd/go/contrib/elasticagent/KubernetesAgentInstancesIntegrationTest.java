@@ -160,7 +160,6 @@ public class KubernetesAgentInstancesIntegrationTest {
         HashMap<String, String> labels = new HashMap<>();
         labels.put(Constants.CREATED_BY_LABEL_KEY, Constants.PLUGIN_ID);
         labels.put(Constants.JOB_ID_LABEL_KEY, createAgentRequest.jobIdentifier().getJobId().toString());
-        labels.put(Constants.JOB_NAME_LABEL_KEY, createAgentRequest.jobIdentifier().getJobName());
         labels.put(Constants.KUBERNETES_POD_KIND_LABEL_KEY, Constants.KUBERNETES_POD_KIND_LABEL_VALUE);
         labels.put(Constants.ENVIRONMENT_LABEL_KEY, createAgentRequest.environment());
 
@@ -268,7 +267,6 @@ public class KubernetesAgentInstancesIntegrationTest {
         HashMap<String, String> labels = new HashMap<>();
         labels.put(Constants.CREATED_BY_LABEL_KEY, Constants.PLUGIN_ID);
         labels.put(Constants.JOB_ID_LABEL_KEY, createAgentRequest.jobIdentifier().getJobId().toString());
-        labels.put(Constants.JOB_NAME_LABEL_KEY, createAgentRequest.jobIdentifier().getJobName());
         labels.put(Constants.KUBERNETES_POD_KIND_LABEL_KEY, Constants.KUBERNETES_POD_KIND_LABEL_VALUE);
         labels.put(Constants.ENVIRONMENT_LABEL_KEY, createAgentRequest.environment());
 
