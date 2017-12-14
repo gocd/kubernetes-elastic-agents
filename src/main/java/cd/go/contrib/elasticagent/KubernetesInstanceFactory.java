@@ -117,7 +117,8 @@ public class KubernetesInstanceFactory {
                 createdAt = new DateTime(getSimpleDateFormat().parse(metadata.getCreationTimestamp())).withZone(DateTimeZone.UTC);
             }
             String environment = metadata.getLabels().get(Constants.ENVIRONMENT_LABEL_KEY);
-            kubernetesInstance = new KubernetesInstance(createdAt, environment, metadata.getName(), metadata.getAnnotations());
+            Long jobId = Long.valueOf(metadata.getLabels().get(Constants.JOB_ID_LABEL_KEY));
+            kubernetesInstance = new KubernetesInstance(createdAt, environment, metadata.getName(), metadata.getAnnotations(), jobId);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

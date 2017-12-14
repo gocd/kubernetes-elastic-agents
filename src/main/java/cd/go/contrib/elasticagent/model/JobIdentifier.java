@@ -57,7 +57,11 @@ public class JobIdentifier {
         jobId = null;
     }
 
-    public JobIdentifier(String pipelineName, long pipelineCounter, String pipelineLabel, String staqeName, String stageCounter, String jobName, long jobId) {
+    public JobIdentifier(Long jobId) {
+        this(null, null, null, null, null, null, jobId);
+    }
+
+    public JobIdentifier(String pipelineName, Long pipelineCounter, String pipelineLabel, String staqeName, String stageCounter, String jobName, Long jobId) {
         this.pipelineName = pipelineName;
         this.pipelineCounter = pipelineCounter;
         this.pipelineLabel = pipelineLabel;

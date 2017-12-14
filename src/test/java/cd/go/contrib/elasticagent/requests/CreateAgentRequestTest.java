@@ -57,7 +57,7 @@ public class CreateAgentRequestTest {
         expectedProperties.put("key2", "value2");
         assertThat(request.properties(), Matchers.<Map<String, String>>equalTo(expectedProperties));
 
-        JobIdentifier expectedJobIdentifier = new JobIdentifier("test-pipeline", 1, "Test Pipeline", "test-stage", "1", "test-job", 100);
+        JobIdentifier expectedJobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", 100L);
         JobIdentifier actualJobIdentifier = request.jobIdentifier();
 
         assertThat(actualJobIdentifier, is(expectedJobIdentifier));

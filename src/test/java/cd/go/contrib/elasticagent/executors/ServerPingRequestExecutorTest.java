@@ -117,13 +117,15 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         KubernetesAgentInstances agentInstances = new KubernetesAgentInstances(factory);
         HashMap<String, String> properties = new HashMap<>();
         properties.put("Image", "foo");
-        KubernetesInstance container = agentInstances.create(new CreateAgentRequest(null, properties, null, new JobIdentifier()), createSettings(), null);
+        KubernetesInstance container = agentInstances.create(new CreateAgentRequest(null, properties, null, new JobIdentifier(1L)), createSettings(), null);
 
         agentInstances.clock = new Clock.TestClock().forward(Period.minutes(11));
         PluginRequest pluginRequest = mock(PluginRequest.class);
 
         objectMetadata.setName(container.name());
-        objectMetadata.setLabels(new HashMap<>());
+        HashMap<String, String> labels = new HashMap<>();
+        labels.put(Constants.JOB_ID_LABEL_KEY, "1");
+        objectMetadata.setLabels(labels);
         when(pluginRequest.getPluginSettings()).thenReturn(createSettings());
         when(pluginRequest.listAgents()).thenReturn(new Agents());
         verifyNoMoreInteractions(pluginRequest);
