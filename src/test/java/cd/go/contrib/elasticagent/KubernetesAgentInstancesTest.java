@@ -86,22 +86,4 @@ public class KubernetesAgentInstancesTest {
         KubernetesInstance instance = agentInstances.create(mockCreateAgentRequest, mockPluginSettings, mockPluginRequest);
         assertTrue(agentInstances.instanceExists(instance));
     }
-
-    @Test
-    public void shouldNotCreatePodWhenOutstandingRequestsExistForJobs() throws Exception {
-        KubernetesInstance kubernetesInstance = new KubernetesInstance(new DateTime(), "test", "test-agent", new HashMap<>());
-        when(mockKubernetesInstanceFactory.create(mockCreateAgentRequest, mockPluginSettings, mockKubernetesClient, mockPluginRequest, false)).
-                thenReturn(kubernetesInstance);
-        testProperties.put("SpecifiedUsingPodConfiguration", "false");
-
-        KubernetesAgentInstances agentInstances = new KubernetesAgentInstances(factory, mockKubernetesInstanceFactory);
-        JobIdentifier jobId = new JobIdentifier("test", 1L, "Test pipeline", "test name", "1", "test job", 100L);
-        when(mockCreateAgentRequest.jobIdentifier()).thenReturn(jobId);
-        agentInstances.create(mockCreateAgentRequest, mockPluginSettings, mockPluginRequest);
-        verify(mockKubernetesInstanceFactory, times(1)).create(any(), any(), any(), any(), any());
-        reset(mockKubernetesInstanceFactory);
-
-        agentInstances.create(mockCreateAgentRequest, mockPluginSettings, mockPluginRequest);
-        verify(mockKubernetesInstanceFactory, times(0)).create(any(), any(), any(), any(), any());
-    }
 }
