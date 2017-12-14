@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagent;
 
+import cd.go.contrib.elasticagent.model.JobIdentifier;
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
@@ -55,11 +56,27 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
 
     @Override
     public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) throws Exception {
+        JobIdentifier jobIdentifier = request.jobIdentifier();
+        if (isAgentCreatedForJob(jobIdentifier.getJobId())) {
+            LOG.warn("[Create Agent Request] Request for creating an agent for Job Identifier [" + jobIdentifier + "] has already been scheduled. Skipping current request.");
+            return null;
+        }
+
         KubernetesClient client = factory.kubernetes(settings);
         KubernetesInstance instance = kubernetesInstanceFactory.create(request, settings, client, pluginRequest, isUsingPodYaml(request));
         register(instance);
 
         return instance;
+    }
+
+    private boolean isAgentCreatedForJob(Long jobId) {
+        for (KubernetesInstance instance : instances.values()) {
+            if (instance.jobId().equals(jobId)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private boolean isUsingPodYaml(CreateAgentRequest request) {
@@ -131,10 +148,6 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     @Override
     public KubernetesInstance find(String agentId) {
         return instances.get(agentId);
-    }
-
-    public boolean hasInstance(String agentId) {
-        return instances.containsKey(agentId);
     }
 
     private void register(KubernetesInstance instance) {

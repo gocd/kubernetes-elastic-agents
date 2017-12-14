@@ -131,7 +131,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         verifyNoMoreInteractions(pluginRequest);
 
         new ServerPingRequestExecutor(agentInstances, pluginRequest).execute();
-        assertFalse(agentInstances.hasInstance(container.name()));
+        assertFalse(agentInstances.instanceExists(container));
     }
 
     @Test

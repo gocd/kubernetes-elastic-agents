@@ -56,4 +56,8 @@ public class KubernetesInstance {
     public Map<String, String> getInstanceProperties() {
         return properties;
     }
+
+    public Long jobId() {
+        return jobId;
+    }
 }
