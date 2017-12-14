@@ -17,6 +17,7 @@
 package cd.go.contrib.elasticagent.requests;
 
 import cd.go.contrib.elasticagent.Agent;
+import cd.go.contrib.elasticagent.model.JobIdentifier;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class ShouldAssignWorkRequestTest {
@@ -40,6 +42,15 @@ public class ShouldAssignWorkRequestTest {
                 "  },\n" +
                 "  \"properties\": {\n" +
                 "    \"property_name\": \"property_value\"\n" +
+                "  },\n" +
+                "  \"job_identifier\": {\n" +
+                "    \"pipeline_name\": \"test-pipeline\",\n" +
+                "    \"pipeline_counter\": 1,\n" +
+                "    \"pipeline_label\": \"Test Pipeline\",\n" +
+                "    \"stage_name\": \"test-stage\",\n" +
+                "    \"stage_counter\": \"1\",\n" +
+                "    \"job_name\": \"test-job\",\n" +
+                "    \"job_id\": 100\n" +
                 "  }\n" +
                 "}";
 
@@ -49,5 +60,10 @@ public class ShouldAssignWorkRequestTest {
         HashMap<String, String> expectedProperties = new HashMap<>();
         expectedProperties.put("property_name", "property_value");
         assertThat(request.properties(), Matchers.<Map<String, String>>equalTo(expectedProperties));
+
+        JobIdentifier expectedJobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", 100L);
+        JobIdentifier actualJobIdentifier = request.jobIdentifier();
+
+        assertThat(actualJobIdentifier, is(expectedJobIdentifier));
     }
 }
