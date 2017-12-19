@@ -17,6 +17,7 @@
 package cd.go.contrib.elasticagent.executors;
 
 import cd.go.contrib.elasticagent.*;
+import cd.go.contrib.elasticagent.model.JobIdentifier;
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import io.fabric8.kubernetes.api.model.DoneablePod;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
@@ -32,7 +33,6 @@ import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
@@ -117,19 +117,21 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         KubernetesAgentInstances agentInstances = new KubernetesAgentInstances(factory);
         HashMap<String, String> properties = new HashMap<>();
         properties.put("Image", "foo");
-        KubernetesInstance container = agentInstances.create(new CreateAgentRequest(null, properties, null), createSettings(), null);
+        KubernetesInstance container = agentInstances.create(new CreateAgentRequest(null, properties, null, new JobIdentifier(1L)), createSettings(), null);
 
         agentInstances.clock = new Clock.TestClock().forward(Period.minutes(11));
         PluginRequest pluginRequest = mock(PluginRequest.class);
 
         objectMetadata.setName(container.name());
-        objectMetadata.setLabels(new HashMap<>());
+        HashMap<String, String> labels = new HashMap<>();
+        labels.put(Constants.JOB_ID_LABEL_KEY, "1");
+        objectMetadata.setLabels(labels);
         when(pluginRequest.getPluginSettings()).thenReturn(createSettings());
         when(pluginRequest.listAgents()).thenReturn(new Agents());
         verifyNoMoreInteractions(pluginRequest);
 
         new ServerPingRequestExecutor(agentInstances, pluginRequest).execute();
-        assertFalse(agentInstances.hasInstance(container.name()));
+        assertFalse(agentInstances.instanceExists(container));
     }
 
     @Test

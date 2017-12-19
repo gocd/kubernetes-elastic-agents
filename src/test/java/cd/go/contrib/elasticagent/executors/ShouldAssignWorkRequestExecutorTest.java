@@ -17,6 +17,7 @@
 package cd.go.contrib.elasticagent.executors;
 
 import cd.go.contrib.elasticagent.*;
+import cd.go.contrib.elasticagent.model.JobIdentifier;
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagent.requests.ShouldAssignWorkRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -44,7 +45,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
-    private final String environment = "production";
     @Mock
     KubernetesClientFactory factory;
     private AgentInstances<KubernetesInstance> agentInstances;
@@ -56,6 +56,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     private MixedOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>> mockedOperation;
     @Mock
     private NonNamespaceOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>> mockedNamespaceOperation;
+    private String environment = "QA";
 
     @Before
     public void setUp() throws Exception {
@@ -68,28 +69,23 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
         agentInstances = new KubernetesAgentInstances(factory);
         properties.put("foo", "bar");
         properties.put("Image", "gocdcontrib/ubuntu-docker-elastic-agent");
-        instance = agentInstances.create(new CreateAgentRequest(UUID.randomUUID().toString(), properties, environment), createSettings(), null);
+        instance = agentInstances.create(new CreateAgentRequest(UUID.randomUUID().toString(), properties, environment, new JobIdentifier(100L)), createSettings(), null);
     }
 
     @Test
-    public void shouldAssignWorkToContainerWithMatchingEnvironmentNameAndProperties() throws Exception {
-        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest(new Agent(instance.name(), null, null, null), environment, properties);
+    public void shouldAssignWorkWhenJobIdMatchesPodId() throws Exception {
+        JobIdentifier jobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", 100L);
+        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest(new Agent(instance.name(), null, null, null), environment, properties, jobIdentifier);
         GoPluginApiResponse response = new ShouldAssignWorkRequestExecutor(request, agentInstances).execute();
         assertThat(response.responseCode(), is(200));
         assertThat(response.responseBody(), is("true"));
     }
 
     @Test
-    public void shouldNotAssignWorkToContainerWithDifferentEnvironmentName() throws Exception {
-        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest(new Agent(instance.name(), null, null, null), "FooEnv", properties);
-        GoPluginApiResponse response = new ShouldAssignWorkRequestExecutor(request, agentInstances).execute();
-        assertThat(response.responseCode(), is(200));
-        assertThat(response.responseBody(), is("false"));
-    }
-
-    @Test
-    public void shouldNotAssignWorkToContainerWithDifferentProperties() throws Exception {
-        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest(new Agent(instance.name(), null, null, null), environment, null);
+    public void shouldNotAssignWorkWhenJobIdDiffersFromPodId() throws Exception {
+        long mismatchingJobId = 200L;
+        JobIdentifier jobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", mismatchingJobId);
+        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest(new Agent(instance.name(), null, null, null), "FooEnv", properties, jobIdentifier);
         GoPluginApiResponse response = new ShouldAssignWorkRequestExecutor(request, agentInstances).execute();
         assertThat(response.responseCode(), is(200));
         assertThat(response.responseBody(), is("false"));

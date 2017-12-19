@@ -33,7 +33,7 @@ public class KubernetesCluster {
 
     public KubernetesCluster(KubernetesClient client) throws ParseException {
         nodes = client.nodes().list().getItems().stream().map(node -> new KubernetesNode(node)).collect(toList());
-        LOG.info("Running docker swarm nodes " + nodes.size());
+        LOG.info("Running kubernetes nodes " + nodes.size());
         fetchPods(client);
     }
 

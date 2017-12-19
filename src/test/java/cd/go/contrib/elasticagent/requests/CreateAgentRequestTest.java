@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagent.requests;
 
+import cd.go.contrib.elasticagent.model.JobIdentifier;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class CreateAgentRequestTest {
@@ -35,7 +37,16 @@ public class CreateAgentRequestTest {
                 "    \"key1\": \"value1\",\n" +
                 "    \"key2\": \"value2\"\n" +
                 "  },\n" +
-                "  \"environment\": \"prod\"\n" +
+                "  \"environment\": \"prod\",\n" +
+                "  \"job_identifier\": {\n" +
+                "    \"pipeline_name\": \"test-pipeline\",\n" +
+                "    \"pipeline_counter\": 1,\n" +
+                "    \"pipeline_label\": \"Test Pipeline\",\n" +
+                "    \"stage_name\": \"test-stage\",\n" +
+                "    \"stage_counter\": \"1\",\n" +
+                "    \"job_name\": \"test-job\",\n" +
+                "    \"job_id\": 100\n" +
+                "  }\n" +
                 "}";
 
         CreateAgentRequest request = CreateAgentRequest.fromJSON(json);
@@ -46,5 +57,9 @@ public class CreateAgentRequestTest {
         expectedProperties.put("key2", "value2");
         assertThat(request.properties(), Matchers.<Map<String, String>>equalTo(expectedProperties));
 
+        JobIdentifier expectedJobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", 100L);
+        JobIdentifier actualJobIdentifier = request.jobIdentifier();
+
+        assertThat(actualJobIdentifier, is(expectedJobIdentifier));
     }
 }

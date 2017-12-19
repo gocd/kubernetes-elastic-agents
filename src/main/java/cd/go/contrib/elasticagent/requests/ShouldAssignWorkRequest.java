@@ -21,6 +21,7 @@ import cd.go.contrib.elasticagent.AgentInstances;
 import cd.go.contrib.elasticagent.Request;
 import cd.go.contrib.elasticagent.RequestExecutor;
 import cd.go.contrib.elasticagent.executors.ShouldAssignWorkRequestExecutor;
+import cd.go.contrib.elasticagent.model.JobIdentifier;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -35,20 +36,27 @@ public class ShouldAssignWorkRequest {
     @Expose
     @SerializedName("agent")
     private Agent agent;
+
     @Expose
     @SerializedName("environment")
     private String environment;
+
     @Expose
     @SerializedName("properties")
     private Map<String, String> properties;
 
-    public ShouldAssignWorkRequest(Agent agent, String environment, Map<String, String> properties) {
+    @Expose
+    @SerializedName("job_identifier")
+    private JobIdentifier jobIdentifier;
+
+    public ShouldAssignWorkRequest() {
+    }
+
+    public ShouldAssignWorkRequest(Agent agent, String environment, Map<String, String> properties, JobIdentifier jobIdentifier) {
         this.agent = agent;
         this.environment = environment;
         this.properties = properties;
-    }
-
-    public ShouldAssignWorkRequest() {
+        this.jobIdentifier = jobIdentifier;
     }
 
     public static ShouldAssignWorkRequest fromJSON(String json) {
@@ -69,5 +77,9 @@ public class ShouldAssignWorkRequest {
 
     public RequestExecutor executor(AgentInstances agentInstances) {
         return new ShouldAssignWorkRequestExecutor(this, agentInstances);
+    }
+
+    public JobIdentifier jobIdentifier() {
+        return jobIdentifier;
     }
 }

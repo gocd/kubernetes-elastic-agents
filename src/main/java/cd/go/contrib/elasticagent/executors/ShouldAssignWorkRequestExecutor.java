@@ -23,12 +23,6 @@ import cd.go.contrib.elasticagent.requests.ShouldAssignWorkRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
-import static org.apache.commons.lang3.StringUtils.stripToEmpty;
-
 public class ShouldAssignWorkRequestExecutor implements RequestExecutor {
     private final AgentInstances<KubernetesInstance> agentInstances;
     private final ShouldAssignWorkRequest request;
@@ -40,22 +34,13 @@ public class ShouldAssignWorkRequestExecutor implements RequestExecutor {
 
     @Override
     public GoPluginApiResponse execute() {
-        KubernetesInstance instance = agentInstances.find(request.agent().elasticAgentId());
+        KubernetesInstance pod = agentInstances.find(request.agent().elasticAgentId());
 
-        if (instance == null) {
+        if (pod == null) {
             return DefaultGoPluginApiResponse.success("false");
         }
 
-        boolean environmentMatches = stripToEmpty(request.environment()).equalsIgnoreCase(stripToEmpty(instance.environment()));
-
-
-        Map<String, String> containerProperties = instance.getInstanceProperties() == null ? new HashMap<>() : instance.getInstanceProperties();
-        Map<String, String> requestProperties = request.properties() == null ? new HashMap<>() : request.properties();
-
-        boolean propertiesMatch = requestProperties.equals(containerProperties);
-
-        if (environmentMatches && propertiesMatch) {
-            LOG.debug(String.format("[Should Assign Work] Assigning job[%s] to agent[%s]", request.properties(), request.agent().elasticAgentId()));
+        if (request.jobIdentifier().getJobId().equals(pod.jobId())) {
             return DefaultGoPluginApiResponse.success("true");
         }
 

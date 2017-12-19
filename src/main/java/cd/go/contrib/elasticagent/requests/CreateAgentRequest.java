@@ -21,6 +21,7 @@ import cd.go.contrib.elasticagent.Constants;
 import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.RequestExecutor;
 import cd.go.contrib.elasticagent.executors.CreateAgentRequestExecutor;
+import cd.go.contrib.elasticagent.model.JobIdentifier;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import io.fabric8.kubernetes.api.model.EnvVar;
@@ -42,19 +43,27 @@ public class CreateAgentRequest {
     @Expose
     @SerializedName("environment")
     private String environment;
-
+    @Expose
+    @SerializedName("job_identifier")
+    private JobIdentifier jobIdentifier;
 
     public CreateAgentRequest() {
     }
 
-    public CreateAgentRequest(String autoRegisterKey, Map<String, String> properties, String environment) {
+    private CreateAgentRequest(String autoRegisterKey, Map<String, String> properties, String environment) {
         this.autoRegisterKey = autoRegisterKey;
         this.properties = properties;
         this.environment = environment;
     }
 
+    public CreateAgentRequest(String autoRegisterKey, Map<String, String> properties, String environment, JobIdentifier identifier) {
+        this(autoRegisterKey, properties, environment);
+        this.jobIdentifier = identifier;
+    }
+
     public static CreateAgentRequest fromJSON(String json) {
-        return GSON.fromJson(json, CreateAgentRequest.class);
+        CreateAgentRequest createAgentRequest = GSON.fromJson(json, CreateAgentRequest.class);
+        return createAgentRequest;
     }
 
     public String autoRegisterKey() {
@@ -67,6 +76,10 @@ public class CreateAgentRequest {
 
     public String environment() {
         return environment;
+    }
+
+    public JobIdentifier jobIdentifier() {
+        return jobIdentifier;
     }
 
     public RequestExecutor executor(AgentInstances agentInstances, PluginRequest pluginRequest) {
@@ -84,5 +97,15 @@ public class CreateAgentRequest {
         vars.add(new EnvVar("GO_EA_AUTO_REGISTER_ELASTIC_AGENT_ID", elasticAgentId, null));
         vars.add(new EnvVar("GO_EA_AUTO_REGISTER_ELASTIC_PLUGIN_ID", Constants.PLUGIN_ID, null));
         return vars;
+    }
+
+    @Override
+    public String toString() {
+        return "CreateAgentRequest{" +
+                "autoRegisterKey='" + autoRegisterKey + '\'' +
+                ", properties=" + properties +
+                ", environment='" + environment + '\'' +
+                ", jobIdentifier=" + jobIdentifier +
+                '}';
     }
 }

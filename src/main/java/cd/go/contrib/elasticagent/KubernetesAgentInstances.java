@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagent;
 
+import cd.go.contrib.elasticagent.model.JobIdentifier;
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
@@ -38,28 +39,44 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     public Clock clock = Clock.DEFAULT;
     private boolean refreshed;
     private KubernetesClientFactory factory;
+    private KubernetesInstanceFactory kubernetesInstanceFactory;
 
     public KubernetesAgentInstances() {
-        this(KubernetesClientFactory.instance());
+        this(KubernetesClientFactory.instance(), new KubernetesInstanceFactory());
     }
 
     public KubernetesAgentInstances(KubernetesClientFactory factory) {
+        this(factory, new KubernetesInstanceFactory());
+    }
+
+    public KubernetesAgentInstances(KubernetesClientFactory factory, KubernetesInstanceFactory kubernetesInstanceFactory) {
         this.factory = factory;
+        this.kubernetesInstanceFactory = kubernetesInstanceFactory;
     }
 
     @Override
     public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) throws Exception {
-        KubernetesClient client = factory.kubernetes(settings);
-        KubernetesInstance instance;
-        if(isUsingPodYaml(request)) {
-            instance = KubernetesInstance.createUsingPodYaml(request, settings, client, pluginRequest);
-        } else {
-            instance = KubernetesInstance.create(request, settings, client, pluginRequest);
+        JobIdentifier jobIdentifier = request.jobIdentifier();
+        if (isAgentCreatedForJob(jobIdentifier.getJobId())) {
+            LOG.warn("[Create Agent Request] Request for creating an agent for Job Identifier [" + jobIdentifier + "] has already been scheduled. Skipping current request.");
+            return null;
         }
 
+        KubernetesClient client = factory.kubernetes(settings);
+        KubernetesInstance instance = kubernetesInstanceFactory.create(request, settings, client, pluginRequest, isUsingPodYaml(request));
         register(instance);
 
         return instance;
+    }
+
+    private boolean isAgentCreatedForJob(Long jobId) {
+        for (KubernetesInstance instance : instances.values()) {
+            if (instance.jobId().equals(jobId)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private boolean isUsingPodYaml(CreateAgentRequest request) {
@@ -119,7 +136,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
                 Map<String, String> podLabels = pod.getMetadata().getLabels();
                 if (podLabels != null) {
                     if (StringUtils.equals(Constants.KUBERNETES_POD_KIND_LABEL_VALUE, podLabels.get(Constants.KUBERNETES_POD_KIND_LABEL_KEY))) {
-                        register(KubernetesInstance.fromInstanceInfo(pod));
+                        register(kubernetesInstanceFactory.fromKubernetesPod(pod));
                     }
                 }
             }
@@ -131,10 +148,6 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     @Override
     public KubernetesInstance find(String agentId) {
         return instances.get(agentId);
-    }
-
-    public boolean hasInstance(String agentId) {
-        return instances.containsKey(agentId);
     }
 
     private void register(KubernetesInstance instance) {
@@ -155,9 +168,13 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
             DateTime dateTimeCreated = new DateTime(createdAt);
 
             if (clock.now().isAfter(dateTimeCreated.plus(period))) {
-                unregisteredInstances.register(KubernetesInstance.fromInstanceInfo(pod));
+                unregisteredInstances.register(kubernetesInstanceFactory.fromKubernetesPod(pod));
             }
         }
         return unregisteredInstances;
+    }
+
+    public boolean instanceExists(KubernetesInstance instance) {
+        return instances.contains(instance);
     }
 }
