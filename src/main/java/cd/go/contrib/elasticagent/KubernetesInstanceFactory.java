@@ -37,6 +37,7 @@ import java.util.*;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.POD_CONFIGURATION;
+import static cd.go.contrib.elasticagent.utils.Util.GSON;
 import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -99,6 +100,7 @@ public class KubernetesInstanceFactory {
     private static void setAnnotations(Pod pod, CreateAgentRequest request) {
         Map<String, String> existingAnnotations = (pod.getMetadata().getAnnotations() != null) ? pod.getMetadata().getAnnotations() : new HashMap<>();
         existingAnnotations.putAll(request.properties());
+        existingAnnotations.put(Constants.JOB_IDENTIFIER_LABEL_KEY, GSON.toJson(request.jobIdentifier()));
         pod.getMetadata().setAnnotations(existingAnnotations);
     }
 
