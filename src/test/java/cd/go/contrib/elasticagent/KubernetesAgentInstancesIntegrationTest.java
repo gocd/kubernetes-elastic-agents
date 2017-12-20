@@ -17,6 +17,7 @@
 package cd.go.contrib.elasticagent;
 
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
+import com.google.gson.Gson;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -32,6 +33,7 @@ import org.mockito.Mock;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
@@ -145,7 +147,10 @@ public class KubernetesAgentInstancesIntegrationTest {
 
         assertNotNull(elasticAgentPod.getMetadata());
 
-        assertThat(elasticAgentPod.getMetadata().getAnnotations(), is(createAgentRequest.properties()));
+        Map<String, String> expectedAnnotations = new HashMap<>();
+        expectedAnnotations.putAll(createAgentRequest.properties());
+        expectedAnnotations.put(Constants.JOB_IDENTIFIER_LABEL_KEY, new Gson().toJson(createAgentRequest.jobIdentifier()));
+        assertThat(elasticAgentPod.getMetadata().getAnnotations(), is(expectedAnnotations));
     }
 
     @Test
@@ -249,6 +254,7 @@ public class KubernetesAgentInstancesIntegrationTest {
         HashMap<String, String> expectedAnnotations = new HashMap<>();
         expectedAnnotations.putAll(createAgentRequest.properties());
         expectedAnnotations.put("annotation-key", "my-fancy-annotation-value");
+        expectedAnnotations.put(Constants.JOB_IDENTIFIER_LABEL_KEY, new Gson().toJson(createAgentRequest.jobIdentifier()));
 
         assertThat(elasticAgentPod.getMetadata().getAnnotations(), is(expectedAnnotations));
     }

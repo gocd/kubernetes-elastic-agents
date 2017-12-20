@@ -120,4 +120,8 @@ public class JobIdentifier {
     public String getJobName() {
         return jobName;
     }
+
+    public String representation() {
+        return pipelineName + "/" + pipelineCounter + "/" + staqeName + "/" + stageCounter + "/" + jobName;
+    }
 }

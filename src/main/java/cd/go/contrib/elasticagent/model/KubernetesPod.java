@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagent.model;
 
+import cd.go.contrib.elasticagent.Constants;
 import cd.go.contrib.elasticagent.utils.Util;
 import io.fabric8.kubernetes.api.model.Pod;
 
@@ -29,8 +30,10 @@ public class KubernetesPod {
     private final Date creationTimestamp;
     private final String podIP;
     private final String status;
+    private JobIdentifier jobIdentifier;
 
     public KubernetesPod(Pod pod) throws ParseException {
+        jobIdentifier = Util.GSON.fromJson(pod.getMetadata().getAnnotations().get(Constants.JOB_IDENTIFIER_LABEL_KEY), JobIdentifier.class);
         podName = pod.getMetadata().getName();
         image = pod.getSpec().getContainers().get(0).getImage();
         podIP = pod.getStatus().getPodIP();
@@ -64,6 +67,13 @@ public class KubernetesPod {
         return status;
     }
 
+    public String getJobInformation() {
+        if(jobIdentifier != null) {
+            return jobIdentifier.representation();
+        }
+        return "No Job Information Available!";
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -77,7 +87,8 @@ public class KubernetesPod {
         if (creationTimestamp != null ? !creationTimestamp.equals(that.creationTimestamp) : that.creationTimestamp != null)
             return false;
         if (podIP != null ? !podIP.equals(that.podIP) : that.podIP != null) return false;
-        return status != null ? status.equals(that.status) : that.status == null;
+        if (status != null ? !status.equals(that.status) : that.status != null) return false;
+        return jobIdentifier != null ? jobIdentifier.equals(that.jobIdentifier) : that.jobIdentifier == null;
     }
 
     @Override
@@ -88,6 +99,7 @@ public class KubernetesPod {
         result = 31 * result + (creationTimestamp != null ? creationTimestamp.hashCode() : 0);
         result = 31 * result + (podIP != null ? podIP.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (jobIdentifier != null ? jobIdentifier.hashCode() : 0);
         return result;
     }
 }
