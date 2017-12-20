@@ -4,23 +4,23 @@
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .node {
-        border:        1px solid #d1c4e9;
-        width:         100%;
-        background:    #fff;
+        border: 1px solid #d1c4e9;
+        width: 100%;
+        background: #fff;
         border-radius: 2px;
         margin-bottom: 20px;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .node-header {
-        background:  #d1c4e9;
-        padding:     10px;
-        font-size:   14px;
+        background: #d1c4e9;
+        padding: 10px;
+        font-size: 14px;
         font-weight: 600;
-        cursor:      pointer;
+        cursor: pointer;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .node-header .left {
-        float:   left;
+        float: left;
         padding: 0px;
     }
 
@@ -33,8 +33,8 @@
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .node-header span {
-        display:   inline-block;
-        width:     15%;
+        display: inline-block;
+        width: 15%;
         font-size: 17px;
     }
 
@@ -43,11 +43,11 @@
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .node table {
-        width:     calc(100% - 40px);
+        width: calc(100% - 40px);
         min-width: 95%;
-        border:    1px solid #D8D8D8;
+        border: 1px solid #D8D8D8;
         font-size: 13px;
-        margin:    10px 20px 20px 20px;
+        margin: 10px 20px 20px 20px;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .node table thead {
@@ -55,50 +55,50 @@
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .node table thead th {
-        padding:     10px 20px;
+        padding: 10px 20px;
         font-weight: bold;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .node table tbody tr {
-        border-top:      1px solid #D8D8D8;
-        border-bottom:   1px solid #D8D8D8;
+        border-top: 1px solid #D8D8D8;
+        border-bottom: 1px solid #D8D8D8;
         border-collapse: collapse;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .node table tbody td {
-        padding:       10px 20px;
-        max-width:     190px;
+        padding: 10px 20px;
+        max-width: 190px;
         text-overflow: ellipsis;
-        overflow:      hidden;
+        overflow: hidden;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] dl.properties {
-        overflow:       hidden;
-        margin:         0;
-        font-size:      13px;
-        display:        inline-block;
+        overflow: hidden;
+        margin: 0;
+        font-size: 13px;
+        display: inline-block;
         vertical-align: top;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] dt {
-        float:       left;
-        clear:       both;
-        min-width:   230px;
-        text-align:  right;
+        float: left;
+        clear: both;
+        min-width: 230px;
+        text-align: right;
         font-weight: normal;
-        padding:     5px 0px;
-        margin:      0;
+        padding: 5px 0px;
+        margin: 0;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] dl.properties.inline dt {
-        clear:          none;
-        min-width:      auto;
+        clear: none;
+        min-width: auto;
         vertical-align: bottom;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] dl.properties.inline dd, [data-plugin-style-id="kubernetes-plugin"] dl.properties.inline dt {
         padding: 0px;
-        height:  15px;
+        height: 15px;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] dl.properties.inline dd {
@@ -106,21 +106,21 @@
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .node-header .hostname, [data-plugin-style-id="kubernetes-plugin"] .node-header .node-id {
-        min-width:     150px;
-        max-width:     150px;
-        overflow:      hidden;
+        min-width: 150px;
+        max-width: 150px;
+        overflow: hidden;
         text-overflow: ellipsis;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .name {
-        min-width:     300px;
-        max-width:     300px;
-        overflow:      hidden;
+        min-width: 300px;
+        max-width: 300px;
+        overflow: hidden;
         text-overflow: ellipsis;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] dl.properties.inline dt:first-child {
-        min-width:   auto;
+        min-width: auto;
         margin-left: 10px;
     }
 
@@ -130,10 +130,10 @@
     }
 
     [data-plugin-style-id="kubernetes-plugin"] dd {
-        float:       left;
-        padding:     5px 0px;
+        float: left;
+        padding: 5px 0px;
         font-weight: 600;
-        margin:      0;
+        margin: 0;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .node .header {
@@ -141,12 +141,12 @@
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .warning {
-        font-size:     13px;
-        font-weight:   600;
+        font-size: 13px;
+        font-weight: 600;
         margin-bottom: 10px;
-        border-left:   2px solid #f7bc08;
-        padding:       10px;
-        background:    #fff;
+        border-left: 2px solid #f7bc08;
+        padding: 10px;
+        background: #fff;
         border-radius: 2px;
     }
 </style>
@@ -208,7 +208,7 @@
                             <dt>Architecture</dt>
                             <dd>${node.architecture!}</dd>
                         </dl>
-                        
+
                         <dl class="properties">
                             <dt>Container Runtime Version</dt>
                             <dd>${node.containerRuntimeVersion!}</dd>
@@ -223,6 +223,7 @@
                         <thead>
                         <tr>
                             <th>Pod Name</th>
+                            <th>Job Information</th>
                             <th>Image</th>
                             <th>IP Address</th>
                             <th>Created At</th>
@@ -234,6 +235,7 @@
                                 <#list node.pods as pod>
                                 <tr>
                                     <td>${pod.podName!}</td>
+                                    <td>${pod.jobInformation!}</td>
                                     <td>${pod.image!}</td>
                                     <td>${pod.podIP!}</td>
                                     <td>{{ ${pod.creationTimestamp?long?c!} | date:"MMM dd, yyyy hh:mm:ss a"}}</td>
