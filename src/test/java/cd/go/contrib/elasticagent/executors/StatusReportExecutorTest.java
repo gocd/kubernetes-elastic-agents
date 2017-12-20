@@ -22,6 +22,8 @@ import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.PluginSettings;
 import cd.go.contrib.elasticagent.builders.PluginStatusReportViewBuilder;
 import cd.go.contrib.elasticagent.model.KubernetesCluster;
+import cd.go.contrib.elasticagent.model.StatusReportInformation;
+import cd.go.contrib.elasticagent.requests.StatusReportRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import freemarker.template.Template;
 import io.fabric8.kubernetes.api.model.NodeList;
@@ -72,9 +74,9 @@ public class StatusReportExecutorTest {
         final Template template = mock(Template.class);
 
         when(builder.getTemplate("status-report.template.ftlh")).thenReturn(template);
-        when(builder.build(eq(template), any(KubernetesCluster.class))).thenReturn("status-report");
+        when(builder.build(eq(template), any(StatusReportInformation.class))).thenReturn("status-report");
 
-        final GoPluginApiResponse response = new StatusReportExecutor(pluginRequest, kubernetesClientFactory, builder).execute();
+        final GoPluginApiResponse response = new StatusReportExecutor(new StatusReportRequest(), pluginRequest, kubernetesClientFactory, builder).execute();
 
         assertThat(response.responseCode(), is(200));
         assertThat(response.responseBody(), is("{\"view\":\"status-report\"}"));

@@ -149,6 +149,12 @@
         background: #fff;
         border-radius: 2px;
     }
+
+    [data-plugin-style-id="kubernetes-plugin"] .active_job {
+        background: #ffeda0;
+        border-bottom: 1px solid #ff
+    }
+
 </style>
 
 <div data-plugin-style-id="kubernetes-plugin">
@@ -233,7 +239,11 @@
                         <tbody>
                             <#if node.pods?size != 0>
                                 <#list node.pods as pod>
-                                <tr>
+                                <tr
+                                    <#if pod.jobInformation == jobInformation>
+                                            class="active_job"
+                                    </#if>
+                                >
                                     <td>${pod.podName!}</td>
                                     <td>${pod.jobInformation!}</td>
                                     <td>${pod.image!}</td>

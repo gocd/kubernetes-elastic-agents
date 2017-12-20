@@ -18,8 +18,11 @@ package cd.go.contrib.elasticagent.executors;
 
 import cd.go.contrib.elasticagent.KubernetesClientFactory;
 import cd.go.contrib.elasticagent.PluginRequest;
+import cd.go.contrib.elasticagent.RequestExecutor;
 import cd.go.contrib.elasticagent.builders.PluginStatusReportViewBuilder;
 import cd.go.contrib.elasticagent.model.KubernetesCluster;
+import cd.go.contrib.elasticagent.model.StatusReportInformation;
+import cd.go.contrib.elasticagent.requests.StatusReportRequest;
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -30,28 +33,30 @@ import java.io.IOException;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 
-public class StatusReportExecutor {
+public class StatusReportExecutor implements RequestExecutor {
+    private StatusReportRequest statusReportRequest;
     private final PluginRequest pluginRequest;
     private final KubernetesClientFactory factory;
     private final PluginStatusReportViewBuilder statusReportViewBuilder;
 
 
-    public StatusReportExecutor(PluginRequest pluginRequest) throws IOException {
-        this(pluginRequest, KubernetesClientFactory.instance(), PluginStatusReportViewBuilder.instance());
+    public StatusReportExecutor(StatusReportRequest statusReportRequest, PluginRequest pluginRequest) throws IOException {
+        this(statusReportRequest, pluginRequest, KubernetesClientFactory.instance(), PluginStatusReportViewBuilder.instance());
     }
 
-    public StatusReportExecutor(PluginRequest pluginRequest, KubernetesClientFactory factory, PluginStatusReportViewBuilder statusReportViewBuilder) throws IOException {
+    public StatusReportExecutor(StatusReportRequest statusReportRequest, PluginRequest pluginRequest, KubernetesClientFactory factory, PluginStatusReportViewBuilder statusReportViewBuilder) throws IOException {
+        this.statusReportRequest = statusReportRequest;
         this.pluginRequest = pluginRequest;
         this.factory = factory;
         this.statusReportViewBuilder = statusReportViewBuilder;
     }
 
     public GoPluginApiResponse execute() throws Exception {
-        LOG.info("[status-report] Generating status report");
+        LOG.info(String.format("[status-report] Generating status report %s", statusReportRequest.toString()));
         KubernetesClient client = factory.kubernetes(pluginRequest.getPluginSettings());
-        final KubernetesCluster kubernetesCluster = new KubernetesCluster(client);
+        StatusReportInformation reportInformation = new StatusReportInformation(new KubernetesCluster(client), statusReportRequest.jobIdentifier());
         final Template template = statusReportViewBuilder.getTemplate("status-report.template.ftlh");
-        final String statusReportView = statusReportViewBuilder.build(template, kubernetesCluster);
+        final String statusReportView = statusReportViewBuilder.build(template, reportInformation);
 
         JsonObject responseJSON = new JsonObject();
         responseJSON.addProperty("view", statusReportView);

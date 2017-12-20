@@ -17,6 +17,7 @@
 package cd.go.contrib.elasticagent.builders;
 
 import cd.go.contrib.elasticagent.model.KubernetesCluster;
+import cd.go.contrib.elasticagent.model.StatusReportInformation;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -44,9 +45,9 @@ public class PluginStatusReportViewBuilder {
         return configuration.getTemplate(template);
     }
 
-    public String build(Template template, KubernetesCluster cluster) throws IOException, TemplateException {
+    public String build(Template template, StatusReportInformation reportInformation) throws IOException, TemplateException {
         Writer writer = new StringWriter();
-        template.process(cluster, writer);
+        template.process(reportInformation, writer);
         return writer.toString();
     }
 
