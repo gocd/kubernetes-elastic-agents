@@ -59,6 +59,10 @@ public class ValidateConfigurationExecutorTest {
                 "    \"key\": \"auto_register_timeout\"\n" +
                 "  },\n" +
                 "  {\n" +
+                "    \"message\": \"Maximum Pending Kuberneted Pods Count must be a positive integer.\",\n" +
+                "    \"key\": \"pending_pods_count\"\n" +
+                "  },\n" +
+                "  {\n" +
                 "    \"message\": \"Kubernetes Cluster URL must not be blank.\",\n" +
                 "    \"key\": \"kubernetes_cluster_url\"\n" +
                 "  }\n" +
@@ -71,6 +75,7 @@ public class ValidateConfigurationExecutorTest {
         settings.put("go_server_url", "https://ci.example.com/go");
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
         settings.put("auto_register_timeout", "10");
+        settings.put("pending_pods_count", "10");
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, null).execute();
 
         assertThat(response.responseCode(), is(200));
@@ -83,6 +88,7 @@ public class ValidateConfigurationExecutorTest {
         serverInfo.setSecureSiteUrl(null);
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
         settings.put("auto_register_timeout", "10");
+        settings.put("pending_pods_count", "10");
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, pluginRequest).execute();
 
         assertThat(response.responseCode(), is(200));
@@ -100,6 +106,7 @@ public class ValidateConfigurationExecutorTest {
         settings.put("go_server_url", "foo.com/go(");
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
         settings.put("auto_register_timeout", "10");
+        settings.put("pending_pods_count", "10");
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, pluginRequest).execute();
 
         assertThat(response.responseCode(), is(200));
@@ -117,6 +124,7 @@ public class ValidateConfigurationExecutorTest {
         settings.put("go_server_url", "https://foo.com");
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
         settings.put("auto_register_timeout", "10");
+        settings.put("pending_pods_count", "10");
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, pluginRequest).execute();
 
         assertThat(response.responseCode(), is(200));
