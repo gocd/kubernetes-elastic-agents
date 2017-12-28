@@ -32,6 +32,10 @@ public class PluginSettings {
     private String autoRegisterTimeout;
 
     @Expose
+    @SerializedName("pending_pods_count")
+    private String pendingPodsCount;
+
+    @Expose
     @SerializedName("kubernetes_cluster_url")
     private String kubernetesClusterUrl;
 
@@ -49,7 +53,6 @@ public class PluginSettings {
 
     private Period autoRegisterPeriod;
 
-
     public static PluginSettings fromJSON(String json) {
         return GSON.fromJson(json, PluginSettings.class);
     }
@@ -58,11 +61,12 @@ public class PluginSettings {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof PluginSettings)) return false;
-
         PluginSettings that = (PluginSettings) o;
 
         if (goServerUrl != null ? !goServerUrl.equals(that.goServerUrl) : that.goServerUrl != null) return false;
         if (autoRegisterTimeout != null ? !autoRegisterTimeout.equals(that.autoRegisterTimeout) : that.autoRegisterTimeout != null)
+            return false;
+        if (pendingPodsCount != null ? !pendingPodsCount.equals(that.pendingPodsCount) : that.pendingPodsCount != null)
             return false;
         if (kubernetesClusterUrl != null ? !kubernetesClusterUrl.equals(that.kubernetesClusterUrl) : that.kubernetesClusterUrl != null)
             return false;
@@ -73,6 +77,7 @@ public class PluginSettings {
     public int hashCode() {
         int result = goServerUrl != null ? goServerUrl.hashCode() : 0;
         result = 31 * result + (autoRegisterTimeout != null ? autoRegisterTimeout.hashCode() : 0);
+        result = 31 * result + (pendingPodsCount != null ? pendingPodsCount.hashCode() : 0);
         result = 31 * result + (kubernetesClusterUrl != null ? kubernetesClusterUrl.hashCode() : 0);
         result = 31 * result + (autoRegisterPeriod != null ? autoRegisterPeriod.hashCode() : 0);
         return result;
@@ -90,6 +95,14 @@ public class PluginSettings {
             autoRegisterTimeout = "10";
         }
         return autoRegisterTimeout;
+    }
+
+    public Integer getMaximumPendingAgentsCount() {
+        if (pendingPodsCount == null) {
+            pendingPodsCount = "10";
+        }
+
+        return Integer.valueOf(pendingPodsCount);
     }
 
     public String getGoServerUrl() {

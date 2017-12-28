@@ -59,7 +59,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
 
     @Override
     public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) throws Exception {
-        final Integer maxAllowedContainers = 5;
+        final Integer maxAllowedContainers = settings.getMaximumPendingAgentsCount();
         synchronized (instances) {
             doWithLockOnSemaphore(new SetupSemaphore(maxAllowedContainers, instances, semaphore));
 
