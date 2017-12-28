@@ -27,11 +27,13 @@ public class PluginSettingsTest {
         PluginSettings pluginSettings = PluginSettings.fromJSON("{" +
                 "\"go_server_url\": \"https://foo.go.cd/go\", " +
                 "\"auto_register_timeout\": \"10\", " +
+                "\"pending_pods_count\": \"10\", " +
                 "\"kubernetes_cluster_url\": \"https://cloud.example.com\" " +
                 "}");
 
         assertThat(pluginSettings.getGoServerUrl(), is("https://foo.go.cd/go"));
         assertThat(pluginSettings.getAutoRegisterTimeout(), is("10"));
+        assertThat(pluginSettings.getMaximumPendingAgentsCount(), is(10));
         assertThat(pluginSettings.getKubernetesClusterUrl(), is("https://cloud.example.com"));
     }
 }

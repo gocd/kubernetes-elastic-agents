@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.SPECIFIED_USING_POD_CONFIGURATION;
@@ -38,6 +39,8 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     private final ConcurrentHashMap<String, KubernetesInstance> instances = new ConcurrentHashMap<>();
     public Clock clock = Clock.DEFAULT;
     private boolean refreshed;
+    final Semaphore semaphore = new Semaphore(0, true);
+
     private KubernetesClientFactory factory;
     private KubernetesInstanceFactory kubernetesInstanceFactory;
 
@@ -56,6 +59,26 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
 
     @Override
     public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) throws Exception {
+        final Integer maxAllowedContainers = settings.getMaximumPendingAgentsCount();
+        synchronized (instances) {
+            doWithLockOnSemaphore(new SetupSemaphore(maxAllowedContainers, instances, semaphore));
+
+            if (semaphore.tryAcquire()) {
+                return createKubernetesInstance(request, settings, pluginRequest);
+            } else {
+                LOG.warn(String.format("The number of pending kubernetes pods is currently at the maximum permissible limit (%d). Total kubernetes pods (%d). Not creating any more containers.", maxAllowedContainers, instances.size()));
+                return null;
+            }
+        }
+    }
+
+    private void doWithLockOnSemaphore(Runnable runnable) {
+        synchronized (semaphore) {
+            runnable.run();
+        }
+    }
+
+    private KubernetesInstance createKubernetesInstance(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) throws Exception {
         JobIdentifier jobIdentifier = request.jobIdentifier();
         if (isAgentCreatedForJob(jobIdentifier.getJobId())) {
             LOG.warn("[Create Agent Request] Request for creating an agent for Job Identifier [" + jobIdentifier + "] has already been scheduled. Skipping current request.");
