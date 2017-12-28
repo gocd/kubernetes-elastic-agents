@@ -103,4 +103,9 @@ public class KubernetesAgentInstancesTest {
         agentInstances.create(mockCreateAgentRequest, mockPluginSettings, mockPluginRequest);
         verify(mockKubernetesInstanceFactory, times(0)).create(any(), any(), any(), any(), any());
     }
+
+    @Test
+    public void shouldNotCreatePodsWhenOutstandingLimitOfPendingKubernetesPodsHasReached() {
+
+    }
 }

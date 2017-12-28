@@ -62,4 +62,8 @@ public class KubernetesInstance {
     public Long jobId() {
         return jobId;
     }
+
+    public boolean isPending() {
+        return this.state.equals(PodState.Pending);
+    }
 }
