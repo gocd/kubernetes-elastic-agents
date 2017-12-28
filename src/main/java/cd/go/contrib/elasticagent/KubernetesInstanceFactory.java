@@ -120,7 +120,7 @@ public class KubernetesInstanceFactory {
             }
             String environment = metadata.getLabels().get(Constants.ENVIRONMENT_LABEL_KEY);
             Long jobId = Long.valueOf(metadata.getLabels().get(Constants.JOB_ID_LABEL_KEY));
-            kubernetesInstance = new KubernetesInstance(createdAt, environment, metadata.getName(), metadata.getAnnotations(), jobId);
+            kubernetesInstance = new KubernetesInstance(createdAt, environment, metadata.getName(), metadata.getAnnotations(), jobId, PodState.fromPod(elasticAgentPod));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

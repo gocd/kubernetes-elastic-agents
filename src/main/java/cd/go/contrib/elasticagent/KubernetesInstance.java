@@ -28,13 +28,15 @@ public class KubernetesInstance {
     private final String name;
     private final Map<String, String> properties;
     private final Long jobId;
+    private final PodState state;
 
-    public KubernetesInstance(DateTime createdAt, String environment, String name, Map<String, String> properties, Long jobId) {
+    public KubernetesInstance(DateTime createdAt, String environment, String name, Map<String, String> properties, Long jobId, PodState state) {
         this.createdAt = createdAt.withZone(DateTimeZone.UTC);
         this.environment = environment;
         this.name = name;
         this.properties = properties;
         this.jobId = jobId;
+        this.state = state;
     }
 
     public void terminate(KubernetesClient client) {
