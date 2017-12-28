@@ -18,10 +18,7 @@ package cd.go.contrib.elasticagent;
 
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import com.google.gson.Gson;
-import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.EnvVar;
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.PodList;
+import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.internal.NodeOperationsImpl;
 import io.fabric8.kubernetes.client.dsl.internal.PodOperationsImpl;
@@ -100,6 +97,24 @@ public class KubernetesAgentInstancesIntegrationTest {
 
         assertThat(gocdAgentContainer.getImage(), is("gocd/custom-gocd-agent-alpine:latest"));
         assertThat(gocdAgentContainer.getImagePullPolicy(), is("IfNotPresent"));
+    }
+
+    @Test
+    public void shouldCreateKubernetesPodWithResourcesLimitSpecificationOnGoCDAgentContainer() throws Exception {
+        ArgumentCaptor<Pod> argumentCaptor = ArgumentCaptor.forClass(Pod.class);
+        kubernetesAgentInstances.create(createAgentRequest, settings, mockedPluginRequest);
+        verify(pods).create(argumentCaptor.capture());
+        Pod elasticAgentPod = argumentCaptor.getValue();
+
+        List<Container> containers = elasticAgentPod.getSpec().getContainers();
+        assertThat(containers.size(), is(1));
+
+        Container gocdAgentContainer = containers.get(0);
+
+        ResourceRequirements resources = gocdAgentContainer.getResources();
+
+        assertThat(resources.getLimits().get("memory").getAmount(), is(String.valueOf(1024 * 1024 * 1024)));
+        assertThat(resources.getLimits().get("cpu").getAmount(), is("2"));
     }
 
     @Test

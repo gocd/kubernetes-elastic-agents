@@ -58,23 +58,7 @@ public class KubernetesInstanceFactory {
         container.setImage(image(request.properties()));
         container.setImagePullPolicy("IfNotPresent");
 
-        ResourceRequirements resources = new ResourceRequirements();
-        resources.setLimits(new HashMap<String, Quantity>() {{
-            String maxMemory = request.properties().get("MaxMemory");
-            if (StringUtils.isNotBlank(maxMemory)) {
-                LOG.debug(String.format("[Create Agent] Setting memory resource limit on k8s pod:%s", maxMemory));
-                Size mem = Size.parse(maxMemory);
-                put("memory", new Quantity(String.valueOf(mem.toMegabytes()), "Mi"));
-            }
-
-            String maxCPU = request.properties().get("MaxCPU");
-            if (StringUtils.isNotBlank(maxCPU)) {
-                LOG.debug(String.format("[Create Agent] Setting cpu resource limit on k8s pod:%s", maxCPU));
-                put("cpu", new Quantity(maxCPU));
-            }
-        }});
-
-        container.setResources(resources);
+        container.setResources(getPodResources(request));
 
         ObjectMeta podMetadata = new ObjectMeta();
         podMetadata.setName(containerName);
@@ -89,6 +73,28 @@ public class KubernetesInstanceFactory {
         setLabels(elasticAgentPod, request);
 
         return createKubernetesPod(client, elasticAgentPod);
+    }
+
+    private ResourceRequirements getPodResources(CreateAgentRequest request) {
+        ResourceRequirements resources = new ResourceRequirements();
+        HashMap<String, Quantity> limits = new HashMap<>();
+
+        String maxMemory = request.properties().get("MaxMemory");
+        if (StringUtils.isNotBlank(maxMemory)) {
+            Size mem = Size.parse(maxMemory);
+            LOG.debug(String.format("[Create Agent] Setting memory resource limit on k8s pod:%s", new Quantity(String.valueOf(mem.toMegabytes()), "M")));
+            limits.put("memory", new Quantity(String.valueOf(mem.toBytes())));
+        }
+
+        String maxCPU = request.properties().get("MaxCPU");
+        if (StringUtils.isNotBlank(maxCPU)) {
+            LOG.debug(String.format("[Create Agent] Setting cpu resource limit on k8s pod:%s", new Quantity(maxCPU)));
+            limits.put("cpu", new Quantity(maxCPU));
+        }
+
+        resources.setLimits(limits);
+
+        return resources;
     }
 
     private static void setLabels(Pod pod, CreateAgentRequest request) {

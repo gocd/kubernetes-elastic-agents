@@ -27,8 +27,8 @@ public class CreateAgentRequestMother {
         String autoRegisterKey = UUID.randomUUID().toString();
         HashMap<String, String> properties = new HashMap<>();
         properties.put("Image", "gocd/custom-gocd-agent-alpine");
-        properties.put("MaxMemory", "1024m");
-        properties.put("MaxCPU", "1");
+        properties.put("MaxMemory", "1024M");
+        properties.put("MaxCPU", "2");
         properties.put("Environment", "ENV1=VALUE1\n" +
                 "ENV2=VALUE2");
         properties.put("PodConfiguration", "");
