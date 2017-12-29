@@ -137,6 +137,18 @@ public class KubernetesAgentInstancesIntegrationTest {
     }
 
     @Test
+    public void shouldCreateKubernetesPodWithTimeStamp() throws Exception {
+        ArgumentCaptor<Pod> argumentCaptor = ArgumentCaptor.forClass(Pod.class);
+        kubernetesAgentInstances.create(createAgentRequest, settings, mockedPluginRequest);
+        verify(pods).create(argumentCaptor.capture());
+
+        Pod elasticAgentPod = argumentCaptor.getValue();
+
+        assertNotNull(elasticAgentPod.getMetadata());
+        assertNotNull(elasticAgentPod.getMetadata().getCreationTimestamp());
+    }
+
+    @Test
     public void shouldCreateKubernetesPodWithGoCDElasticAgentContainerContainingEnvironmentVariables() throws Exception {
         ArgumentCaptor<Pod> argumentCaptor = ArgumentCaptor.forClass(Pod.class);
         KubernetesInstance instance = kubernetesAgentInstances.create(createAgentRequest, settings, mockedPluginRequest);
@@ -236,6 +248,20 @@ public class KubernetesAgentInstancesIntegrationTest {
         assertThat(elasticAgentPod.getMetadata().getName(), is("test-pod-yaml"));
 
         assertThat(elasticAgentPod.getMetadata().getName(), is(instance.name()));
+    }
+
+    @Test
+    public void usingPodYamlConfigurations_shouldCreateKubernetesPodWithTimestamp() throws Exception {
+        createAgentRequest = CreateAgentRequestMother.createAgentRequestUsingPodYaml();
+
+        ArgumentCaptor<Pod> argumentCaptor = ArgumentCaptor.forClass(Pod.class);
+        kubernetesAgentInstances.create(createAgentRequest, settings, mockedPluginRequest);
+        verify(pods).create(argumentCaptor.capture());
+
+        Pod elasticAgentPod = argumentCaptor.getValue();
+
+        assertNotNull(elasticAgentPod.getMetadata());
+        assertNotNull(elasticAgentPod.getMetadata().getCreationTimestamp());
     }
 
     @Test
