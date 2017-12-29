@@ -17,18 +17,20 @@
 package cd.go.contrib.elasticagent;
 
 import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.PodStatus;
 
 public enum PodState {
     Running,
     Pending;
 
     public static PodState fromPod(Pod pod) {
-        PodStatus status = pod.getStatus();
-        if (status == null) {
+        if (pod.getStatus() == null) {
             return Pending;
         }
 
-        return (status.getPhase() != null && status.getPhase().equals("Running")) ? Running : Pending;
+        if ("Running".equals(pod.getStatus().getPhase())) {
+            return Running;
+        }
+
+        return Pending;
     }
 }

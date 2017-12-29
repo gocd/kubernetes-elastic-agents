@@ -32,6 +32,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.util.*;
 
@@ -62,12 +64,20 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         when(mockedClient.pods()).thenReturn(mockedOperation);
         when(mockedOperation.inNamespace(Constants.KUBERNETES_NAMESPACE_KEY)).thenReturn(mockedNamespaceOperation);
 
-        when(mockedNamespaceOperation.create(any(Pod.class))).thenReturn(mockedPod);
+        when(mockedNamespaceOperation.create(any(Pod.class))).thenAnswer(new Answer<Pod>() {
+            @Override
+            public Pod answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                return (Pod) args[0];
+            }
+        });
+
         when(mockedNamespaceOperation.withName(anyString())).thenReturn(podResource);
         when(podResource.get()).thenReturn(mockedPod);
 
         objectMetadata = new ObjectMeta();
         objectMetadata.setCreationTimestamp(getSimpleDateFormat().format(new Date()));
+
         when(mockedPod.getMetadata()).thenReturn(objectMetadata);
     }
 

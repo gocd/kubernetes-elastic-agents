@@ -20,12 +20,13 @@ import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import com.google.gson.Gson;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.dsl.internal.NodeOperationsImpl;
 import io.fabric8.kubernetes.client.dsl.internal.PodOperationsImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,9 +56,6 @@ public class KubernetesAgentInstancesIntegrationTest {
     private KubernetesClient mockKubernetesClient;
 
     @Mock
-    private NodeOperationsImpl nodes;
-
-    @Mock
     private PodOperationsImpl pods;
 
     @Before
@@ -67,6 +65,15 @@ public class KubernetesAgentInstancesIntegrationTest {
         when(mockedKubernetesClientFactory.kubernetes(any())).thenReturn(mockKubernetesClient);
 
         when(pods.inNamespace(Constants.KUBERNETES_NAMESPACE_KEY)).thenReturn(pods);
+
+        when(pods.create(any())).thenAnswer(new Answer<Pod>() {
+            @Override
+            public Pod answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                return (Pod) args[0];
+            }
+        });
+
         when(pods.list()).thenReturn(new PodList());
         when(mockKubernetesClient.pods()).thenReturn(pods);
 

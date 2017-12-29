@@ -38,7 +38,6 @@ import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
 public class KubernetesAgentInstances implements AgentInstances<KubernetesInstance> {
     private final ConcurrentHashMap<String, KubernetesInstance> instances = new ConcurrentHashMap<>();
     public Clock clock = Clock.DEFAULT;
-    private boolean refreshed;
     final Semaphore semaphore = new Semaphore(0, true);
 
     private KubernetesClientFactory factory;
@@ -149,22 +148,17 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
 
     @Override
     public void refreshAll(PluginRequest pluginRequest) throws Exception {
-        LOG.debug("Refreshing Elastic agents.");
+        LOG.debug("[Refresh Instances]. Syncing k8s elastic agent pod information");
         KubernetesClient client = factory.kubernetes(pluginRequest.getPluginSettings());
         PodList list = client.pods().inNamespace(Constants.KUBERNETES_NAMESPACE_KEY).list();
 
-        if (!refreshed) {
-            LOG.debug("Syncing k8s elastic agent pod information");
-            for (Pod pod : list.getItems()) {
-                Map<String, String> podLabels = pod.getMetadata().getLabels();
-                if (podLabels != null) {
-                    if (StringUtils.equals(Constants.KUBERNETES_POD_KIND_LABEL_VALUE, podLabels.get(Constants.KUBERNETES_POD_KIND_LABEL_KEY))) {
-                        register(kubernetesInstanceFactory.fromKubernetesPod(pod));
-                    }
+        for (Pod pod : list.getItems()) {
+            Map<String, String> podLabels = pod.getMetadata().getLabels();
+            if (podLabels != null) {
+                if (StringUtils.equals(Constants.KUBERNETES_POD_KIND_LABEL_VALUE, podLabels.get(Constants.KUBERNETES_POD_KIND_LABEL_KEY))) {
+                    register(kubernetesInstanceFactory.fromKubernetesPod(pod));
                 }
             }
-
-            refreshed = true;
         }
     }
 
