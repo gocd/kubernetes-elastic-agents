@@ -17,7 +17,6 @@
 package cd.go.contrib.elasticagent.model;
 
 import cd.go.contrib.elasticagent.Constants;
-import io.fabric8.kubernetes.api.model.Node;
 import io.fabric8.kubernetes.api.model.NodeList;
 import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -25,11 +24,6 @@ import io.fabric8.kubernetes.client.dsl.internal.NodeOperationsImpl;
 import io.fabric8.kubernetes.client.dsl.internal.PodOperationsImpl;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 public class KubernetesClusterTest {
@@ -44,6 +38,7 @@ public class KubernetesClusterTest {
         when(kubernetesClient.nodes()).thenReturn(nodes);
 
         when(pods.inNamespace(Constants.KUBERNETES_NAMESPACE_KEY)).thenReturn(pods);
+        when(pods.withLabel(Constants.CREATED_BY_LABEL_KEY, Constants.PLUGIN_ID)).thenReturn(pods);
         when(pods.list()).thenReturn(new PodList());
         when(kubernetesClient.pods()).thenReturn(pods);
 
