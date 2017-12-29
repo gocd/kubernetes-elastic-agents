@@ -31,6 +31,8 @@ import io.fabric8.kubernetes.client.dsl.PodResource;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +42,6 @@ import static cd.go.contrib.elasticagent.Constants.KUBERNETES_NAMESPACE_KEY;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -64,7 +65,13 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
         when(factory.kubernetes(any(PluginSettings.class))).thenReturn(mockedClient);
         when(mockedClient.pods()).thenReturn(mockedOperation);
         when(mockedOperation.inNamespace(KUBERNETES_NAMESPACE_KEY)).thenReturn(mockedNamespaceOperation);
-        when(mockedNamespaceOperation.create(any(Pod.class))).thenReturn(mock(Pod.class));
+        when(mockedNamespaceOperation.create(any(Pod.class))).thenAnswer(new Answer<Pod>() {
+            @Override
+            public Pod answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                return (Pod) args[0];
+            }
+        });
 
         agentInstances = new KubernetesAgentInstances(factory);
         properties.put("foo", "bar");
