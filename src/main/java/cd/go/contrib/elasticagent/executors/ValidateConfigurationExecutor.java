@@ -22,7 +22,6 @@ import cd.go.contrib.elasticagent.ServerRequestFailedException;
 import cd.go.contrib.elasticagent.model.Field;
 import cd.go.contrib.elasticagent.model.ServerInfo;
 import cd.go.contrib.elasticagent.requests.ValidatePluginSettings;
-import com.google.gson.Gson;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.apache.commons.lang3.StringUtils;

@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagent.executors;
 
+import cd.go.contrib.elasticagent.KubernetesInstanceFactory;
 import cd.go.contrib.elasticagent.RequestExecutor;
 import cd.go.contrib.elasticagent.model.Metadata;
 import cd.go.contrib.elasticagent.requests.ProfileValidateRequest;
@@ -96,7 +97,7 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         try {
-            mapper.readValue(podYaml, Pod.class);
+            mapper.readValue(KubernetesInstanceFactory.getTemplatizedPodYamlString(podYaml), Pod.class);
         } catch (IOException e) {
             addError(result, key, "Invalid Pod Yaml.");
         }

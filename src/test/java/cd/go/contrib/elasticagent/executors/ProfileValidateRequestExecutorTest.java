@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,6 +51,59 @@ public class ProfileValidateRequestExecutorTest {
         ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties));
         String json = executor.execute().responseBody();
         JSONAssert.assertEquals("[{\"message\":\"Pod Configuration must not be blank.\",\"key\":\"PodConfiguration\"}]", json, JSONCompareMode.NON_EXTENSIBLE);
+    }
+
+    @Test
+    public void shouldValidatePodConfigurationWhenSpecifiedAsYaml() throws Exception {
+        Map<String, String> properties = new HashMap<>();
+        properties.put("SpecifiedUsingPodConfiguration", "true");
+        properties.put("PodConfiguration", "this is my invalid fancy pod yaml!!");
+        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties));
+        String json = executor.execute().responseBody();
+        JSONAssert.assertEquals("[{\"message\":\"Invalid Pod Yaml.\",\"key\":\"PodConfiguration\"}]", json, JSONCompareMode.NON_EXTENSIBLE);
+    }
+
+    @Test
+    public void shouldAllowPodYamlConfiguration() throws Exception {
+        Map<String, String> properties = new HashMap<>();
+        properties.put("SpecifiedUsingPodConfiguration", "true");
+        String podYaml = "apiVersion: v1\n" +
+                "kind: Pod\n" +
+                "metadata:\n" +
+                "  name: pod-name\n" +
+                "  labels:\n" +
+                "    app: web\n" +
+                "spec:\n" +
+                "  containers:\n" +
+                "    - name: gocd-agent-container\n" +
+                "      image: gocd/fancy-agent-image:latest";
+
+        properties.put("PodConfiguration", podYaml);
+        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties));
+        String json = executor.execute().responseBody();
+        JSONAssert.assertEquals("[]", json, JSONCompareMode.NON_EXTENSIBLE);
+    }
+
+
+    @Test
+    public void shouldAllowGinjaTemplatedPodYaml() throws Exception {
+        Map<String, String> properties = new HashMap<>();
+        properties.put("SpecifiedUsingPodConfiguration", "true");
+        String podYaml = "apiVersion: v1\n" +
+                "kind: Pod\n" +
+                "metadata:\n" +
+                "  name: pod-name-prefix-{{ POD_POSTFIX }}\n" +
+                "  labels:\n" +
+                "    app: web\n" +
+                "spec:\n" +
+                "  containers:\n" +
+                "    - name: gocd-agent-container-{{ CONTAINER_POSTFIX }}\n" +
+                "      image: {{ GOCD_AGENT_IMAGE }}:{{ LATEST_VERSION }}";
+
+        properties.put("PodConfiguration", podYaml);
+        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties));
+        String json = executor.execute().responseBody();
+        JSONAssert.assertEquals("[]", json, JSONCompareMode.NON_EXTENSIBLE);
     }
 
     @Test

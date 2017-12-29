@@ -201,12 +201,7 @@ public class KubernetesInstanceFactory {
     private KubernetesInstance createUsingPodYaml(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         String podYaml = request.properties().get(POD_CONFIGURATION.getKey());
-
-        StringWriter writer = new StringWriter();
-        MustacheFactory mf = new DefaultMustacheFactory();
-        Mustache mustache = mf.compile(new StringReader(podYaml), "templatePod");
-        mustache.execute(writer, KubernetesInstanceFactory.getJinJavaContext());
-        String templatizedPodYaml = writer.toString();
+        String templatizedPodYaml = getTemplatizedPodYamlString(podYaml);
 
         Pod elasticAgentPod = new Pod();
         try {
@@ -218,6 +213,14 @@ public class KubernetesInstanceFactory {
 
         setGoCDMetadata(request, settings, pluginRequest, elasticAgentPod);
         return createKubernetesPod(client, elasticAgentPod);
+    }
+
+    public static String getTemplatizedPodYamlString(String podYaml) {
+        StringWriter writer = new StringWriter();
+        MustacheFactory mf = new DefaultMustacheFactory();
+        Mustache mustache = mf.compile(new StringReader(podYaml), "templatePod");
+        mustache.execute(writer, KubernetesInstanceFactory.getJinJavaContext());
+        return writer.toString();
     }
 
     public static Map<String, String> getJinJavaContext() {
