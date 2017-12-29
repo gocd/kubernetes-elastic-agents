@@ -70,7 +70,6 @@ public class KubernetesPlugin implements GoPlugin {
                     refreshInstances();
                     return CreateAgentRequest.fromJSON(request.requestBody()).executor(agentInstances, pluginRequest).execute();
                 case REQUEST_SHOULD_ASSIGN_WORK:
-                    refreshInstances();
                     return ShouldAssignWorkRequest.fromJSON(request.requestBody()).executor(agentInstances).execute();
                 case REQUEST_SERVER_PING:
                     refreshInstances();
