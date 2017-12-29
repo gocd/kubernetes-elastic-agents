@@ -68,11 +68,17 @@ public class KubernetesInstanceFactory {
 
         Pod elasticAgentPod = new Pod("v1", "Pod", podMetadata, podSpec, new PodStatus());
 
+        setGoCDMetadata(request, settings, pluginRequest, elasticAgentPod);
+
+        return createKubernetesPod(client, elasticAgentPod);
+    }
+
+    private void setGoCDMetadata(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest, Pod elasticAgentPod) {
+        elasticAgentPod.getMetadata().setCreationTimestamp(getSimpleDateFormat().format(new Date()));
+
         setContainerEnvVariables(elasticAgentPod, request, settings, pluginRequest);
         setAnnotations(elasticAgentPod, request);
         setLabels(elasticAgentPod, request);
-
-        return createKubernetesPod(client, elasticAgentPod);
     }
 
     private ResourceRequirements getPodResources(CreateAgentRequest request) {
@@ -210,12 +216,7 @@ public class KubernetesInstanceFactory {
             LOG.error(e.getMessage());
         }
 
-        elasticAgentPod.getMetadata().setCreationTimestamp(getSimpleDateFormat().format(new Date()));
-
-        setContainerEnvVariables(elasticAgentPod, request, settings, pluginRequest);
-        setAnnotations(elasticAgentPod, request);
-        setLabels(elasticAgentPod, request);
-
+        setGoCDMetadata(request, settings, pluginRequest, elasticAgentPod);
         return createKubernetesPod(client, elasticAgentPod);
     }
 
