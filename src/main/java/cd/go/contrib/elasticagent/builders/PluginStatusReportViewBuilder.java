@@ -31,7 +31,7 @@ public class PluginStatusReportViewBuilder {
     private static PluginStatusReportViewBuilder builder;
     private final Configuration configuration;
 
-    private PluginStatusReportViewBuilder() throws IOException {
+    private PluginStatusReportViewBuilder() {
         configuration = new Configuration(Configuration.VERSION_2_3_23);
         configuration.setTemplateLoader(new ClassTemplateLoader(getClass(), "/"));
         configuration.setDefaultEncoding("UTF-8");
@@ -44,13 +44,13 @@ public class PluginStatusReportViewBuilder {
         return configuration.getTemplate(template);
     }
 
-    public String build(Template template, KubernetesCluster cluster) throws IOException, TemplateException {
+    public String build(Template template, Object cluster) throws IOException, TemplateException {
         Writer writer = new StringWriter();
         template.process(cluster, writer);
         return writer.toString();
     }
 
-    public static PluginStatusReportViewBuilder instance() throws IOException {
+    public static PluginStatusReportViewBuilder instance() {
         if (builder == null) {
             builder = new PluginStatusReportViewBuilder();
         }

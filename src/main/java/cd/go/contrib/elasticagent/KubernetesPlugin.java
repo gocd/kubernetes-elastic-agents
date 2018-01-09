@@ -17,10 +17,7 @@
 package cd.go.contrib.elasticagent;
 
 import cd.go.contrib.elasticagent.executors.*;
-import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
-import cd.go.contrib.elasticagent.requests.ProfileValidateRequest;
-import cd.go.contrib.elasticagent.requests.ShouldAssignWorkRequest;
-import cd.go.contrib.elasticagent.requests.ValidatePluginSettings;
+import cd.go.contrib.elasticagent.requests.*;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.GoPlugin;
 import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
@@ -76,6 +73,8 @@ public class KubernetesPlugin implements GoPlugin {
                     return new ServerPingRequestExecutor(agentInstances, pluginRequest).execute();
                 case REQUEST_STATUS_REPORT:
                     return new StatusReportExecutor(pluginRequest).execute();
+                case REQUEST_ELASTIC_AGENT_STATUS_REPORT:
+                    return AgentStatusReportRequest.fromJSON(request.requestBody()).executor(pluginRequest).execute();
                 default:
                     throw new UnhandledRequestTypeException(request.requestName());
             }
