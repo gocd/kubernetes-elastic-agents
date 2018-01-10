@@ -40,7 +40,7 @@ public class KubernetesCluster {
     private void fetchPods(KubernetesClient dockerClient) throws ParseException {
         final Map<String, KubernetesNode> dockerNodeMap = nodes.stream().distinct().collect(toMap(KubernetesNode::getName, node -> node));
 
-        final List<Pod> pods = dockerClient.pods().inNamespace(Constants.KUBERNETES_NAMESPACE_KEY)
+        final List<Pod> pods = dockerClient.pods().inNamespace(Constants.KUBERNETES_NAMESPACE)
                 .withLabel(Constants.CREATED_BY_LABEL_KEY, Constants.PLUGIN_ID)
                 .list().getItems();
 

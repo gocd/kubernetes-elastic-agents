@@ -48,7 +48,7 @@ public interface Constants {
     String JOB_ID_LABEL_KEY = "Elastic-Agent-Job-Id";
     String JOB_IDENTIFIER_LABEL_KEY = "Elastic-Agent-Job-Identifier";
 
-    String KUBERNETES_NAMESPACE_KEY = "default";
+    String KUBERNETES_NAMESPACE = "default";
     String KUBERNETES_POD_KIND_LABEL_KEY = "kind";
     String KUBERNETES_POD_KIND_LABEL_VALUE = "kubernetes-elastic-agent";
     String KUBERNETES_POD_NAME = "kubernetes-elastic-agent";

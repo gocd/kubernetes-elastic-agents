@@ -64,7 +64,7 @@ public class KubernetesAgentInstancesIntegrationTest {
         kubernetesAgentInstances = new KubernetesAgentInstances(mockedKubernetesClientFactory);
         when(mockedKubernetesClientFactory.kubernetes(any())).thenReturn(mockKubernetesClient);
 
-        when(pods.inNamespace(Constants.KUBERNETES_NAMESPACE_KEY)).thenReturn(pods);
+        when(pods.inNamespace(Constants.KUBERNETES_NAMESPACE)).thenReturn(pods);
 
         when(pods.create(any())).thenAnswer(new Answer<Pod>() {
             @Override

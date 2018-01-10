@@ -62,7 +62,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         initMocks(this);
         when(factory.kubernetes(any(PluginSettings.class))).thenReturn(mockedClient);
         when(mockedClient.pods()).thenReturn(mockedOperation);
-        when(mockedOperation.inNamespace(Constants.KUBERNETES_NAMESPACE_KEY)).thenReturn(mockedNamespaceOperation);
+        when(mockedOperation.inNamespace(Constants.KUBERNETES_NAMESPACE)).thenReturn(mockedNamespaceOperation);
 
         when(mockedNamespaceOperation.create(any(Pod.class))).thenAnswer(new Answer<Pod>() {
             @Override
