@@ -49,7 +49,7 @@ public class AgentStatusReportExecutor {
             pod = findPodUsingJobIdentifier(jobIdentifier, client);
         }
 
-        KubernetesElasticAgent elasticAgent = KubernetesElasticAgent.fromPod(pod, elasticAgentId, jobIdentifier);
+        KubernetesElasticAgent elasticAgent = KubernetesElasticAgent.fromPod(client, pod, elasticAgentId, jobIdentifier);
 
         final Template template = statusReportViewBuilder.getTemplate("agent-status-report.template.ftlh");
         final String statusReportView = statusReportViewBuilder.build(template, elasticAgent);
