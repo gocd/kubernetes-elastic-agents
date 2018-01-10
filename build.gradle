@@ -111,6 +111,7 @@ tasks.withType(Jar) { jarTask ->
 }
 
 task deploy(type: Copy) {
+    delete '/Users/ganeshpatil/projects/gocd/server/plugins/external/*.jar.*'
     from jar
     into '/Users/ganeshpatil/projects/gocd/server/plugins/external'
 }
