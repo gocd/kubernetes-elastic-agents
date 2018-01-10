@@ -27,8 +27,8 @@ public class KubernetesPodEvent {
         return lastTimestamp;
     }
 
-    public Integer getCount() {
-        return count;
+    public String getCount() {
+        return String.valueOf(count);
     }
 
     public String getFieldPath() {

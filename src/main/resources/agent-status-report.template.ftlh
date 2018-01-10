@@ -125,10 +125,41 @@
             </div>
 
             <div class="tab">
-                <input name="agent-information" type="radio" id="checkbox3" class="checkboxtab">
-                <label for="checkbox3">Tab 3</label>
+                <input name="agent-information" type="radio" id="pod-events" class="checkboxtab pod-events">
+                <label for="pod-events">Events</label>
                 <dl class="content">
-                    This is the content of tab 3
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>First Seen</th>
+                            <th>Last Seen</th>
+                            <th>Count</th>
+                            <th>Path</th>
+                            <th>Type</th>
+                            <th>Reason</th>
+                            <th>Message</th>
+                        </thead>
+                        </tr>
+                        <tbody>
+                            <#if events?size != 0>
+                                <#list events as event>
+                                <tr>
+                                    <td>${event.firstTimestamp!}</td>
+                                    <td>${event.lastTimestamp!}</td>
+                                    <td>${event.count!}</td>
+                                    <td>${event.fieldPath!}</td>
+                                    <td>${event.type!}</td>
+                                    <td>${event.reason!}</td>
+                                    <td>${event.message!}</td>
+                                </tr>
+                                </#list>
+                            <#else>
+                            <tr>
+                                <td colspan="5" class="message">No events available for the current pod.</td>
+                            </tr>
+                            </#if>
+                        </tbody>
+                    </table>
                 </dl>
             </div>
         </div>
