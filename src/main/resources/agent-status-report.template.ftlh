@@ -47,9 +47,53 @@
         <div class="tabs">
             <div class="tab">
                 <input name="agent-information" type="radio" id="pod-details" class="checkboxtab pod-details" checked>
-                <label for="pod-details">Tab 1</label>
+                <label for="pod-details">Pod Details</label>
                 <dl class="content">
-                    This is the content of tab 1
+                    <dt>Pod Name:</dt>
+                    <dd>${ podDetails.name !}</dd>
+                    <dt>Cluster Name:</dt>
+                    <dd>${ podDetails.clusterName !}</dd>
+                    <dt>Node Name:</dt>
+                    <dd>${ podDetails.nodeName !}</dd>
+                    <dt>Namespace:</dt>
+                    <dd>${ podDetails.namespace !}</dd>
+
+                    <dt>Creation Timestamp:</dt>
+                    <dd>${ podDetails.createdAt !}</dd>
+                    <dt>Start Timestamp:</dt>
+                    <dd>${ podDetails.startedAt !}</dd>
+
+                    <dt>Status:</dt>
+                    <dd>${ podDetails.phase !}</dd>
+
+                    <dt>Pod IP:</dt>
+                    <dd>${ podDetails.podIP !}</dd>
+                    <dt>Host IP:</dt>
+                    <dd>${ podDetails.hostIP !}</dd>
+
+                    <dt>Conditions:</dt>
+                    <dd>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Last Transition Time</th>
+                                <th>Last Probe Time</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                            </thead>
+                            </tr>
+                            <tbody>
+                                <#list podDetails.conditions as condition>
+                                <tr>
+                                    <td>${condition.lastTransitionTime!}</td>
+                                    <td>${condition.lastProbeTime!}</td>
+                                    <td>${condition.type!}</td>
+                                    <td>${condition.status!}</td>
+                                </tr>
+                                </#list>
+                            </tbody>
+                        </table>
+                    </dd>
                 </dl>
             </div>
 
