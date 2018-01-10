@@ -46,7 +46,7 @@
 
         <div class="tabs">
             <div class="tab">
-                <input name="agent-information" type="radio" id="pod-details" class="checkboxtab pod-details">
+                <input name="agent-information" type="radio" id="pod-details" class="checkboxtab pod-details" checked>
                 <label for="pod-details">Pod Details</label>
                 <dl class="content">
                     <dt>Pod Name:</dt>
@@ -98,8 +98,7 @@
             </div>
 
             <div class="tab">
-                <input name="agent-information" type="radio" id="agent-details" class="checkboxtab agent-details"
-                       checked>
+                <input name="agent-information" type="radio" id="agent-details" class="checkboxtab agent-details">
                 <label for="agent-details">GoCD Agent Details</label>
                 <dl class="content">
                     <dt>Name:</dt>
@@ -161,6 +160,18 @@
                         </tbody>
                     </table>
                 </dl>
+            </div>
+
+            <div class="tab">
+                <input name="agent-information" type="radio" id="pod-logs" class="checkboxtab">
+                <label for="pod-logs">Logs</label>
+                <dl class="content"> ${ logs !} </dl>
+            </div>
+
+            <div class="tab">
+                <input name="agent-information" type="radio" id="pod-configuration" class="checkboxtab">
+                <label for="pod-configuration">Configuration</label>
+                <dl class="content"> ${ configuration !} </dl>
             </div>
         </div>
     </div>
