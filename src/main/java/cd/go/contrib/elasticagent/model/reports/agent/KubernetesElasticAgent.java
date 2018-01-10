@@ -76,7 +76,7 @@ public class KubernetesElasticAgent {
 
     private static String getPodLogs(Pod pod, KubernetesClient client) {
         return client.pods().inNamespace(Constants.KUBERNETES_NAMESPACE)
-                .withName(pod.getMetadata().getName()).getLog();
+                .withName(pod.getMetadata().getName()).getLog(true);
     }
 
     private static String getPodConfiguration(Pod pod) {

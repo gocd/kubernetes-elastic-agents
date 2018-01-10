@@ -17,7 +17,9 @@
         background-color: white;
         left: 0px;
         width: 100%;
+        height: 750px;
         border: 1px #000 solid;
+        overflow-x: scroll;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .checkboxtab {
@@ -36,13 +38,15 @@
     [data-plugin-style-id="kubernetes-plugin"] .checkboxtab:checked ~ .content {
         z-index: 1;
     }
+
+    [data-plugin-style-id="kubernetes-plugin"] .agent-name {
+        padding: 10px;
+    }
 </style>
 
 <div data-plugin-style-id="kubernetes-plugin">
     <div class="kubernetes-elastic-agent">
-        <div class="agent-name">
-            This is the stasdedssddtus report page for${elasticAgentId!}
-        </div>
+        <h2 class="agent-name"> ${ elasticAgentId! } </h2>
 
         <div class="tabs">
             <div class="tab">
@@ -115,10 +119,10 @@
                     <dd>${ agentDetails.restartCount !}</dd>
 
                     <dt>Command:</dt>
-                    <dd>${ agentDetails.command !}</dd>
+                    <dd>${ agentDetails.command?html?replace("\n", "<br>") !}</dd>
 
                     <dt>Environment Variables:</dt>
-                    <dd>${ agentDetails.env !}</dd>
+                    <dd>${ agentDetails.env?html?replace("\n", "<br>") !}</dd>
 
                 </dl>
             </div>
@@ -165,13 +169,13 @@
             <div class="tab">
                 <input name="agent-information" type="radio" id="pod-logs" class="checkboxtab">
                 <label for="pod-logs">Logs</label>
-                <dl class="content"> ${ logs !} </dl>
+                <dl class="content"> ${ logs?html?replace("\n", "<br>") !} </dl>
             </div>
 
             <div class="tab">
                 <input name="agent-information" type="radio" id="pod-configuration" class="checkboxtab">
                 <label for="pod-configuration">Configuration</label>
-                <dl class="content"> ${ configuration !} </dl>
+                <dl class="content"> ${ configuration?html?replace("\n", "<br>") !} </dl>
             </div>
         </div>
     </div>
