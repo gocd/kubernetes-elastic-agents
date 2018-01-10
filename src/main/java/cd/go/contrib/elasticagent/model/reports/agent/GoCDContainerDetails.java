@@ -3,6 +3,7 @@ package cd.go.contrib.elasticagent.model.reports.agent;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerStatus;
 import io.fabric8.kubernetes.api.model.EnvVar;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,20 +48,20 @@ public class GoCDContainerDetails {
         return imagePullPolicy;
     }
 
-    public List<String> getCommand() {
-        return command;
+    public String getCommand() {
+        return StringUtils.join(command, '\n');
     }
 
-    public ArrayList<EnvironmentVariable> getEnv() {
-        return env;
+    public String getEnv() {
+        return StringUtils.join(env, '\n');
     }
 
-    public Boolean getReady() {
-        return ready;
+    public String getReady() {
+        return String.valueOf(ready);
     }
 
-    public Integer getRestartCount() {
-        return restartCount;
+    public String getRestartCount() {
+        return String.valueOf(restartCount);
     }
 
     private static class EnvironmentVariable {
@@ -78,6 +79,11 @@ public class GoCDContainerDetails {
 
         public String getValue() {
             return value;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s: %s", getName(), getValue());
         }
     }
 }

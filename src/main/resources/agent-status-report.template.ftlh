@@ -46,7 +46,7 @@
 
         <div class="tabs">
             <div class="tab">
-                <input name="agent-information" type="radio" id="pod-details" class="checkboxtab pod-details" checked>
+                <input name="agent-information" type="radio" id="pod-details" class="checkboxtab pod-details">
                 <label for="pod-details">Pod Details</label>
                 <dl class="content">
                     <dt>Pod Name:</dt>
@@ -98,10 +98,29 @@
             </div>
 
             <div class="tab">
-                <input name="agent-information" type="radio" id="checkbox2" class="checkboxtab">
-                <label for="checkbox2">Tab 2</label>
+                <input name="agent-information" type="radio" id="agent-details" class="checkboxtab agent-details"
+                       checked>
+                <label for="agent-details">GoCD Agent Details</label>
                 <dl class="content">
-                    This is the content of tab 2
+                    <dt>Name:</dt>
+                    <dd>${ agentDetails.name !}</dd>
+                    <dt>Image:</dt>
+                    <dd>${ agentDetails.image !}</dd>
+                    <dt>ImagePullPolicy:</dt>
+                    <dd>${ agentDetails.imagePullPolicy !}</dd>
+
+                    <dt>Ready:</dt>
+                    <dd>${ agentDetails.ready !}</dd>
+
+                    <dt>Restart Count:</dt>
+                    <dd>${ agentDetails.restartCount !}</dd>
+
+                    <dt>Command:</dt>
+                    <dd>${ agentDetails.command !}</dd>
+
+                    <dt>Environment Variables:</dt>
+                    <dd>${ agentDetails.env !}</dd>
+
                 </dl>
             </div>
 
