@@ -3,8 +3,14 @@
         padding: 60px 20px 0 20px;
     }
 
-    [data-plugin-style-id="kubernetes-plugin"] .header {
+    [data-plugin-style-id="kubernetes-plugin"] .sub-nav {
         padding-left: 25px;
+    }
+
+    [data-plugin-style-id="kubernetes-plugin"] .header {
+        margin: 25px 0 10px 3px;
+        font-weight: 600;
+        text-decoration: underline;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .tabs {
@@ -71,11 +77,14 @@
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .tab-content {
-        background: #fff;
         margin-top: 0;
-        margin: 20px;
         height: calc(100vh - 280px);
         overflow-x: hidden;
+    }
+
+    [data-plugin-style-id="kubernetes-plugin"] .tab-content-outer {
+        background: white;
+        padding: 20px;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .pod-events table {
@@ -107,12 +116,41 @@
         text-overflow: ellipsis;
         overflow: hidden;
     }
+
+    [data-plugin-style-id="kubernetes-plugin"] dl.properties {
+        overflow: hidden;
+        margin: 0;
+        font-size: 14px;
+        vertical-align: top;
+        font-family: "Open Sans", "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+        color: #484848;
+    }
+
+    [data-plugin-style-id="kubernetes-plugin"] .properties dt {
+        float: left;
+        clear: both;
+        text-align: left;
+        min-width: 200px;
+        font-weight: 600;
+        margin: 0;
+        padding: 3px;
+        min-height: 20px;
+        line-height: 1.5;
+    }
+
+    [data-plugin-style-id="kubernetes-plugin"] .properties dd {
+        margin-left: 200px;
+        min-height: 20px;
+        padding: 3px;
+        line-height: 1.5;
+    }
+
 </style>
 
 <div data-plugin-style-id="kubernetes-plugin">
     <div class="row">
         <div class="header-panel">
-            <header class="page-header header">
+            <header class="page-header sub-nav">
                 <f.row>
                     <f.column size={6}>
                         <h1>${ elasticAgentId! }</h1>
@@ -142,8 +180,55 @@
                 </ul>
             </div>
 
-            <div class="tab-content" ng-show="currenttab == 'pod-details'"></div>
-            <div class="tab-content pod-events" ng-show="currenttab == 'pod-events'">
+            <div class="tab-content-outer">
+                <div class="tab-content" ng-show="currenttab == 'pod-details'">
+                    <h4 class="header">Pod Details</h4>
+                    <dl class="properties">
+                        <dt>Pod Name:</dt>
+                        <dd>${ podDetails.name !}</dd>
+                        <dt>Cluster Name:</dt>
+                        <dd>${ podDetails.clusterName !}</dd>
+                        <dt>Node Name:</dt>
+                        <dd>${ podDetails.nodeName !}</dd>
+                        <dt>Namespace:</dt>
+                        <dd>${ podDetails.namespace !}</dd>
+
+                        <dt>Creation Timestamp:</dt>
+                        <dd>${ podDetails.createdAt !}</dd>
+                        <dt>Start Timestamp:</dt>
+                        <dd>${ podDetails.startedAt !}</dd>
+
+                        <dt>Status:</dt>
+                        <dd>${ podDetails.phase !}</dd>
+
+                        <dt>Pod IP:</dt>
+                        <dd>${ podDetails.podIP !}</dd>
+                        <dt>Host IP:</dt>
+                        <dd>${ podDetails.hostIP !}</dd>
+                    </dl>
+                    <h4 class="header">GoCD Agent Details</h4>
+                    <dl class="properties">
+                        <dt>Name:</dt>
+                        <dd>${ agentDetails.name !}</dd>
+                        <dt>Image:</dt>
+                        <dd>${ agentDetails.image !}</dd>
+                        <dt>ImagePullPolicy:</dt>
+                        <dd>${ agentDetails.imagePullPolicy !}</dd>
+
+                        <dt>Ready:</dt>
+                        <dd>${ agentDetails.ready !}</dd>
+
+                        <dt>Restart Count:</dt>
+                        <dd>${ agentDetails.restartCount !}</dd>
+
+                        <dt>Command:</dt>
+                        <dd>${ agentDetails.command?html?replace("\n", "<br>") !}</dd>
+
+                        <dt>Environment Variables:</dt>
+                        <dd>${ agentDetails.env?html?replace("\n", "<br>") !}</dd>
+                    </dl>
+                </div>
+                <div class="tab-content pod-events" ng-show="currenttab == 'pod-events'">
                 <#if events?size != 0>
                     <table>
                         <thead>
@@ -177,12 +262,13 @@
                                 <td colspan="5" class="message">No events available for the current pod.</td>
                             </tr>
                 </#if>
-            </div>
-            <div class="tab-content pod-logs" ng-show="currenttab == 'pod-logs'">
-            ${ logs?html?replace("\n", "<br>") !}
-            </div>
-            <div class="tab-content pod-configuration" ng-show="currenttab == 'pod-configuration'">
-            ${ configuration?html?replace("\n", "<br>") !}
+                </div>
+                <div class="tab-content pod-logs" ng-show="currenttab == 'pod-logs'">
+                ${ logs?html?replace("\n", "<br>") !}
+                </div>
+                <div class="tab-content pod-configuration" ng-show="currenttab == 'pod-configuration'">
+                ${ configuration?html?replace("\n", "<br>") !}
+                </div>
             </div>
         </div>
     </div>
