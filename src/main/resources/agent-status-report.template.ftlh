@@ -103,12 +103,19 @@
                     <li ng-class="{'current_tab' : currenttab == 'pod-logs' }" ng-click="currenttab='pod-logs'">
                         <a href="#">Logs</a>
                     </li>
+                    <li ng-class="{'current_tab' : currenttab == 'pod-configuration' }" ng-click="currenttab='pod-configuration'">
+                        <a href="#">Configuration</a>
+                    </li>
                 </ul>
             </div>
 
             <div class="tab-content" ng-show="currenttab == 'pod-details'"></div>
-            <div class="tab-content pod-logs"
-                 ng-show="currenttab == 'pod-logs'">${ logs?html?replace("\n", "<br>") !} </div>
+            <div class="tab-content pod-logs" ng-show="currenttab == 'pod-logs'">
+                ${ logs?html?replace("\n", "<br>") !}
+            </div>
+            <div class="tab-content pod-configuration" ng-show="currenttab == 'pod-configuration'">
+                ${ configuration?html?replace("\n", "<br>") !}
+            </div>
         </div>
     </div>
 
