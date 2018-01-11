@@ -154,7 +154,7 @@
                             <th>Path</th>
                             <th>Type</th>
                             <th>Reason</th>
-                            <th>Message</th>
+                            <th width="700">Message</th>
                         </thead>
                         </tr>
                         <tbody>
