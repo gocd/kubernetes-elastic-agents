@@ -145,6 +145,18 @@
         line-height: 1.5;
     }
 
+    [data-plugin-style-id="kubernetes-plugin"] .warning-message {
+        background-color: #fdf5e2;
+        color: #b88c34;
+        font-weight: 600;
+        font-size: 15px;
+        padding: 10px 20px;
+        border-radius: 3px;
+        margin: 0 0 1rem 0;
+        border: 1px solid rgba(10, 10, 10, 0.25);
+        position: relative;
+    }
+
 </style>
 
 <div data-plugin-style-id="kubernetes-plugin">
@@ -243,36 +255,33 @@
                         </thead>
                         </tr>
                         <tbody>
-                                <#list events as event>
-                                <tr>
-                                    <td>${event.firstTimestamp!}</td>
-                                    <td>${event.lastTimestamp!}</td>
-                                    <td>${event.count!}</td>
-                                    <td>${event.fieldPath!}</td>
-                                    <td>${event.type!}</td>
-                                    <td>${event.reason!}</td>
-                                    <td>${event.message!}</td>
-                                </tr>
-                                </#list>
-
+                            <#list events as event>
+                            <tr>
+                                <td>${event.firstTimestamp!}</td>
+                                <td>${event.lastTimestamp!}</td>
+                                <td>${event.count!}</td>
+                                <td>${event.fieldPath!}</td>
+                                <td>${event.type!}</td>
+                                <td>${event.reason!}</td>
+                                <td>${event.message!}</td>
+                            </tr>
+                            </#list>
                         </tbody>
                     </table>
                 <#else>
-                            <tr>
-                                <td colspan="5" class="message">No events available for the current pod.</td>
-                            </tr>
+                    <div class="warning-message">No events available for the current pod.</td>
                 </#if>
                 </div>
-                <div class="tab-content pod-logs" ng-show="currenttab == 'pod-logs'">
-                ${ logs?html?replace("\n", "<br>") !}
-                </div>
-                <div class="tab-content pod-configuration" ng-show="currenttab == 'pod-configuration'">
-                ${ configuration?html?replace("\n", "<br>") !}
+                    <div class="tab-content pod-logs" ng-show="currenttab == 'pod-logs'">
+                    ${ logs?html?replace("\n", "<br>") !}
+                    </div>
+                    <div class="tab-content pod-configuration" ng-show="currenttab == 'pod-configuration'">
+                    ${ configuration?html?replace("\n", "<br>") !}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-</div>
+    </div>
 
 
