@@ -1,6 +1,6 @@
 <style>
     [data-plugin-style-id="kubernetes-plugin"] .kubernetes-elastic-agent {
-        padding: 20px;
+        padding: 50px 20px 0 20px;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .tabs {
@@ -14,12 +14,13 @@
 
     [data-plugin-style-id="kubernetes-plugin"] .tabs .tab .content {
         position: absolute;
-        background-color: white;
+        display: none;
         left: 0px;
         width: 100%;
-        height: 750px;
+        height: calc(100vh - 225px);
         border: 1px #000 solid;
-        overflow-x: scroll;
+        border-radius: 5px;
+        overflow-x: hidden;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .checkboxtab {
@@ -27,30 +28,70 @@
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .tab label {
-        margin-right: 10px;
+        background-color: #d1c4e9;
+        padding: 7px 15px;
+        line-height: 19px;
+        font-size: 13px;
+        border-radius: 3px 3px 0 0;
+        font-weight: 600;
+        color: #333;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .checkboxtab:checked ~ label {
-        color: #ab70ff;
-        border: 1px #000 solid;
+        background-color: #dfdef0;
+        border: 1px solid;
+        border-bottom: none;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .checkboxtab:checked ~ .content {
         z-index: 1;
+        display: block !important;
     }
 
     [data-plugin-style-id="kubernetes-plugin"] .agent-name {
         padding: 10px;
     }
+
+    [data-plugin-style-id="kubernetes-plugin"] .pod-logs {
+        background-color: #383838;
+        font-size: 13px;
+        font-family: monaco;
+        color: white;
+        display: block;
+        font-weight: 400;
+        line-height: 20px;
+        padding-left: 10px;
+    }
+
+    [data-plugin-style-id="kubernetes-plugin"] .pod-configuration {
+        background-color: white;
+        font-family: courier;
+        font-size: 15px;
+        white-space: pre;
+        font-weight: 600;
+        display: block;
+        line-height: 10px;
+        color: #484848;
+    }
+
 </style>
 
 <div data-plugin-style-id="kubernetes-plugin">
-    <div class="kubernetes-elastic-agent">
-        <h2 class="agent-name"> ${ elasticAgentId! } </h2>
-
+    <div class="row">
+        <div class="header-panel">
+            <header class="page-header">
+                <f.row>
+                    <f.column size={6}>
+                        <h1>${ elasticAgentId! }</h1>
+                    </f.column>
+                </f.row>
+            </header>
+        </div>
+    </div>
+    <div class="kubernetes-elastic-agent row">
         <div class="tabs">
             <div class="tab">
-                <input name="agent-information" type="radio" id="pod-details" class="checkboxtab pod-details" checked>
+                <input name="agent-information" type="radio" id="pod-details" class="checkboxtab pod-details">
                 <label for="pod-details">Pod Details</label>
                 <dl class="content">
                     <dt>Pod Name:</dt>
@@ -131,20 +172,20 @@
                 <input name="agent-information" type="radio" id="pod-events" class="checkboxtab pod-events">
                 <label for="pod-events">Events</label>
                 <dl class="content">
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>First Seen</th>
-                            <th>Last Seen</th>
-                            <th>Count</th>
-                            <th>Path</th>
-                            <th>Type</th>
-                            <th>Reason</th>
-                            <th>Message</th>
-                        </thead>
-                        </tr>
-                        <tbody>
-                            <#if events?size != 0>
+                    <#if events?size != 0>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>First Seen</th>
+                                <th>Last Seen</th>
+                                <th>Count</th>
+                                <th>Path</th>
+                                <th>Type</th>
+                                <th>Reason</th>
+                                <th>Message</th>
+                            </thead>
+                            </tr>
+                            <tbody>
                                 <#list events as event>
                                 <tr>
                                     <td>${event.firstTimestamp!}</td>
@@ -156,26 +197,27 @@
                                     <td>${event.message!}</td>
                                 </tr>
                                 </#list>
-                            <#else>
+
+                            </tbody>
+                        </table>
+                    <#else>
                             <tr>
                                 <td colspan="5" class="message">No events available for the current pod.</td>
                             </tr>
-                            </#if>
-                        </tbody>
-                    </table>
+                    </#if>
                 </dl>
             </div>
 
             <div class="tab">
-                <input name="agent-information" type="radio" id="pod-logs" class="checkboxtab">
+                <input name="agent-information" type="radio" id="pod-logs" class="checkboxtab" checked>
                 <label for="pod-logs">Logs</label>
-                <dl class="content"> ${ logs?html?replace("\n", "<br>") !} </dl>
+                <dl class="content pod-logs"> ${ logs?html?replace("\n", "<br>") !} </dl>
             </div>
 
             <div class="tab">
                 <input name="agent-information" type="radio" id="pod-configuration" class="checkboxtab">
                 <label for="pod-configuration">Configuration</label>
-                <dl class="content"> ${ configuration?html?replace("\n", "<br>") !} </dl>
+                <dl class="content pod-configuration"> ${ configuration?html?replace("\n", "<br>") !} </dl>
             </div>
         </div>
     </div>
