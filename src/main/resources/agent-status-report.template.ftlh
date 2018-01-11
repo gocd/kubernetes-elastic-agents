@@ -78,6 +78,35 @@
         overflow-x: hidden;
     }
 
+    [data-plugin-style-id="kubernetes-plugin"] .pod-events table {
+        width: calc(100% - 40px);
+        min-width: 95%;
+        border: 1px solid #D8D8D8;
+        font-size: 13px;
+        margin: 10px 20px 20px 20px;
+    }
+
+    [data-plugin-style-id="kubernetes-plugin"] .pod-events table thead {
+        background: #D8D8D8;
+    }
+
+    [data-plugin-style-id="kubernetes-plugin"] .pod-events table thead th {
+        padding: 10px 20px;
+        font-weight: bold;
+    }
+
+    [data-plugin-style-id="kubernetes-plugin"] .pod-events table tbody tr {
+        border-top: 1px solid #D8D8D8;
+        border-bottom: 1px solid #D8D8D8;
+        border-collapse: collapse;
+    }
+
+    [data-plugin-style-id="kubernetes-plugin"] .pod-events table tbody td {
+        padding: 10px 20px;
+        max-width: 190px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
 </style>
 
 <div data-plugin-style-id="kubernetes-plugin">
@@ -100,21 +129,60 @@
                     <li ng-class="{'current_tab' : currenttab == 'pod-details' }" ng-click="currenttab='pod-details'">
                         <a href="#">Details</a>
                     </li>
+                    <li ng-class="{'current_tab' : currenttab == 'pod-events' }" ng-click="currenttab='pod-events'">
+                        <a href="#">Events</a>
+                    </li>
                     <li ng-class="{'current_tab' : currenttab == 'pod-logs' }" ng-click="currenttab='pod-logs'">
                         <a href="#">Logs</a>
                     </li>
-                    <li ng-class="{'current_tab' : currenttab == 'pod-configuration' }" ng-click="currenttab='pod-configuration'">
+                    <li ng-class="{'current_tab' : currenttab == 'pod-configuration' }"
+                        ng-click="currenttab='pod-configuration'">
                         <a href="#">Configuration</a>
                     </li>
                 </ul>
             </div>
 
             <div class="tab-content" ng-show="currenttab == 'pod-details'"></div>
+            <div class="tab-content pod-events" ng-show="currenttab == 'pod-events'">
+                <#if events?size != 0>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>First Seen</th>
+                            <th>Last Seen</th>
+                            <th>Count</th>
+                            <th>Path</th>
+                            <th>Type</th>
+                            <th>Reason</th>
+                            <th>Message</th>
+                        </thead>
+                        </tr>
+                        <tbody>
+                                <#list events as event>
+                                <tr>
+                                    <td>${event.firstTimestamp!}</td>
+                                    <td>${event.lastTimestamp!}</td>
+                                    <td>${event.count!}</td>
+                                    <td>${event.fieldPath!}</td>
+                                    <td>${event.type!}</td>
+                                    <td>${event.reason!}</td>
+                                    <td>${event.message!}</td>
+                                </tr>
+                                </#list>
+
+                        </tbody>
+                    </table>
+                <#else>
+                            <tr>
+                                <td colspan="5" class="message">No events available for the current pod.</td>
+                            </tr>
+                </#if>
+            </div>
             <div class="tab-content pod-logs" ng-show="currenttab == 'pod-logs'">
-                ${ logs?html?replace("\n", "<br>") !}
+            ${ logs?html?replace("\n", "<br>") !}
             </div>
             <div class="tab-content pod-configuration" ng-show="currenttab == 'pod-configuration'">
-                ${ configuration?html?replace("\n", "<br>") !}
+            ${ configuration?html?replace("\n", "<br>") !}
             </div>
         </div>
     </div>
