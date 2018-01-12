@@ -30,8 +30,10 @@ import static java.util.stream.Collectors.toMap;
 
 public class KubernetesCluster {
     private final List<KubernetesNode> nodes;
+    private final String pluginId;
 
     public KubernetesCluster(KubernetesClient client) throws ParseException {
+        pluginId = Constants.PLUGIN_ID;
         nodes = client.nodes().list().getItems().stream().map(node -> new KubernetesNode(node)).collect(toList());
         LOG.info("Running kubernetes nodes " + nodes.size());
         fetchPods(client);
@@ -57,5 +59,9 @@ public class KubernetesCluster {
 
     public List<KubernetesNode> getNodes() {
         return nodes;
+    }
+
+    public String getPluginId() {
+        return pluginId;
     }
 }
