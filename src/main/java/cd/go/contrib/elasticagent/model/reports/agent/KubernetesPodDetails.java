@@ -4,6 +4,7 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodCondition;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class KubernetesPodDetails {
     private String name;
@@ -36,9 +37,7 @@ public class KubernetesPodDetails {
         podDetails.conditions = new ArrayList<>();
         for (PodCondition podCondition : pod.getStatus().getConditions()) {
             Condition condition = new Condition(podCondition.getType(),
-                    podCondition.getStatus(),
-                    podCondition.getLastTransitionTime(),
-                    podCondition.getLastProbeTime());
+                    podCondition.getStatus());
             podDetails.conditions.add(condition);
         }
 
@@ -81,21 +80,18 @@ public class KubernetesPodDetails {
         return hostIP;
     }
 
-    public ArrayList<Condition> getConditions() {
-        return conditions;
+    public String getConditions() {
+        return String.join(", ", conditions.stream()
+                .map(Condition::toString).collect(Collectors.toList()));
     }
 
     private static class Condition {
         private final String type;
         private final String status;
-        private final String lastTransitionTime;
-        private final String lastProbeTime;
 
-        public Condition(String type, String status, String lastTransitionTime, String lastProbeTime) {
+        public Condition(String type, String status) {
             this.type = type;
             this.status = status;
-            this.lastTransitionTime = lastTransitionTime;
-            this.lastProbeTime = lastProbeTime;
         }
 
         public String getType() {
@@ -106,12 +102,9 @@ public class KubernetesPodDetails {
             return status;
         }
 
-        public String getLastTransitionTime() {
-            return lastTransitionTime;
-        }
-
-        public String getLastProbeTime() {
-            return lastProbeTime;
+        @Override
+        public String toString() {
+            return String.format("%s: %s", type, status);
         }
     }
 }

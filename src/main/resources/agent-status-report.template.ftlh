@@ -210,6 +210,9 @@
                         <dt>Start Timestamp:</dt>
                         <dd>${ podDetails.startedAt !}</dd>
 
+                        <dt>Conditions:</dt>
+                        <dd>${ podDetails.conditions !}</dd>
+
                         <dt>Status:</dt>
                         <dd>${ podDetails.phase !}</dd>
 
