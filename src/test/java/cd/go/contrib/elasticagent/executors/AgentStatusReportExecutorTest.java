@@ -5,8 +5,11 @@ import cd.go.contrib.elasticagent.KubernetesClientFactory;
 import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.PluginSettings;
 import cd.go.contrib.elasticagent.builders.PluginStatusReportViewBuilder;
+import cd.go.contrib.elasticagent.model.JobIdentifier;
+import cd.go.contrib.elasticagent.model.reports.agent.KubernetesElasticAgent;
 import cd.go.contrib.elasticagent.requests.AgentStatusReportRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
+import freemarker.template.Template;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
@@ -23,6 +26,7 @@ import java.util.Arrays;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -68,6 +72,9 @@ public class AgentStatusReportExecutorTest {
     @Mock
     private PodResource<Pod, DoneablePod> podresource;
 
+    @Mock
+    private Template template;
+
     @Before
     public void setUp() throws Exception {
         initMocks(this);
@@ -91,6 +98,26 @@ public class AgentStatusReportExecutorTest {
 
     @Test
     public void shouldReturnAgentStatusReportBasedOnProvidedElasticAgentId() throws Exception {
+        when(statusReportRequest.getJobIdentifier()).thenReturn(null);
+        when(statusReportRequest.getElasticAgentId()).thenReturn(elasticAgentId);
+
+        PluginSettings pluginSettings = new PluginSettings();
+
+        when(pluginRequest.getPluginSettings()).thenReturn(pluginSettings);
+        when(kubernetesClientFactory.kubernetes(pluginSettings)).thenReturn(client);
+
+        when(builder.getTemplate("agent-status-report.template.ftlh")).thenReturn(template);
+        when(builder.build(eq(template), any(KubernetesElasticAgent.class))).thenReturn("my-view");
+
+        GoPluginApiResponse response = executor.execute();
+
+        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseBody(), is("{\"view\":\"my-view\"}"));
+    }
+
+    @Test
+    public void shouldReturnErrorWhenPodForSpecifiedElasticAgentIdNotFound() throws Exception {
+        when(podList.getItems()).thenReturn(new ArrayList<>()); // no matching pod for the specified elastic agent id
 
         when(statusReportRequest.getJobIdentifier()).thenReturn(null);
         when(statusReportRequest.getElasticAgentId()).thenReturn(elasticAgentId);
@@ -100,12 +127,35 @@ public class AgentStatusReportExecutorTest {
         when(pluginRequest.getPluginSettings()).thenReturn(pluginSettings);
         when(kubernetesClientFactory.kubernetes(pluginSettings)).thenReturn(client);
 
-        when(builder.build(any(), any())).thenReturn("my-view");
+        when(builder.getTemplate("error.template.ftlh")).thenReturn(template);
+        when(builder.build(eq(template), any(RuntimeException.class))).thenReturn("my-error-view");
 
         GoPluginApiResponse response = executor.execute();
 
         assertThat(response.responseCode(), is(200));
-        assertThat(response.responseBody(), is("{\"view\":\"my-view\"}"));
+        assertThat(response.responseBody(), is("{\"view\":\"my-error-view\"}"));
+    }
+
+    @Test
+    public void shouldReturnErrorWhenPodForSpecifiedJobIdentifierNotFound() throws Exception {
+        when(client.pods()).thenThrow(new RuntimeException("Boom!")); //can not find pod for specified job identitier
+
+        JobIdentifier jobIdentifier = new JobIdentifier("up42", 1L, "1", "up42_stage", "1", "job_name", 1L);
+        when(statusReportRequest.getJobIdentifier()).thenReturn(jobIdentifier);
+        when(statusReportRequest.getElasticAgentId()).thenReturn(null);
+
+        PluginSettings pluginSettings = new PluginSettings();
+
+        when(pluginRequest.getPluginSettings()).thenReturn(pluginSettings);
+        when(kubernetesClientFactory.kubernetes(pluginSettings)).thenReturn(client);
+
+        when(builder.getTemplate("error.template.ftlh")).thenReturn(template);
+        when(builder.build(eq(template), any(RuntimeException.class))).thenReturn("my-error-view");
+
+        GoPluginApiResponse response = executor.execute();
+
+        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseBody(), is("{\"view\":\"my-error-view\"}"));
     }
 
     private Pod creatdDefaultPod() {

@@ -42,22 +42,30 @@ public class AgentStatusReportExecutor {
         LOG.info(String.format("[status-report] Generating status report for agent: %s with job: %s", elasticAgentId, jobIdentifier));
         KubernetesClient client = factory.kubernetes(pluginRequest.getPluginSettings());
 
-        Pod pod;
-        if (StringUtils.isNotBlank(elasticAgentId)) {
-            pod = findPodUsingElasticAgentId(elasticAgentId, client);
-        } else {
-            pod = findPodUsingJobIdentifier(jobIdentifier, client);
+        try {
+            Pod pod;
+            if (StringUtils.isNotBlank(elasticAgentId)) {
+                pod = findPodUsingElasticAgentId(elasticAgentId, client);
+            } else {
+                pod = findPodUsingJobIdentifier(jobIdentifier, client);
+            }
+
+            KubernetesElasticAgent elasticAgent = KubernetesElasticAgent.fromPod(client, pod, elasticAgentId, jobIdentifier);
+
+            final String statusReportView = statusReportViewBuilder.build(statusReportViewBuilder.getTemplate("agent-status-report.template.ftlh"), elasticAgent);
+
+            JsonObject responseJSON = new JsonObject();
+            responseJSON.addProperty("view", statusReportView);
+
+            return DefaultGoPluginApiResponse.success(responseJSON.toString());
+        } catch (Exception e) {
+            final String statusReportView = statusReportViewBuilder.build(statusReportViewBuilder.getTemplate("error.template.ftlh"), e);
+
+            JsonObject responseJSON = new JsonObject();
+            responseJSON.addProperty("view", statusReportView);
+
+            return DefaultGoPluginApiResponse.success(responseJSON.toString());
         }
-
-        KubernetesElasticAgent elasticAgent = KubernetesElasticAgent.fromPod(client, pod, elasticAgentId, jobIdentifier);
-
-        final Template template = statusReportViewBuilder.getTemplate("agent-status-report.template.ftlh");
-        final String statusReportView = statusReportViewBuilder.build(template, elasticAgent);
-
-        JsonObject responseJSON = new JsonObject();
-        responseJSON.addProperty("view", statusReportView);
-
-        return DefaultGoPluginApiResponse.success(responseJSON.toString());
     }
 
     private Pod findPodUsingJobIdentifier(JobIdentifier jobIdentifier, KubernetesClient client) {
@@ -66,8 +74,7 @@ public class AgentStatusReportExecutor {
                     .withLabel(Constants.JOB_ID_LABEL_KEY, String.valueOf(jobIdentifier.getJobId()))
                     .list().getItems().get(0);
         } catch (Exception e) {
-            //todo: returning null is evil.. how about showing a fancy not found page?
-            return null;
+            throw new RuntimeException(String.format("Can not find a running Pod for the provided job identifier '%s'", jobIdentifier));
         }
     }
 
@@ -79,7 +86,6 @@ public class AgentStatusReportExecutor {
             }
         }
 
-        //todo: returning null is evil.. how about showing a fancy not found page?
-        return null;
+        throw new RuntimeException(String.format("Can not find a running Pod for the provided elastic agent id '%s'", elasticAgentId));
     }
 }
