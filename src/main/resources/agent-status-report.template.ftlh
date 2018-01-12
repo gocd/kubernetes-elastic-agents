@@ -244,36 +244,36 @@
                     </dl>
                 </div>
                 <div class="tab-content pod-events" ng-show="currenttab == 'pod-events'">
-                <#if events?size != 0>
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>First Seen</th>
-                            <th>Last Seen</th>
-                            <th>Count</th>
-                            <th>Path</th>
-                            <th>Type</th>
-                            <th>Reason</th>
-                            <th width="700">Message</th>
-                        </thead>
-                        </tr>
-                        <tbody>
-                            <#list events as event>
+                    <#if events?size != 0>
+                        <table>
+                            <thead>
                             <tr>
-                                <td>${event.firstTimestamp!}</td>
-                                <td>${event.lastTimestamp!}</td>
-                                <td>${event.count!}</td>
-                                <td>${event.fieldPath!}</td>
-                                <td>${event.type!}</td>
-                                <td>${event.reason!}</td>
-                                <td>${event.message!}</td>
+                                <th>First Seen</th>
+                                <th>Last Seen</th>
+                                <th>Count</th>
+                                <th>Path</th>
+                                <th>Type</th>
+                                <th>Reason</th>
+                                <th width="700">Message</th>
+                            </thead>
                             </tr>
-                            </#list>
-                        </tbody>
-                    </table>
-                <#else>
-                    <div class="warning-message">No events available for the current pod.</td>
-                </#if>
+                            <tbody>
+                                <#list events as event>
+                                <tr>
+                                    <td>${event.firstTimestamp!}</td>
+                                    <td>${event.lastTimestamp!}</td>
+                                    <td>${event.count!}</td>
+                                    <td>${event.fieldPath!}</td>
+                                    <td>${event.type!}</td>
+                                    <td>${event.reason!}</td>
+                                    <td>${event.message!}</td>
+                                </tr>
+                                </#list>
+                            </tbody>
+                        </table>
+                    <#else>
+                        <div class="warning-message">No events available for the current pod.</div>
+                    </#if>
                 </div>
                     <div class="tab-content pod-logs" ng-show="currenttab == 'pod-logs'">
                     ${ logs?html?replace("\n", "<br>") !}
