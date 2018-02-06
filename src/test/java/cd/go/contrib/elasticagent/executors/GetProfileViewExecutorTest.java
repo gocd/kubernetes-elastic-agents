@@ -41,7 +41,7 @@ public class GetProfileViewExecutorTest {
     }
 
     @Test
-    public void allFieldsShouldBePresentInView() throws Exception {
+    public void allFieldsShouldBePresentInView() {
         String template = Util.readResource("/profile.template.html");
         final Document document = Jsoup.parse(template);
 
@@ -58,8 +58,7 @@ public class GetProfileViewExecutorTest {
             assertThat(spanToShowError.text(), is("{{GOINPUTNAME[" + field.getKey() + "].$error.server}}"));
         }
 
-        final Elements inputs = document.select("textarea,input[type=text],select");
+        final Elements inputs = document.select("textarea,input[type=text],select,input[type=checkbox]");
         assertThat(inputs, hasSize(GetProfileMetadataExecutor.FIELDS.size() - 1)); // do not include SPECIFIED_USING_POD_CONFIGURATION key
     }
-
 }

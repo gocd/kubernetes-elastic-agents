@@ -87,6 +87,14 @@
             background-color: #e6e6e6;
             border-radius: 3px;
         }
+
+        [data-plugin-style-id="kubernetes-plugin"] .form-help-content {
+            color: #666;
+            font-style: italic;
+            clear: both;
+            font-size: 0.82rem;
+        }
+
     </style>
 
     <div class="row collapse">
@@ -150,6 +158,16 @@
                       ng-show="GOINPUTNAME[MaxCPU].$error.server">{{GOINPUTNAME[MaxCPU].$error.server}}</span>
             </div>
         </div>
+
+        <div class="form_item_block">
+            <input ng-class="{'is-invalid-input': GOINPUTNAME[Privileged].$error.server}" type="checkbox" ng-model="Privileged" ng-required="true" ng-true-value="true" ng-false-value="false" id="Privileged"/>
+            <label ng-class="{'is-invalid-label': GOINPUTNAME[Privileged].$error.server}" for="Privileged">Privileged</label>
+            <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[Privileged].$error.server}" ng-show="GOINPUTNAME[Privileged].$error.server">{{GOINPUTNAME[Privileged].$error.server}}</span>
+            <span class="form-help-content">
+                <strong>Note:</strong> When privileged mode is enabled, the container is given elevated privileges on the host container instance.
+            </span>
+        </div>
+
         <div class="form_item_block">
             <label ng-class="{'is-invalid-label': GOINPUTNAME[Environment].$error.server}">Environment Variables
                 <small>(Enter one variable per line)</small>
