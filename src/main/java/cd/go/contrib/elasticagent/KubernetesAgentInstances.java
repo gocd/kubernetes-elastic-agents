@@ -150,7 +150,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     public void refreshAll(PluginRequest pluginRequest) throws Exception {
         LOG.debug("[Refresh Instances]. Syncing k8s elastic agent pod information");
         KubernetesClient client = factory.kubernetes(pluginRequest.getPluginSettings());
-        PodList list = client.pods().inNamespace(Constants.KUBERNETES_NAMESPACE_KEY).list();
+        PodList list = client.pods().inNamespace(Constants.KUBERNETES_NAMESPACE).list();
 
         for (Pod pod : list.getItems()) {
             Map<String, String> podLabels = pod.getMetadata().getLabels();
@@ -180,7 +180,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
             if (knownAgents.containsAgentWithId(instanceName)) {
                 continue;
             }
-            Pod pod = client.pods().inNamespace(Constants.KUBERNETES_NAMESPACE_KEY).withName(instanceName).get();
+            Pod pod = client.pods().inNamespace(Constants.KUBERNETES_NAMESPACE).withName(instanceName).get();
             Date createdAt = getSimpleDateFormat().parse(pod.getMetadata().getCreationTimestamp());
             DateTime dateTimeCreated = new DateTime(createdAt);
 

@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static cd.go.contrib.elasticagent.Constants.KUBERNETES_NAMESPACE_KEY;
+import static cd.go.contrib.elasticagent.Constants.KUBERNETES_NAMESPACE;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -64,7 +64,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
         initMocks(this);
         when(factory.kubernetes(any(PluginSettings.class))).thenReturn(mockedClient);
         when(mockedClient.pods()).thenReturn(mockedOperation);
-        when(mockedOperation.inNamespace(KUBERNETES_NAMESPACE_KEY)).thenReturn(mockedNamespaceOperation);
+        when(mockedOperation.inNamespace(KUBERNETES_NAMESPACE)).thenReturn(mockedNamespaceOperation);
         when(mockedNamespaceOperation.create(any(Pod.class))).thenAnswer(new Answer<Pod>() {
             @Override
             public Pod answer(InvocationOnMock invocation) throws Throwable {

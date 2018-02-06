@@ -234,7 +234,9 @@
                             <#if node.pods?size != 0>
                                 <#list node.pods as pod>
                                 <tr>
-                                    <td>${pod.podName!}</td>
+                                    <td>
+                                        <a href="/go/admin/status_reports/${pluginId}/${pod.podName!}"> ${pod.podName!} </a>
+                                    </td>
                                     <td>${pod.jobInformation!}</td>
                                     <td>${pod.image!}</td>
                                     <td>${pod.podIP!}</td>

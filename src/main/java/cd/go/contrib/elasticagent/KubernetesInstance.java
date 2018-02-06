@@ -40,7 +40,7 @@ public class KubernetesInstance {
     }
 
     public void terminate(KubernetesClient client) {
-        client.pods().inNamespace(Constants.KUBERNETES_NAMESPACE_KEY).withName(name).delete();
+        client.pods().inNamespace(Constants.KUBERNETES_NAMESPACE).withName(name).delete();
     }
 
     public String name() {

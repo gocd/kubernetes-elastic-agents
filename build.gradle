@@ -97,6 +97,7 @@ tasks.withType(Jar) { jarTask ->
         }
     }
 
+
     manifest {
         attributes(
                 'Go-Version': project.pluginDesc.goCdVersion,
@@ -107,4 +108,10 @@ tasks.withType(Jar) { jarTask ->
                 'Target-Compatibility': project.targetCompatibility
         )
     }
+}
+
+task deploy(type: Copy) {
+    delete '/Users/ganeshpatil/projects/gocd/server/plugins/external/*.jar.*'
+    from jar
+    into '/Users/ganeshpatil/projects/gocd/server/plugins/external'
 }
