@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2017 ThoughtWorks, Inc.
+  ~ Copyright 2018 ThoughtWorks, Inc.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -200,7 +200,9 @@ metadata:
 spec:
   containers:
     - name: gocd-agent-container-{{ CONTAINER_POSTFIX }}
-      image: {{ GOCD_AGENT_IMAGE }}:{{ LATEST_VERSION }}')">
+      image: {{ GOCD_AGENT_IMAGE }}:{{ LATEST_VERSION }}
+      securityContext:
+        privileged: true')">
             </textarea>
             <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[PodConfiguration].$error.server}"
                   ng-show="GOINPUTNAME[PodConfiguration].$error.server">{{GOINPUTNAME[PodConfiguration].$error.server}}</span>
