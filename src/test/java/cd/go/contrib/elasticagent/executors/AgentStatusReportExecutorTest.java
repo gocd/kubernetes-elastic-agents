@@ -22,7 +22,9 @@ import org.mockito.Mock;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
+import static cd.go.contrib.elasticagent.Constants.JOB_IDENTIFIER_LABEL_KEY;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -167,6 +169,7 @@ public class AgentStatusReportExecutorTest {
         PodStatus status = new PodStatus();
         status.setContainerStatuses(Arrays.asList(new ContainerStatus()));
         pod.setStatus(status);
+        pod.getMetadata().setAnnotations(Collections.singletonMap(JOB_IDENTIFIER_LABEL_KEY, "{}"));
         return pod;
     }
 
