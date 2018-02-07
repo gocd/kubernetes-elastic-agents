@@ -246,7 +246,7 @@
                                 </#list>
                             <#else>
                             <tr>
-                                <td colspan="5" class="message">No running pods.</td>
+                                <td colspan="6" class="message">No running pods.</td>
                             </tr>
                             </#if>
                         </tbody>

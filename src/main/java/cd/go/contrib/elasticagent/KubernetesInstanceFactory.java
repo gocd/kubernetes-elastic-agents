@@ -35,11 +35,14 @@ import java.io.StringWriter;
 import java.text.ParseException;
 import java.util.*;
 
+import static cd.go.contrib.elasticagent.Constants.*;
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.POD_CONFIGURATION;
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PRIVILEGED;
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
 import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
+import static java.lang.String.format;
+import static java.lang.String.valueOf;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class KubernetesInstanceFactory {
@@ -52,7 +55,7 @@ public class KubernetesInstanceFactory {
     }
 
     private KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
-        String containerName = Constants.KUBERNETES_POD_NAME + UUID.randomUUID().toString();
+        String containerName = format("%s-%s", KUBERNETES_POD_NAME_PREFIX, UUID.randomUUID().toString());
 
         Container container = new Container();
         container.setName(containerName);
@@ -98,13 +101,13 @@ public class KubernetesInstanceFactory {
         String maxMemory = request.properties().get("MaxMemory");
         if (StringUtils.isNotBlank(maxMemory)) {
             Size mem = Size.parse(maxMemory);
-            LOG.debug(String.format("[Create Agent] Setting memory resource limit on k8s pod:%s", new Quantity(String.valueOf(mem.toMegabytes()), "M")));
-            limits.put("memory", new Quantity(String.valueOf(mem.toBytes())));
+            LOG.debug(format("[Create Agent] Setting memory resource limit on k8s pod:%s", new Quantity(valueOf(mem.toMegabytes()), "M")));
+            limits.put("memory", new Quantity(valueOf(mem.toBytes())));
         }
 
         String maxCPU = request.properties().get("MaxCPU");
         if (StringUtils.isNotBlank(maxCPU)) {
-            LOG.debug(String.format("[Create Agent] Setting cpu resource limit on k8s pod:%s", new Quantity(maxCPU)));
+            LOG.debug(format("[Create Agent] Setting cpu resource limit on k8s pod:%s", new Quantity(maxCPU)));
             limits.put("cpu", new Quantity(maxCPU));
         }
 
@@ -122,13 +125,13 @@ public class KubernetesInstanceFactory {
     private static void setAnnotations(Pod pod, CreateAgentRequest request) {
         Map<String, String> existingAnnotations = (pod.getMetadata().getAnnotations() != null) ? pod.getMetadata().getAnnotations() : new HashMap<>();
         existingAnnotations.putAll(request.properties());
-        existingAnnotations.put(Constants.JOB_IDENTIFIER_LABEL_KEY, GSON.toJson(request.jobIdentifier()));
+        existingAnnotations.put(JOB_IDENTIFIER_LABEL_KEY, GSON.toJson(request.jobIdentifier()));
         pod.getMetadata().setAnnotations(existingAnnotations);
     }
 
     private KubernetesInstance createKubernetesPod(KubernetesClient client, Pod elasticAgentPod) {
-        LOG.info(String.format("[Create Agent] Creating K8s pod with spec:%s", elasticAgentPod.toString()));
-        Pod pod = client.pods().inNamespace(Constants.KUBERNETES_NAMESPACE).create(elasticAgentPod);
+        LOG.info(format("[Create Agent] Creating K8s pod with spec:%s", elasticAgentPod.toString()));
+        Pod pod = client.pods().inNamespace(KUBERNETES_NAMESPACE).create(elasticAgentPod);
         return fromKubernetesPod(pod);
     }
 
@@ -140,8 +143,8 @@ public class KubernetesInstanceFactory {
             if (StringUtils.isNotBlank(metadata.getCreationTimestamp())) {
                 createdAt = new DateTime(getSimpleDateFormat().parse(metadata.getCreationTimestamp())).withZone(DateTimeZone.UTC);
             }
-            String environment = metadata.getLabels().get(Constants.ENVIRONMENT_LABEL_KEY);
-            Long jobId = Long.valueOf(metadata.getLabels().get(Constants.JOB_ID_LABEL_KEY));
+            String environment = metadata.getLabels().get(ENVIRONMENT_LABEL_KEY);
+            Long jobId = Long.valueOf(metadata.getLabels().get(JOB_ID_LABEL_KEY));
             kubernetesInstance = new KubernetesInstance(createdAt, environment, metadata.getName(), metadata.getAnnotations(), jobId, PodState.fromPod(elasticAgentPod));
         } catch (ParseException e) {
             throw new RuntimeException(e);
@@ -183,14 +186,14 @@ public class KubernetesInstanceFactory {
     private static HashMap<String, String> labelsFrom(CreateAgentRequest request) {
         HashMap<String, String> labels = new HashMap<>();
 
-        labels.put(Constants.CREATED_BY_LABEL_KEY, Constants.PLUGIN_ID);
-        labels.put(Constants.JOB_ID_LABEL_KEY, String.valueOf(request.jobIdentifier().getJobId()));
+        labels.put(CREATED_BY_LABEL_KEY, PLUGIN_ID);
+        labels.put(JOB_ID_LABEL_KEY, valueOf(request.jobIdentifier().getJobId()));
 
         if (StringUtils.isNotBlank(request.environment())) {
-            labels.put(Constants.ENVIRONMENT_LABEL_KEY, request.environment());
+            labels.put(ENVIRONMENT_LABEL_KEY, request.environment());
         }
 
-        labels.put(Constants.KUBERNETES_POD_KIND_LABEL_KEY, Constants.KUBERNETES_POD_KIND_LABEL_VALUE);
+        labels.put(KUBERNETES_POD_KIND_LABEL_KEY, KUBERNETES_POD_KIND_LABEL_VALUE);
 
         return labels;
     }
@@ -235,10 +238,10 @@ public class KubernetesInstanceFactory {
 
     public static Map<String, String> getJinJavaContext() {
         HashMap<String, String> context = new HashMap<>();
-        context.put(Constants.POD_POSTFIX, UUID.randomUUID().toString());
-        context.put(Constants.CONTAINER_POSTFIX, UUID.randomUUID().toString());
-        context.put(Constants.GOCD_AGENT_IMAGE, "gocd/gocd-agent-alpine-3.5");
-        context.put(Constants.LATEST_VERSION, "v17.10.0");
+        context.put(POD_POSTFIX, UUID.randomUUID().toString());
+        context.put(CONTAINER_POSTFIX, UUID.randomUUID().toString());
+        context.put(GOCD_AGENT_IMAGE, "gocd/gocd-agent-alpine-3.5");
+        context.put(LATEST_VERSION, "v17.10.0");
         return context;
     }
 }

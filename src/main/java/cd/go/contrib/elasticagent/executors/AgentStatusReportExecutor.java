@@ -10,7 +10,6 @@ import cd.go.contrib.elasticagent.requests.AgentStatusReportRequest;
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import freemarker.template.Template;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.apache.commons.lang3.StringUtils;
@@ -50,7 +49,7 @@ public class AgentStatusReportExecutor {
                 pod = findPodUsingJobIdentifier(jobIdentifier, client);
             }
 
-            KubernetesElasticAgent elasticAgent = KubernetesElasticAgent.fromPod(client, pod, elasticAgentId, jobIdentifier);
+            KubernetesElasticAgent elasticAgent = KubernetesElasticAgent.fromPod(client, pod, jobIdentifier);
 
             final String statusReportView = statusReportViewBuilder.build(statusReportViewBuilder.getTemplate("agent-status-report.template.ftlh"), elasticAgent);
 
