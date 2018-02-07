@@ -33,6 +33,7 @@ public class CreateAgentRequestMother {
                 "ENV2=VALUE2");
         properties.put("PodConfiguration", "");
         properties.put("SpecifiedUsingPodConfiguration", "false");
+        properties.put("Privileged", "false");
 
         String environment = "QA";
         JobIdentifier identifier = new JobIdentifier("up_42", 1L, "up_42_label", "up42_stage", "20", "up42_job", 10L);

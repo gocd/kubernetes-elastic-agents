@@ -82,10 +82,16 @@ public class GetProfileMetadataExecutorTest {
                 "      \"required\": true,\n" +
                 "      \"secure\": false\n" +
                 "    }\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"key\": \"Privileged\",\n" +
+                "    \"metadata\": {\n" +
+                "      \"required\": false,\n" +
+                "      \"secure\": false\n" +
+                "    }\n" +
                 "  }\n" +
                 "]";
 
         JSONAssert.assertEquals(expectedJSON, response.responseBody(), true);
     }
-
 }

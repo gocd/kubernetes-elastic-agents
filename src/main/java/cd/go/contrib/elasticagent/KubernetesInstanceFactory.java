@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 ThoughtWorks, Inc.
+ * Copyright 2018 ThoughtWorks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import java.util.*;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.POD_CONFIGURATION;
+import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PRIVILEGED;
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
 import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -57,6 +58,7 @@ public class KubernetesInstanceFactory {
         container.setName(containerName);
         container.setImage(image(request.properties()));
         container.setImagePullPolicy("IfNotPresent");
+        container.setSecurityContext(new SecurityContextBuilder().withPrivileged(privileged(request)).build());
 
         container.setResources(getPodResources(request));
 
@@ -71,6 +73,14 @@ public class KubernetesInstanceFactory {
         setGoCDMetadata(request, settings, pluginRequest, elasticAgentPod);
 
         return createKubernetesPod(client, elasticAgentPod);
+    }
+
+    private Boolean privileged(CreateAgentRequest request) {
+        final String privilegedMode = request.properties().get(PRIVILEGED.getKey());
+        if (StringUtils.isBlank(privilegedMode)) {
+            return false;
+        }
+        return Boolean.valueOf(privilegedMode);
     }
 
     private void setGoCDMetadata(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest, Pod elasticAgentPod) {

@@ -25,7 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
@@ -33,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PRIVILEGED;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -66,12 +66,9 @@ public class KubernetesAgentInstancesIntegrationTest {
 
         when(pods.inNamespace(Constants.KUBERNETES_NAMESPACE)).thenReturn(pods);
 
-        when(pods.create(any())).thenAnswer(new Answer<Pod>() {
-            @Override
-            public Pod answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                return (Pod) args[0];
-            }
+        when(pods.create(any())).thenAnswer((Answer<Pod>) invocation -> {
+            Object[] args = invocation.getArguments();
+            return (Pod) args[0];
         });
 
         when(pods.list()).thenReturn(new PodList());
@@ -104,6 +101,24 @@ public class KubernetesAgentInstancesIntegrationTest {
 
         assertThat(gocdAgentContainer.getImage(), is("gocd/custom-gocd-agent-alpine:latest"));
         assertThat(gocdAgentContainer.getImagePullPolicy(), is("IfNotPresent"));
+        assertThat(gocdAgentContainer.getSecurityContext().getPrivileged(), is(false));
+    }
+
+    @Test
+    public void shouldCreateKubernetesPodWithPrivilegedMod() throws Exception {
+        createAgentRequest.properties().put(PRIVILEGED.getKey(), "true");
+        ArgumentCaptor<Pod> argumentCaptor = ArgumentCaptor.forClass(Pod.class);
+        KubernetesInstance instance = kubernetesAgentInstances.create(createAgentRequest, settings, mockedPluginRequest);
+        verify(pods).create(argumentCaptor.capture());
+        Pod elasticAgentPod = argumentCaptor.getValue();
+
+        List<Container> containers = elasticAgentPod.getSpec().getContainers();
+        assertThat(containers.size(), is(1));
+
+        Container gocdAgentContainer = containers.get(0);
+
+        assertThat(gocdAgentContainer.getName(), is(instance.name()));
+        assertThat(gocdAgentContainer.getSecurityContext().getPrivileged(), is(true));
     }
 
     @Test
