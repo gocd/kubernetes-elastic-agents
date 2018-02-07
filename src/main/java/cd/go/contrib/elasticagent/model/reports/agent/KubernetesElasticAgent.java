@@ -11,7 +11,10 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 
 import java.util.ArrayList;
 
+import static cd.go.contrib.elasticagent.utils.Util.GSON;
+
 public class KubernetesElasticAgent {
+    private JobIdentifier jobIdentifier;
     private KubernetesPodDetails podDetails;
     private GoCDContainerDetails agentDetails;
     private String elasticAgentId;
@@ -19,15 +22,25 @@ public class KubernetesElasticAgent {
     private String logs;
     private String configuration;
 
-    public static KubernetesElasticAgent fromPod(KubernetesClient client, Pod pod, String elasticAgentId, JobIdentifier jobIdentifier) {
+    public static KubernetesElasticAgent fromPod(KubernetesClient client, Pod pod, JobIdentifier jobIdentifier) {
         KubernetesElasticAgent agent = new KubernetesElasticAgent();
-        agent.elasticAgentId = elasticAgentId;
+        agent.jobIdentifier = getJobIdentifier(pod, jobIdentifier);
+        agent.elasticAgentId = pod.getMetadata().getName();
         agent.podDetails = KubernetesPodDetails.fromPod(pod);
         agent.agentDetails = GoCDContainerDetails.fromContainer(pod.getSpec().getContainers().get(0), pod.getStatus().getContainerStatuses().get(0));
         agent.events = getAllEventsForPod(pod, client);
         agent.logs = getPodLogs(pod, client);
         agent.configuration = getPodConfiguration(pod);
         return agent;
+    }
+
+    private static JobIdentifier getJobIdentifier(Pod pod, JobIdentifier jobIdentifier) {
+        if (jobIdentifier != null) {
+            return jobIdentifier;
+        }
+
+        final String json = pod.getMetadata().getAnnotations().get(Constants.JOB_IDENTIFIER_LABEL_KEY);
+        return GSON.fromJson(json, JobIdentifier.class);
     }
 
     public ArrayList<KubernetesPodEvent> getEvents() {
@@ -52,6 +65,10 @@ public class KubernetesElasticAgent {
 
     public String getElasticAgentId() {
         return elasticAgentId;
+    }
+
+    public JobIdentifier getJobIdentifier() {
+        return jobIdentifier;
     }
 
     private static ArrayList<KubernetesPodEvent> getAllEventsForPod(Pod pod, KubernetesClient client) {
