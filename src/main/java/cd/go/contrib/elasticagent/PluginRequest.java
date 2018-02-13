@@ -52,10 +52,16 @@ public class PluginRequest {
             throw ServerRequestFailedException.getPluginSettings(response);
         }
 
-        final PluginSettings pluginSettings = PluginSettings.fromJSON(response.responseBody());
+        PluginSettings pluginSettings = PluginSettings.fromJSON(response.responseBody());
+
+        if (pluginSettings == null) {
+            pluginSettings = PluginSettings.fromEnv();
+        }
+
         if (pluginSettings == null) {
             throw new PluginSettingsNotConfiguredException();
         }
+
         return pluginSettings;
     }
 
@@ -71,7 +77,7 @@ public class PluginRequest {
     }
 
     public void disableAgents(Collection<Agent> toBeDisabled) throws ServerRequestFailedException {
-        LOG.debug("[Server Ping] Disabling Agents:"+toBeDisabled.toString());
+        LOG.debug("[Server Ping] Disabling Agents:" + toBeDisabled.toString());
         if (toBeDisabled.isEmpty()) {
             return;
         }
@@ -87,7 +93,7 @@ public class PluginRequest {
     }
 
     public void deleteAgents(Collection<Agent> toBeDeleted) throws ServerRequestFailedException {
-        LOG.debug("[Server Ping] Deleting Agents:"+toBeDeleted.toString());
+        LOG.debug("[Server Ping] Deleting Agents:" + toBeDeleted.toString());
         if (toBeDeleted.isEmpty()) {
             return;
         }

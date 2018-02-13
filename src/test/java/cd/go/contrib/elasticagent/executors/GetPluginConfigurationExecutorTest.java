@@ -46,48 +46,36 @@ public class GetPluginConfigurationExecutorTest {
         assertThat(response.responseCode(), is(200));
         String expectedJSON = "{\n" +
                 "  \"go_server_url\": {\n" +
-                "    \"display-name\": \"Go Server URL\",\n" +
+                "    \"display-name\": \"GoCD server URL\",\n" +
                 "    \"required\": false,\n" +
                 "    \"secure\": false,\n" +
                 "    \"display-order\": \"0\"\n" +
                 "  },\n" +
                 "  \"auto_register_timeout\": {\n" +
-                "    \"display-name\": \"Agent auto-register Timeout (in minutes)\",\n" +
+                "    \"display-name\": \"Agent auto-register timeout (in minutes)\",\n" +
                 "    \"default-value\": \"10\",\n" +
                 "    \"required\": true,\n" +
                 "    \"secure\": false,\n" +
                 "    \"display-order\": \"1\"\n" +
                 "  },\n" +
                 "  \"pending_pods_count\": {\n" +
-                "    \"display-name\": \"Maximum Pending Kuberneted Pods Count\",\n" +
+                "    \"display-name\": \"Maximum pending pods\",\n" +
                 "    \"default-value\": \"10\",\n" +
                 "    \"required\": true,\n" +
                 "    \"secure\": false,\n" +
                 "    \"display-order\": \"2\"\n" +
                 "  },\n" +
                 "  \"kubernetes_cluster_url\": {\n" +
-                "    \"display-name\": \"Kubernetes Cluster URL\",\n" +
+                "    \"display-name\": \"Cluster URL\",\n" +
                 "    \"required\": true,\n" +
                 "    \"secure\": false,\n" +
                 "    \"display-order\": \"3\"\n" +
                 "  },\n" +
-                "  \"kubernetes_cluster_username\": {\n" +
-                "    \"display-name\": \"Kubernetes Cluster Username\",\n" +
-                "    \"required\": false,\n" +
-                "    \"secure\": false,\n" +
-                "    \"display-order\": \"4\"\n" +
-                "  },\n" +
-                "  \"kubernetes_cluster_password\": {\n" +
-                "    \"display-name\": \"Kubernetes Cluster Password\",\n" +
-                "    \"required\": false,\n" +
-                "    \"secure\": true,\n" +
-                "    \"display-order\": \"5\"\n" +
-                "  },\n" +
                 "  \"kubernetes_cluster_ca_cert\": {\n" +
-                "    \"display-name\": \"Kubernetes Cluster CA Certificate\",\n" +
-                "    \"required\": false,\n" +
+                "    \"display-name\": \"Cluster ca-certificate\",\n" +
+                "    \"required\": true,\n" +
                 "    \"secure\": true,\n" +
-                "    \"display-order\": \"6\"\n" +
+                "    \"display-order\": \"4\"\n" +
                 "  }\n" +
                 "}";
 

@@ -24,7 +24,6 @@ import cd.go.contrib.elasticagent.model.ServerInfo;
 import cd.go.contrib.elasticagent.requests.ValidatePluginSettings;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +31,7 @@ import java.util.Map;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class ValidateConfigurationExecutor implements RequestExecutor {
     private final ValidatePluginSettings settings;
@@ -55,9 +55,9 @@ public class ValidateConfigurationExecutor implements RequestExecutor {
             }
         }
 
-        if(StringUtils.isBlank(settings.get("go_server_url"))) {
+        if (isBlank(settings.get("go_server_url"))) {
             ServerInfo severInfo = pluginRequest.getSeverInfo();
-            if(StringUtils.isBlank(severInfo.getSecureSiteUrl())) {
+            if (isBlank(severInfo.getSecureSiteUrl())) {
                 HashMap<String, String> error = new HashMap<>();
                 error.put("key", "go_server_url");
                 error.put("message", "Secure site url is not configured. Please specify Go Server Url.");

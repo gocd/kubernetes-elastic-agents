@@ -18,8 +18,10 @@ package cd.go.contrib.elasticagent;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Period;
 
+import static cd.go.contrib.elasticagent.executors.GetPluginConfigurationExecutor.*;
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
 
 public class PluginSettings {
@@ -40,47 +42,22 @@ public class PluginSettings {
     private String kubernetesClusterUrl;
 
     @Expose
-    @SerializedName("kubernetes_cluster_username")
-    private String kubernetesClusterUsername;
-
-    @Expose
-    @SerializedName("kubernetes_cluster_password")
-    private String kubernetesClusterPassword;
-
-    @Expose
     @SerializedName("kubernetes_cluster_ca_cert")
     private String kubernetesClusterCACert;
 
     private Period autoRegisterPeriod;
 
+    public PluginSettings() {
+    }
+
+    public PluginSettings(String goServerUrl, String clusterUrl, String clusterCACert) {
+        this.goServerUrl = goServerUrl;
+        this.kubernetesClusterUrl = clusterUrl;
+        this.kubernetesClusterCACert = clusterCACert;
+    }
+
     public static PluginSettings fromJSON(String json) {
         return GSON.fromJson(json, PluginSettings.class);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PluginSettings)) return false;
-        PluginSettings that = (PluginSettings) o;
-
-        if (goServerUrl != null ? !goServerUrl.equals(that.goServerUrl) : that.goServerUrl != null) return false;
-        if (autoRegisterTimeout != null ? !autoRegisterTimeout.equals(that.autoRegisterTimeout) : that.autoRegisterTimeout != null)
-            return false;
-        if (pendingPodsCount != null ? !pendingPodsCount.equals(that.pendingPodsCount) : that.pendingPodsCount != null)
-            return false;
-        if (kubernetesClusterUrl != null ? !kubernetesClusterUrl.equals(that.kubernetesClusterUrl) : that.kubernetesClusterUrl != null)
-            return false;
-        return autoRegisterPeriod != null ? autoRegisterPeriod.equals(that.autoRegisterPeriod) : that.autoRegisterPeriod == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = goServerUrl != null ? goServerUrl.hashCode() : 0;
-        result = 31 * result + (autoRegisterTimeout != null ? autoRegisterTimeout.hashCode() : 0);
-        result = 31 * result + (pendingPodsCount != null ? pendingPodsCount.hashCode() : 0);
-        result = 31 * result + (kubernetesClusterUrl != null ? kubernetesClusterUrl.hashCode() : 0);
-        result = 31 * result + (autoRegisterPeriod != null ? autoRegisterPeriod.hashCode() : 0);
-        return result;
     }
 
     public Period getAutoRegisterPeriod() {
@@ -113,19 +90,53 @@ public class PluginSettings {
         return kubernetesClusterUrl;
     }
 
-    public String getKubernetesClusterUsername() {
-        return kubernetesClusterUsername;
-    }
-
-    public String getKubernetesClusterPassword() {
-        return kubernetesClusterPassword;
-    }
-
     public String getKubernetesClusterCACert() {
         return kubernetesClusterCACert;
     }
 
     public void setGoServerUrl(String goServerUrl) {
         this.goServerUrl = goServerUrl;
+    }
+
+    public static PluginSettings fromEnv() {
+        final String goServerUrl = System.getenv(GO_SERVER_URL.key());
+        final String clusterUrl = System.getenv(CLUSTER_URL.key());
+        final String clusterCACert = System.getenv(CLUSTER_CA_CERT.key());
+
+        if (StringUtils.isAnyBlank(goServerUrl, clusterUrl, clusterCACert)) {
+            return null;
+        }
+
+        return new PluginSettings(goServerUrl, clusterUrl, clusterCACert);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PluginSettings)) return false;
+
+        PluginSettings that = (PluginSettings) o;
+
+        if (goServerUrl != null ? !goServerUrl.equals(that.goServerUrl) : that.goServerUrl != null) return false;
+        if (autoRegisterTimeout != null ? !autoRegisterTimeout.equals(that.autoRegisterTimeout) : that.autoRegisterTimeout != null)
+            return false;
+        if (pendingPodsCount != null ? !pendingPodsCount.equals(that.pendingPodsCount) : that.pendingPodsCount != null)
+            return false;
+        if (kubernetesClusterUrl != null ? !kubernetesClusterUrl.equals(that.kubernetesClusterUrl) : that.kubernetesClusterUrl != null)
+            return false;
+        if (kubernetesClusterCACert != null ? !kubernetesClusterCACert.equals(that.kubernetesClusterCACert) : that.kubernetesClusterCACert != null)
+            return false;
+        return autoRegisterPeriod != null ? autoRegisterPeriod.equals(that.autoRegisterPeriod) : that.autoRegisterPeriod == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = goServerUrl != null ? goServerUrl.hashCode() : 0;
+        result = 31 * result + (autoRegisterTimeout != null ? autoRegisterTimeout.hashCode() : 0);
+        result = 31 * result + (pendingPodsCount != null ? pendingPodsCount.hashCode() : 0);
+        result = 31 * result + (kubernetesClusterUrl != null ? kubernetesClusterUrl.hashCode() : 0);
+        result = 31 * result + (kubernetesClusterCACert != null ? kubernetesClusterCACert.hashCode() : 0);
+        result = 31 * result + (autoRegisterPeriod != null ? autoRegisterPeriod.hashCode() : 0);
+        return result;
     }
 }

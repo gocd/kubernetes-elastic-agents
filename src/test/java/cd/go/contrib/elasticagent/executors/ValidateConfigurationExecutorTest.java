@@ -55,15 +55,15 @@ public class ValidateConfigurationExecutorTest {
         assertThat(response.responseCode(), is(200));
         JSONAssert.assertEquals("[\n" +
                 "  {\n" +
-                "    \"message\": \"Agent auto-register Timeout (in minutes) must be a positive integer.\",\n" +
+                "    \"message\": \"Agent auto-register timeout (in minutes) must be a positive integer.\",\n" +
                 "    \"key\": \"auto_register_timeout\"\n" +
                 "  },\n" +
                 "  {\n" +
-                "    \"message\": \"Maximum Pending Kuberneted Pods Count must be a positive integer.\",\n" +
+                "    \"message\": \"Maximum pending pods must be a positive integer.\",\n" +
                 "    \"key\": \"pending_pods_count\"\n" +
                 "  },\n" +
                 "  {\n" +
-                "    \"message\": \"Kubernetes Cluster URL must not be blank.\",\n" +
+                "    \"message\": \"Cluster URL must not be blank.\",\n" +
                 "    \"key\": \"kubernetes_cluster_url\"\n" +
                 "  }\n" +
                 "]", response.responseBody(), true);
@@ -112,7 +112,7 @@ public class ValidateConfigurationExecutorTest {
         assertThat(response.responseCode(), is(200));
         JSONAssert.assertEquals("[" +
                 "  {\n" +
-                "    \"message\": \"Go Server URL must be a valid HTTPs URL (https://example.com).\",\n" +
+                "    \"message\": \"GoCD server URL must be a valid HTTPs URL (https://example.com).\",\n" +
                 "    \"key\": \"go_server_url\"\n" +
                 "  }\n" +
                 "]", response.responseBody(), true);
@@ -130,7 +130,7 @@ public class ValidateConfigurationExecutorTest {
         assertThat(response.responseCode(), is(200));
         JSONAssert.assertEquals("[" +
                 "  {\n" +
-                "    \"message\": \"Go Server URL must be in format https://<GO_SERVER_URL>:<GO_SERVER_PORT>/go.\",\n" +
+                "    \"message\": \"GoCD server URL must be in format https://<GO_SERVER_URL>:<GO_SERVER_PORT>/go.\",\n" +
                 "    \"key\": \"go_server_url\"\n" +
                 "  }\n" +
                 "]", response.responseBody(), true);

@@ -20,7 +20,8 @@ import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import org.apache.commons.lang3.StringUtils;
+
+import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 
 public class KubernetesClientFactory {
     private static final KubernetesClientFactory KUBERNETES_CLIENT_FACTORY = new KubernetesClientFactory();
@@ -31,29 +32,22 @@ public class KubernetesClientFactory {
         return KUBERNETES_CLIENT_FACTORY;
     }
 
-    private static KubernetesClient createClient(PluginSettings pluginSettings) throws Exception {
-        ConfigBuilder configBuilder = new ConfigBuilder().withMasterUrl(pluginSettings.getKubernetesClusterUrl());
-        if (StringUtils.isNotBlank(pluginSettings.getKubernetesClusterUsername())) {
-            configBuilder.withUsername(pluginSettings.getKubernetesClusterUsername());
-        }
+    private static KubernetesClient createClient(PluginSettings pluginSettings) {
+        Config config = new ConfigBuilder()
+                .withMasterUrl(pluginSettings.getKubernetesClusterUrl())
+                .withCaCertData(pluginSettings.getKubernetesClusterCACert())
+                .build();
 
-        if (StringUtils.isNotBlank(pluginSettings.getKubernetesClusterPassword())) {
-            configBuilder.withPassword(pluginSettings.getKubernetesClusterPassword());
-        }
-
-        if (StringUtils.isNotBlank(pluginSettings.getKubernetesClusterCACert())) {
-            configBuilder.withCaCertData(pluginSettings.getKubernetesClusterCACert());
-        }
-
-        Config build = configBuilder.build();
-        return new DefaultKubernetesClient(build);
+        return new DefaultKubernetesClient(config);
     }
 
-    public synchronized KubernetesClient kubernetes(PluginSettings pluginSettings) throws Exception {
+    public synchronized KubernetesClient kubernetes(PluginSettings pluginSettings) {
         if (pluginSettings.equals(this.pluginSettings) && this.client != null) {
+            LOG.debug("Using previously created client.");
             return this.client;
         }
 
+        LOG.debug("Client is null or plugin setting has been changed. Creating new client...");
         this.pluginSettings = pluginSettings;
         this.client = createClient(pluginSettings);
         return this.client;
