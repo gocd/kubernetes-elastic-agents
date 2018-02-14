@@ -17,11 +17,12 @@
 package cd.go.contrib.elasticagent.executors;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
@@ -30,9 +31,10 @@ import static org.junit.Assert.assertThat;
 public class GetPluginConfigurationExecutorTest {
 
     @Test
-    public void shouldSerializeAllFields() throws Exception {
+    public void shouldSerializeAllFields() {
         GoPluginApiResponse response = new GetPluginConfigurationExecutor().execute();
-        HashMap hashMap = new Gson().fromJson(response.responseBody(), HashMap.class);
+        Map hashMap = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String, Object>>() {
+        }.getType());
         assertEquals("Are you using anonymous inner classes — see https://github.com/google/gson/issues/298",
                 hashMap.size(),
                 GetPluginConfigurationExecutor.FIELDS.size()

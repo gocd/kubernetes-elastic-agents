@@ -16,10 +16,7 @@
 
 package cd.go.contrib.elasticagent.requests;
 
-import cd.go.contrib.elasticagent.Agent;
-import cd.go.contrib.elasticagent.AgentInstances;
-import cd.go.contrib.elasticagent.Request;
-import cd.go.contrib.elasticagent.RequestExecutor;
+import cd.go.contrib.elasticagent.*;
 import cd.go.contrib.elasticagent.executors.ShouldAssignWorkRequestExecutor;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
 import com.google.gson.annotations.Expose;
@@ -75,7 +72,7 @@ public class ShouldAssignWorkRequest {
         return properties;
     }
 
-    public RequestExecutor executor(AgentInstances agentInstances) {
+    public RequestExecutor executor(AgentInstances<KubernetesInstance> agentInstances) {
         return new ShouldAssignWorkRequestExecutor(this, agentInstances);
     }
 

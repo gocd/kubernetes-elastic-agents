@@ -35,7 +35,7 @@ public class KubernetesPlugin implements GoPlugin {
     public static final Logger LOG = Logger.getLoggerFor(KubernetesPlugin.class);
 
     private PluginRequest pluginRequest;
-    private AgentInstances agentInstances;
+    private AgentInstances<KubernetesInstance> agentInstances;
 
     @Override
     public void initializeGoApplicationAccessor(GoApplicationAccessor accessor) {

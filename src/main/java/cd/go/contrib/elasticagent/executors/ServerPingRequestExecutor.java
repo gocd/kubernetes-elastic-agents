@@ -26,10 +26,10 @@ import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 
 public class ServerPingRequestExecutor implements RequestExecutor {
 
-    private final AgentInstances agentInstances;
+    private final AgentInstances<KubernetesInstance> agentInstances;
     private final PluginRequest pluginRequest;
 
-    public ServerPingRequestExecutor(AgentInstances agentInstances, PluginRequest pluginRequest) {
+    public ServerPingRequestExecutor(AgentInstances<KubernetesInstance> agentInstances, PluginRequest pluginRequest) {
         this.agentInstances = agentInstances;
         this.pluginRequest = pluginRequest;
     }

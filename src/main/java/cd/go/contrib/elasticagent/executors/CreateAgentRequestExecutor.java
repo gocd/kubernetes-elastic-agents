@@ -17,6 +17,7 @@
 package cd.go.contrib.elasticagent.executors;
 
 import cd.go.contrib.elasticagent.AgentInstances;
+import cd.go.contrib.elasticagent.KubernetesInstance;
 import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.RequestExecutor;
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
@@ -26,11 +27,11 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 
 public class CreateAgentRequestExecutor implements RequestExecutor {
-    private final AgentInstances agentInstances;
+    private final AgentInstances<KubernetesInstance> agentInstances;
     private final PluginRequest pluginRequest;
     private final CreateAgentRequest request;
 
-    public CreateAgentRequestExecutor(CreateAgentRequest request, AgentInstances agentInstances, PluginRequest pluginRequest) {
+    public CreateAgentRequestExecutor(CreateAgentRequest request, AgentInstances<KubernetesInstance> agentInstances, PluginRequest pluginRequest) {
         this.request = request;
         this.agentInstances = agentInstances;
         this.pluginRequest = pluginRequest;
