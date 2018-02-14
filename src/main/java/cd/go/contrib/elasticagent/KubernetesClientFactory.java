@@ -16,12 +16,14 @@
 
 package cd.go.contrib.elasticagent;
 
-import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
+import static cd.go.contrib.elasticagent.model.AuthenticationStrategy.CLUSTER_CERTS;
+import static cd.go.contrib.elasticagent.model.AuthenticationStrategy.OAUTH_TOKEN;
+import static java.text.MessageFormat.format;
 
 public class KubernetesClientFactory {
     private static final KubernetesClientFactory KUBERNETES_CLIENT_FACTORY = new KubernetesClientFactory();
@@ -32,24 +34,34 @@ public class KubernetesClientFactory {
         return KUBERNETES_CLIENT_FACTORY;
     }
 
-    private static KubernetesClient createClient(PluginSettings pluginSettings) {
-        Config config = new ConfigBuilder()
-                .withMasterUrl(pluginSettings.getKubernetesClusterUrl())
-                .withCaCertData(pluginSettings.getKubernetesClusterCACert())
-                .build();
-
-        return new DefaultKubernetesClient(config);
-    }
-
-    public synchronized KubernetesClient kubernetes(PluginSettings pluginSettings) {
+    public synchronized KubernetesClient client(PluginSettings pluginSettings) {
         if (pluginSettings.equals(this.pluginSettings) && this.client != null) {
             LOG.debug("Using previously created client.");
             return this.client;
         }
 
-        LOG.debug("Client is null or plugin setting has been changed. Creating new client...");
+        LOG.debug(format("Creating a new client because {0}.", (client == null) ? "client is null" : "plugin setting is changed"));
         this.pluginSettings = pluginSettings;
-        this.client = createClient(pluginSettings);
+        this.client = createClientFor(pluginSettings);
+        LOG.debug(format("New client is created using authentication strategy {0}.", pluginSettings.getAuthenticationStrategy()));
         return this.client;
+    }
+
+    private KubernetesClient createClientFor(PluginSettings pluginSettings) {
+        LOG.debug(format("Creating config using authentication strategy {0}.", pluginSettings.getAuthenticationStrategy().name()));
+        final ConfigBuilder configBuilder = new ConfigBuilder();
+
+        if (pluginSettings.getAuthenticationStrategy() == OAUTH_TOKEN) {
+            configBuilder.withOauthToken(pluginSettings.getOauthToken());
+
+        } else if (pluginSettings.getAuthenticationStrategy() == CLUSTER_CERTS) {
+            configBuilder
+                    .withMasterUrl(pluginSettings.getClusterUrl())
+                    .withCaCertData(pluginSettings.getCaCertData())
+                    .withClientKeyData(pluginSettings.getClientKeyData())
+                    .withClientCertData(pluginSettings.getClientCertData());
+        }
+
+        return new DefaultKubernetesClient(configBuilder.build());
     }
 }

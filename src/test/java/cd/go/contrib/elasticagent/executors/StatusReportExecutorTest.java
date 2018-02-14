@@ -53,7 +53,7 @@ public class StatusReportExecutorTest {
         kubernetesClient = mock(KubernetesClient.class);
 
         when(pluginRequest.getPluginSettings()).thenReturn(pluginSettings);
-        when(kubernetesClientFactory.kubernetes(pluginSettings)).thenReturn(kubernetesClient);
+        when(kubernetesClientFactory.client(pluginSettings)).thenReturn(kubernetesClient);
     }
 
     @Test

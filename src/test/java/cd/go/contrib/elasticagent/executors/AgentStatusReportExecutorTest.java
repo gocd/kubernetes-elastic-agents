@@ -106,7 +106,7 @@ public class AgentStatusReportExecutorTest {
         PluginSettings pluginSettings = new PluginSettings();
 
         when(pluginRequest.getPluginSettings()).thenReturn(pluginSettings);
-        when(kubernetesClientFactory.kubernetes(pluginSettings)).thenReturn(client);
+        when(kubernetesClientFactory.client(pluginSettings)).thenReturn(client);
 
         when(builder.getTemplate("agent-status-report.template.ftlh")).thenReturn(template);
         when(builder.build(eq(template), any(KubernetesElasticAgent.class))).thenReturn("my-view");
@@ -127,7 +127,7 @@ public class AgentStatusReportExecutorTest {
         PluginSettings pluginSettings = new PluginSettings();
 
         when(pluginRequest.getPluginSettings()).thenReturn(pluginSettings);
-        when(kubernetesClientFactory.kubernetes(pluginSettings)).thenReturn(client);
+        when(kubernetesClientFactory.client(pluginSettings)).thenReturn(client);
 
         when(builder.getTemplate("error.template.ftlh")).thenReturn(template);
         when(builder.build(eq(template), any(RuntimeException.class))).thenReturn("my-error-view");
@@ -149,7 +149,7 @@ public class AgentStatusReportExecutorTest {
         PluginSettings pluginSettings = new PluginSettings();
 
         when(pluginRequest.getPluginSettings()).thenReturn(pluginSettings);
-        when(kubernetesClientFactory.kubernetes(pluginSettings)).thenReturn(client);
+        when(kubernetesClientFactory.client(pluginSettings)).thenReturn(client);
 
         when(builder.getTemplate("error.template.ftlh")).thenReturn(template);
         when(builder.build(eq(template), any(RuntimeException.class))).thenReturn("my-error-view");

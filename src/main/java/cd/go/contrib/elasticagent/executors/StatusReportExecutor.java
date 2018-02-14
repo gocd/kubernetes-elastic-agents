@@ -48,7 +48,7 @@ public class StatusReportExecutor {
 
     public GoPluginApiResponse execute() throws Exception {
         LOG.info("[status-report] Generating status report");
-        KubernetesClient client = factory.kubernetes(pluginRequest.getPluginSettings());
+        KubernetesClient client = factory.client(pluginRequest.getPluginSettings());
         final KubernetesCluster kubernetesCluster = new KubernetesCluster(client);
         final Template template = statusReportViewBuilder.getTemplate("status-report.template.ftlh");
         final String statusReportView = statusReportViewBuilder.build(template, kubernetesCluster);

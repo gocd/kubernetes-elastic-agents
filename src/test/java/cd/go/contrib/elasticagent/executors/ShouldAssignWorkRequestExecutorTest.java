@@ -62,7 +62,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        when(factory.kubernetes(any(PluginSettings.class))).thenReturn(mockedClient);
+        when(factory.client(any(PluginSettings.class))).thenReturn(mockedClient);
         when(mockedClient.pods()).thenReturn(mockedOperation);
         when(mockedOperation.inNamespace(KUBERNETES_NAMESPACE)).thenReturn(mockedNamespaceOperation);
         when(mockedNamespaceOperation.create(any(Pod.class))).thenAnswer(new Answer<Pod>() {

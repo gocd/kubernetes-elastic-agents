@@ -23,6 +23,10 @@ public class PositiveNumberField extends Field {
 
     @Override
     public String doValidate(String input) {
+        if (required == false) {
+            return null;
+        }
+        
         try {
             if (Integer.parseInt(input) <= 0) {
                 return this.displayName + " must be a positive integer.";

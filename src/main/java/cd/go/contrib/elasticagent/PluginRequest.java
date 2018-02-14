@@ -53,11 +53,6 @@ public class PluginRequest {
         }
 
         PluginSettings pluginSettings = PluginSettings.fromJSON(response.responseBody());
-
-        if (pluginSettings == null) {
-            pluginSettings = PluginSettings.fromEnv();
-        }
-
         if (pluginSettings == null) {
             throw new PluginSettingsNotConfiguredException();
         }

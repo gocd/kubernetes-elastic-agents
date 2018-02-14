@@ -16,12 +16,11 @@
 
 package cd.go.contrib.elasticagent;
 
+import cd.go.contrib.elasticagent.model.AuthenticationStrategy;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Period;
 
-import static cd.go.contrib.elasticagent.executors.GetPluginConfigurationExecutor.*;
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
 
 public class PluginSettings {
@@ -31,29 +30,45 @@ public class PluginSettings {
 
     @Expose
     @SerializedName("auto_register_timeout")
-    private String autoRegisterTimeout;
+    private Integer autoRegisterTimeout = 10;
 
     @Expose
     @SerializedName("pending_pods_count")
-    private String pendingPodsCount;
+    private Integer maxPendingPods = 10;
+
+    @Expose
+    @SerializedName("authentication_strategy")
+    private String authenticationStrategy = AuthenticationStrategy.OAUTH_TOKEN.name();
+
+    @Expose
+    @SerializedName("oauth_token")
+    private String oauthToken;
 
     @Expose
     @SerializedName("kubernetes_cluster_url")
-    private String kubernetesClusterUrl;
+    private String clusterUrl;
 
     @Expose
     @SerializedName("kubernetes_cluster_ca_cert")
-    private String kubernetesClusterCACert;
+    private String clusterCACertData;
+
+    @Expose
+    @SerializedName("client_key_data")
+    private String clientKeyData;
+
+    @Expose
+    @SerializedName("client_cert_data")
+    private String clientCertData;
 
     private Period autoRegisterPeriod;
 
     public PluginSettings() {
     }
 
-    public PluginSettings(String goServerUrl, String clusterUrl, String clusterCACert) {
+    public PluginSettings(String goServerUrl, String clusterUrl, String clusterCACertData) {
         this.goServerUrl = goServerUrl;
-        this.kubernetesClusterUrl = clusterUrl;
-        this.kubernetesClusterCACert = clusterCACert;
+        this.clusterUrl = clusterUrl;
+        this.clusterCACertData = clusterCACertData;
     }
 
     public static PluginSettings fromJSON(String json) {
@@ -62,52 +77,45 @@ public class PluginSettings {
 
     public Period getAutoRegisterPeriod() {
         if (this.autoRegisterPeriod == null) {
-            this.autoRegisterPeriod = new Period().withMinutes(Integer.parseInt(getAutoRegisterTimeout()));
+            this.autoRegisterPeriod = new Period().withMinutes(getAutoRegisterTimeout());
         }
         return this.autoRegisterPeriod;
     }
 
-    String getAutoRegisterTimeout() {
-        if (autoRegisterTimeout == null) {
-            autoRegisterTimeout = "10";
-        }
+    Integer getAutoRegisterTimeout() {
         return autoRegisterTimeout;
     }
 
-    public Integer getMaximumPendingAgentsCount() {
-        if (pendingPodsCount == null) {
-            pendingPodsCount = "10";
-        }
-
-        return Integer.valueOf(pendingPodsCount);
+    public Integer getMaxPendingPods() {
+        return Integer.valueOf(maxPendingPods);
     }
 
     public String getGoServerUrl() {
         return goServerUrl;
     }
 
-    public String getKubernetesClusterUrl() {
-        return kubernetesClusterUrl;
+    public AuthenticationStrategy getAuthenticationStrategy() {
+        return AuthenticationStrategy.from(authenticationStrategy);
     }
 
-    public String getKubernetesClusterCACert() {
-        return kubernetesClusterCACert;
+    public String getOauthToken() {
+        return oauthToken;
     }
 
-    public void setGoServerUrl(String goServerUrl) {
-        this.goServerUrl = goServerUrl;
+    public String getClusterUrl() {
+        return clusterUrl;
     }
 
-    public static PluginSettings fromEnv() {
-        final String goServerUrl = System.getenv(GO_SERVER_URL.key());
-        final String clusterUrl = System.getenv(CLUSTER_URL.key());
-        final String clusterCACert = System.getenv(CLUSTER_CA_CERT.key());
+    public String getCaCertData() {
+        return clusterCACertData;
+    }
 
-        if (StringUtils.isAnyBlank(goServerUrl, clusterUrl, clusterCACert)) {
-            return null;
-        }
+    public String getClientKeyData() {
+        return clientKeyData;
+    }
 
-        return new PluginSettings(goServerUrl, clusterUrl, clusterCACert);
+    public String getClientCertData() {
+        return clientCertData;
     }
 
     @Override
@@ -120,23 +128,30 @@ public class PluginSettings {
         if (goServerUrl != null ? !goServerUrl.equals(that.goServerUrl) : that.goServerUrl != null) return false;
         if (autoRegisterTimeout != null ? !autoRegisterTimeout.equals(that.autoRegisterTimeout) : that.autoRegisterTimeout != null)
             return false;
-        if (pendingPodsCount != null ? !pendingPodsCount.equals(that.pendingPodsCount) : that.pendingPodsCount != null)
+        if (maxPendingPods != null ? !maxPendingPods.equals(that.maxPendingPods) : that.maxPendingPods != null)
             return false;
-        if (kubernetesClusterUrl != null ? !kubernetesClusterUrl.equals(that.kubernetesClusterUrl) : that.kubernetesClusterUrl != null)
+        if (authenticationStrategy != null ? !authenticationStrategy.equals(that.authenticationStrategy) : that.authenticationStrategy != null)
             return false;
-        if (kubernetesClusterCACert != null ? !kubernetesClusterCACert.equals(that.kubernetesClusterCACert) : that.kubernetesClusterCACert != null)
+        if (clusterUrl != null ? !clusterUrl.equals(that.clusterUrl) : that.clusterUrl != null) return false;
+        if (clusterCACertData != null ? !clusterCACertData.equals(that.clusterCACertData) : that.clusterCACertData != null)
             return false;
-        return autoRegisterPeriod != null ? autoRegisterPeriod.equals(that.autoRegisterPeriod) : that.autoRegisterPeriod == null;
+        if (oauthToken != null ? !oauthToken.equals(that.oauthToken) : that.oauthToken != null) return false;
+        if (clientKeyData != null ? !clientKeyData.equals(that.clientKeyData) : that.clientKeyData != null)
+            return false;
+        return clientCertData != null ? clientCertData.equals(that.clientCertData) : that.clientCertData == null;
     }
 
     @Override
     public int hashCode() {
         int result = goServerUrl != null ? goServerUrl.hashCode() : 0;
         result = 31 * result + (autoRegisterTimeout != null ? autoRegisterTimeout.hashCode() : 0);
-        result = 31 * result + (pendingPodsCount != null ? pendingPodsCount.hashCode() : 0);
-        result = 31 * result + (kubernetesClusterUrl != null ? kubernetesClusterUrl.hashCode() : 0);
-        result = 31 * result + (kubernetesClusterCACert != null ? kubernetesClusterCACert.hashCode() : 0);
-        result = 31 * result + (autoRegisterPeriod != null ? autoRegisterPeriod.hashCode() : 0);
+        result = 31 * result + (maxPendingPods != null ? maxPendingPods.hashCode() : 0);
+        result = 31 * result + (authenticationStrategy != null ? authenticationStrategy.hashCode() : 0);
+        result = 31 * result + (clusterUrl != null ? clusterUrl.hashCode() : 0);
+        result = 31 * result + (clusterCACertData != null ? clusterCACertData.hashCode() : 0);
+        result = 31 * result + (oauthToken != null ? oauthToken.hashCode() : 0);
+        result = 31 * result + (clientKeyData != null ? clientKeyData.hashCode() : 0);
+        result = 31 * result + (clientCertData != null ? clientCertData.hashCode() : 0);
         return result;
     }
 }

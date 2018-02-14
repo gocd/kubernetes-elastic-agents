@@ -56,28 +56,52 @@ public class GetPluginConfigurationExecutorTest {
                 "  \"auto_register_timeout\": {\n" +
                 "    \"display-name\": \"Agent auto-register timeout (in minutes)\",\n" +
                 "    \"default-value\": \"10\",\n" +
-                "    \"required\": true,\n" +
+                "    \"required\": false,\n" +
                 "    \"secure\": false,\n" +
                 "    \"display-order\": \"1\"\n" +
                 "  },\n" +
                 "  \"pending_pods_count\": {\n" +
                 "    \"display-name\": \"Maximum pending pods\",\n" +
                 "    \"default-value\": \"10\",\n" +
-                "    \"required\": true,\n" +
+                "    \"required\": false,\n" +
                 "    \"secure\": false,\n" +
                 "    \"display-order\": \"2\"\n" +
                 "  },\n" +
                 "  \"kubernetes_cluster_url\": {\n" +
                 "    \"display-name\": \"Cluster URL\",\n" +
+                "    \"required\": false,\n" +
+                "    \"secure\": false,\n" +
+                "    \"display-order\": \"5\"\n" +
+                "  },\n" +
+                "  \"kubernetes_cluster_ca_cert\": {\n" +
+                "    \"display-name\": \"Cluster ca certificate\",\n" +
+                "    \"required\": false,\n" +
+                "    \"secure\": true,\n" +
+                "    \"display-order\": \"6\"\n" +
+                "  },\n" +
+                "  \"authentication_strategy\": {\n" +
+                "    \"display-name\": \"Authentication strategy\",\n" +
                 "    \"required\": true,\n" +
                 "    \"secure\": false,\n" +
                 "    \"display-order\": \"3\"\n" +
                 "  },\n" +
-                "  \"kubernetes_cluster_ca_cert\": {\n" +
-                "    \"display-name\": \"Cluster ca-certificate\",\n" +
-                "    \"required\": true,\n" +
+                "  \"oauth_token\": {\n" +
+                "    \"display-name\": \"Oauth Token\",\n" +
+                "    \"required\": false,\n" +
                 "    \"secure\": true,\n" +
                 "    \"display-order\": \"4\"\n" +
+                "  },\n" +
+                "  \"client_key_data\": {\n" +
+                "    \"display-name\": \"Client key data\",\n" +
+                "    \"required\": false,\n" +
+                "    \"secure\": true,\n" +
+                "    \"display-order\": \"7\"\n" +
+                "  },\n" +
+                "  \"client_cert_data\": {\n" +
+                "    \"display-name\": \"client cert data\",\n" +
+                "    \"required\": false,\n" +
+                "    \"secure\": true,\n" +
+                "    \"display-order\": \"8\"\n" +
                 "  }\n" +
                 "}";
 

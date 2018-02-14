@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 ThoughtWorks, Inc.
+ * Copyright 2018 ThoughtWorks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagent;
+package cd.go.contrib.elasticagent.model;
 
-public abstract class BaseTest {
-    protected PluginSettings createSettings() {
-        return new PluginSettings("https://localhost:8154/go", null, null);
+import java.util.Arrays;
+
+public enum AuthenticationStrategy {
+    OAUTH_TOKEN, CLUSTER_CERTS;
+
+    public static AuthenticationStrategy from(String authenticationType) {
+        return Arrays.stream(values())
+                .filter(t -> t.name().equalsIgnoreCase(authenticationType))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No such authentication strategy available. Valid authentication strategies are " + Arrays.asList(values())));
     }
 }

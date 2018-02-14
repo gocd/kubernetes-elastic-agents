@@ -57,8 +57,8 @@ public class KubernetesAgentInstancesTest {
         initMocks(this);
         testProperties = new HashMap<>();
         when(mockCreateAgentRequest.properties()).thenReturn(testProperties);
-        when(mockPluginSettings.getMaximumPendingAgentsCount()).thenReturn(10);
-        when(factory.kubernetes(mockPluginSettings)).thenReturn(mockKubernetesClient);
+        when(mockPluginSettings.getMaxPendingPods()).thenReturn(10);
+        when(factory.client(mockPluginSettings)).thenReturn(mockKubernetesClient);
         JobIdentifier jobId = new JobIdentifier("test", 1L, "Test pipeline", "test name", "1", "test job", 100L);
         when(mockCreateAgentRequest.jobIdentifier()).thenReturn(jobId);
     }
@@ -108,7 +108,7 @@ public class KubernetesAgentInstancesTest {
     @Test
     public void shouldNotCreatePodsWhenOutstandingLimitOfPendingKubernetesPodsHasReached() throws Exception {
         //set maximum pending pod count to 1
-        when(mockPluginSettings.getMaximumPendingAgentsCount()).thenReturn(1);
+        when(mockPluginSettings.getMaxPendingPods()).thenReturn(1);
 
         //pending kubernetes pod
         KubernetesInstance kubernetesInstance = new KubernetesInstance(new DateTime(), "test", "test-agent", new HashMap<>(), 100L, PodState.Pending);

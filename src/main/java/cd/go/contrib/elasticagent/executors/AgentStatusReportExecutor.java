@@ -39,7 +39,7 @@ public class AgentStatusReportExecutor {
         String elasticAgentId = request.getElasticAgentId();
         JobIdentifier jobIdentifier = request.getJobIdentifier();
         LOG.info(String.format("[status-report] Generating status report for agent: %s with job: %s", elasticAgentId, jobIdentifier));
-        KubernetesClient client = factory.kubernetes(pluginRequest.getPluginSettings());
+        KubernetesClient client = factory.client(pluginRequest.getPluginSettings());
 
         try {
             Pod pod;

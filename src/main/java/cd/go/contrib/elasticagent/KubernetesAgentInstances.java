@@ -58,7 +58,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
 
     @Override
     public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) throws Exception {
-        final Integer maxAllowedContainers = settings.getMaximumPendingAgentsCount();
+        final Integer maxAllowedContainers = settings.getMaxPendingPods();
         synchronized (instances) {
             doWithLockOnSemaphore(new SetupSemaphore(maxAllowedContainers, instances, semaphore));
 
@@ -84,7 +84,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
             return null;
         }
 
-        KubernetesClient client = factory.kubernetes(settings);
+        KubernetesClient client = factory.client(settings);
         KubernetesInstance instance = kubernetesInstanceFactory.create(request, settings, client, pluginRequest, isUsingPodYaml(request));
         register(instance);
 
@@ -109,7 +109,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     public void terminate(String agentId, PluginSettings settings) throws Exception {
         KubernetesInstance instance = instances.get(agentId);
         if (instance != null) {
-            KubernetesClient client = factory.kubernetes(settings);
+            KubernetesClient client = factory.client(settings);
             instance.terminate(client);
         } else {
             LOG.warn("Requested to terminate an instance that does not exist " + agentId);
@@ -149,7 +149,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     @Override
     public void refreshAll(PluginRequest pluginRequest) throws Exception {
         LOG.debug("[Refresh Instances]. Syncing k8s elastic agent pod information");
-        KubernetesClient client = factory.kubernetes(pluginRequest.getPluginSettings());
+        KubernetesClient client = factory.client(pluginRequest.getPluginSettings());
         PodList list = client.pods().inNamespace(Constants.KUBERNETES_NAMESPACE).list();
 
         for (Pod pod : list.getItems()) {
@@ -174,7 +174,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     private KubernetesAgentInstances unregisteredAfterTimeout(PluginSettings settings, Agents knownAgents) throws Exception {
         Period period = settings.getAutoRegisterPeriod();
         KubernetesAgentInstances unregisteredInstances = new KubernetesAgentInstances();
-        KubernetesClient client = factory.kubernetes(settings);
+        KubernetesClient client = factory.client(settings);
 
         for (String instanceName : instances.keySet()) {
             if (knownAgents.containsAgentWithId(instanceName)) {
