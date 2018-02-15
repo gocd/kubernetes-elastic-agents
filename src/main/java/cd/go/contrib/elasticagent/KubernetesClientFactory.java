@@ -20,6 +20,8 @@ import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
+import java.util.Base64;
+
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static cd.go.contrib.elasticagent.model.AuthenticationStrategy.CLUSTER_CERTS;
 import static cd.go.contrib.elasticagent.model.AuthenticationStrategy.OAUTH_TOKEN;
@@ -58,10 +60,14 @@ public class KubernetesClientFactory {
             configBuilder
                     .withMasterUrl(pluginSettings.getClusterUrl())
                     .withCaCertData(pluginSettings.getCaCertData())
-                    .withClientKeyData(pluginSettings.getClientKeyData())
+                    .withClientKeyData(encodeToBase64(pluginSettings.getClientKeyData()))
                     .withClientCertData(pluginSettings.getClientCertData());
         }
 
         return new DefaultKubernetesClient(configBuilder.build());
+    }
+
+    private String encodeToBase64(String stringToEncode) {
+        return Base64.getEncoder().encodeToString(stringToEncode.getBytes());
     }
 }
