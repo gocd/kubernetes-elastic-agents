@@ -34,6 +34,7 @@ import java.util.concurrent.Semaphore;
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.SPECIFIED_USING_POD_CONFIGURATION;
 import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
+import static java.text.MessageFormat.format;
 
 public class KubernetesAgentInstances implements AgentInstances<KubernetesInstance> {
     private final ConcurrentHashMap<String, KubernetesInstance> instances = new ConcurrentHashMap<>();
@@ -65,7 +66,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
             if (semaphore.tryAcquire()) {
                 return createKubernetesInstance(request, settings, pluginRequest);
             } else {
-                LOG.warn(String.format("The number of pending kubernetes pods is currently at the maximum permissible limit (%d). Total kubernetes pods (%d). Not creating any more containers.", maxAllowedContainers, instances.size()));
+                LOG.warn(format("The number of pending kubernetes pods is currently at the maximum permissible limit ({0}). Total kubernetes pods ({1}). Not creating any more containers.", maxAllowedContainers, instances.size()));
                 return null;
             }
         }
@@ -77,10 +78,10 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         }
     }
 
-    private KubernetesInstance createKubernetesInstance(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) throws Exception {
+    private KubernetesInstance createKubernetesInstance(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) {
         JobIdentifier jobIdentifier = request.jobIdentifier();
         if (isAgentCreatedForJob(jobIdentifier.getJobId())) {
-            LOG.warn("[Create Agent Request] Request for creating an agent for Job Identifier [" + jobIdentifier + "] has already been scheduled. Skipping current request.");
+            LOG.warn(format("[Create Agent Request] Request for creating an agent for Job Identifier [{0}] has already been scheduled. Skipping current request.", jobIdentifier));
             return null;
         }
 
@@ -112,7 +113,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
             KubernetesClient client = factory.client(settings);
             instance.terminate(client);
         } else {
-            LOG.warn("Requested to terminate an instance that does not exist " + agentId);
+            LOG.warn(format("Requested to terminate an instance that does not exist {0}.", agentId));
         }
         instances.remove(agentId);
     }
@@ -124,7 +125,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
             return;
         }
 
-        LOG.warn("Terminating instances that did not register " + toTerminate.instances.keySet());
+        LOG.warn(format("Terminating instances that did not register {0}.", toTerminate.instances.keySet()));
         for (KubernetesInstance container : toTerminate.instances.values()) {
             terminate(container.name(), settings);
         }
@@ -147,8 +148,8 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     }
 
     @Override
-    public void refreshAll(PluginRequest pluginRequest) throws Exception {
-        LOG.debug("[Refresh Instances]. Syncing k8s elastic agent pod information");
+    public void refreshAll(PluginRequest pluginRequest) {
+        LOG.debug("[Refresh Instances]. Syncing k8s elastic agent pod information.");
         KubernetesClient client = factory.client(pluginRequest.getPluginSettings());
         PodList list = client.pods().inNamespace(Constants.KUBERNETES_NAMESPACE).list();
 

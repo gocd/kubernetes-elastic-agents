@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
+import static java.text.MessageFormat.format;
 
 public class AgentStatusReportExecutor {
     private final AgentStatusReportRequest request;
@@ -38,7 +39,7 @@ public class AgentStatusReportExecutor {
     public GoPluginApiResponse execute() throws Exception {
         String elasticAgentId = request.getElasticAgentId();
         JobIdentifier jobIdentifier = request.getJobIdentifier();
-        LOG.info(String.format("[status-report] Generating status report for agent: %s with job: %s", elasticAgentId, jobIdentifier));
+        LOG.info(format("[status-report] Generating status report for agent: {0} with job: {1}", elasticAgentId, jobIdentifier));
         KubernetesClient client = factory.client(pluginRequest.getPluginSettings());
 
         try {
@@ -73,7 +74,7 @@ public class AgentStatusReportExecutor {
                     .withLabel(Constants.JOB_ID_LABEL_KEY, String.valueOf(jobIdentifier.getJobId()))
                     .list().getItems().get(0);
         } catch (Exception e) {
-            throw new RuntimeException(String.format("Can not find a running Pod for the provided job identifier '%s'", jobIdentifier));
+            throw new RuntimeException(format("Can not find a running Pod for the provided job identifier ''{0}", jobIdentifier));
         }
     }
 
@@ -85,6 +86,6 @@ public class AgentStatusReportExecutor {
             }
         }
 
-        throw new RuntimeException(String.format("Can not find a running Pod for the provided elastic agent id '%s'", elasticAgentId));
+        throw new RuntimeException(format("Can not find a running Pod for the provided elastic agent id ''{0}", elasticAgentId));
     }
 }

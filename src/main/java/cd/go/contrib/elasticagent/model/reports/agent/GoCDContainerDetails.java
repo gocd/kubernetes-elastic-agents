@@ -8,6 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.text.MessageFormat.format;
+
 public class GoCDContainerDetails {
     private String name;
     private String image;
@@ -25,7 +27,7 @@ public class GoCDContainerDetails {
         containerDetails.imagePullPolicy = container.getImagePullPolicy();
 
         containerDetails.command = container.getCommand();
-        containerDetails.env = new ArrayList<EnvironmentVariable>();
+        containerDetails.env = new ArrayList<>();
         for (EnvVar var : container.getEnv()) {
             containerDetails.env.add(new EnvironmentVariable(var.getName(), var.getValue()));
         }
@@ -83,7 +85,7 @@ public class GoCDContainerDetails {
 
         @Override
         public String toString() {
-            return String.format("%s: %s", getName(), getValue());
+            return format("{0}: {1}", getName(), getValue());
         }
     }
 }

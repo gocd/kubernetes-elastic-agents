@@ -18,13 +18,13 @@ package cd.go.contrib.elasticagent;
 
 import com.thoughtworks.go.plugin.api.response.GoApiResponse;
 
-import static java.lang.String.format;
+import static java.text.MessageFormat.format;
 
 public class ServerRequestFailedException extends RuntimeException {
 
     private ServerRequestFailedException(GoApiResponse response, String request) {
         super(format(
-                "The server sent an unexpected status code %d with the response body %s when it was sent a %s message",
+                "The server sent an unexpected status code {0} with the response body {1} when it was sent a {2} message",
                 response.responseCode(), response.responseBody(), request
         ));
     }

@@ -41,8 +41,8 @@ import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PO
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PRIVILEGED;
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
 import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
-import static java.lang.String.format;
 import static java.lang.String.valueOf;
+import static java.text.MessageFormat.format;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class KubernetesInstanceFactory {
@@ -55,7 +55,7 @@ public class KubernetesInstanceFactory {
     }
 
     private KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
-        String containerName = format("%s-%s", KUBERNETES_POD_NAME_PREFIX, UUID.randomUUID().toString());
+        String containerName = format("{0}-{1}", KUBERNETES_POD_NAME_PREFIX, UUID.randomUUID().toString());
 
         Container container = new Container();
         container.setName(containerName);
@@ -101,13 +101,13 @@ public class KubernetesInstanceFactory {
         String maxMemory = request.properties().get("MaxMemory");
         if (StringUtils.isNotBlank(maxMemory)) {
             Size mem = Size.parse(maxMemory);
-            LOG.debug(format("[Create Agent] Setting memory resource limit on k8s pod:%s", new Quantity(valueOf(mem.toMegabytes()), "M")));
+            LOG.debug(format("[Create Agent] Setting memory resource limit on k8s pod: {0}.", new Quantity(valueOf(mem.toMegabytes()), "M")));
             limits.put("memory", new Quantity(valueOf(mem.toBytes())));
         }
 
         String maxCPU = request.properties().get("MaxCPU");
         if (StringUtils.isNotBlank(maxCPU)) {
-            LOG.debug(format("[Create Agent] Setting cpu resource limit on k8s pod:%s", new Quantity(maxCPU)));
+            LOG.debug(format("[Create Agent] Setting cpu resource limit on k8s pod: {0}.", new Quantity(maxCPU)));
             limits.put("cpu", new Quantity(maxCPU));
         }
 
@@ -130,7 +130,7 @@ public class KubernetesInstanceFactory {
     }
 
     private KubernetesInstance createKubernetesPod(KubernetesClient client, Pod elasticAgentPod) {
-        LOG.info(format("[Create Agent] Creating K8s pod with spec:%s", elasticAgentPod.toString()));
+        LOG.info(format("[Create Agent] Creating K8s pod with spec: {0}.", elasticAgentPod.toString()));
         Pod pod = client.pods().inNamespace(KUBERNETES_NAMESPACE).create(elasticAgentPod);
         return fromKubernetesPod(pod);
     }
