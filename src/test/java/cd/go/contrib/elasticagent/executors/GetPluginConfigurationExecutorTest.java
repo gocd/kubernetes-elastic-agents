@@ -69,39 +69,21 @@ public class GetPluginConfigurationExecutorTest {
                 "  },\n" +
                 "  \"kubernetes_cluster_url\": {\n" +
                 "    \"display-name\": \"Cluster URL\",\n" +
-                "    \"required\": false,\n" +
+                "    \"required\": true,\n" +
                 "    \"secure\": false,\n" +
-                "    \"display-order\": \"5\"\n" +
+                "    \"display-order\": \"4\"\n" +
                 "  },\n" +
                 "  \"kubernetes_cluster_ca_cert\": {\n" +
                 "    \"display-name\": \"Cluster ca certificate\",\n" +
                 "    \"required\": false,\n" +
                 "    \"secure\": true,\n" +
-                "    \"display-order\": \"6\"\n" +
-                "  },\n" +
-                "  \"authentication_strategy\": {\n" +
-                "    \"display-name\": \"Authentication strategy\",\n" +
-                "    \"required\": true,\n" +
-                "    \"secure\": false,\n" +
-                "    \"display-order\": \"3\"\n" +
+                "    \"display-order\": \"5\"\n" +
                 "  },\n" +
                 "  \"oauth_token\": {\n" +
-                "    \"display-name\": \"Oauth Token\",\n" +
-                "    \"required\": false,\n" +
+                "    \"display-name\": \"Oauth token\",\n" +
+                "    \"required\": true,\n" +
                 "    \"secure\": true,\n" +
-                "    \"display-order\": \"4\"\n" +
-                "  },\n" +
-                "  \"client_key_data\": {\n" +
-                "    \"display-name\": \"Client key data\",\n" +
-                "    \"required\": false,\n" +
-                "    \"secure\": true,\n" +
-                "    \"display-order\": \"7\"\n" +
-                "  },\n" +
-                "  \"client_cert_data\": {\n" +
-                "    \"display-name\": \"client cert data\",\n" +
-                "    \"required\": false,\n" +
-                "    \"secure\": true,\n" +
-                "    \"display-order\": \"8\"\n" +
+                "    \"display-order\": \"3\"\n" +
                 "  }\n" +
                 "}";
 

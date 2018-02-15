@@ -51,11 +51,7 @@ public class GetViewRequestExecutorTest {
             final Field field = GetPluginConfigurationExecutor.FIELDS.get(key);
 
             final Elements inputFieldForKey = document.getElementsByAttributeValue("ng-model", field.key());
-            if (field.key().equalsIgnoreCase("authentication_strategy")) {
-                assertThat(field.key(), inputFieldForKey, hasSize(2));
-            } else {
-                assertThat(field.key(), inputFieldForKey, hasSize(1));
-            }
+            assertThat(field.key(), inputFieldForKey, hasSize(1));
 
 
             final Elements spanToShowError = document.getElementsByAttributeValue("ng-show", "GOINPUTNAME[" + field.key() + "].$error.server");
@@ -65,6 +61,6 @@ public class GetViewRequestExecutorTest {
         }
 
         final Elements inputs = document.select("textarea,input[type=text],select,input[type=radio]");
-        assertThat(inputs, hasSize(GetPluginConfigurationExecutor.FIELDS.size() + 1)); // Two radio for authentication_strategy
+        assertThat(inputs, hasSize(GetPluginConfigurationExecutor.FIELDS.size()));
     }
 }

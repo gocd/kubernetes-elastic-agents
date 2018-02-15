@@ -16,7 +16,6 @@
 
 package cd.go.contrib.elasticagent;
 
-import cd.go.contrib.elasticagent.model.AuthenticationStrategy;
 import com.google.gson.Gson;
 import org.junit.Test;
 
@@ -35,23 +34,17 @@ public class PluginSettingsTest {
         pluginSettingsMap.put("go_server_url", "https://foo.go.cd/go");
         pluginSettingsMap.put("auto_register_timeout", "13");
         pluginSettingsMap.put("pending_pods_count", 14);
-        pluginSettingsMap.put("authentication_strategy", "ClUsTeR_certs");
         pluginSettingsMap.put("kubernetes_cluster_url", "https://cloud.example.com");
         pluginSettingsMap.put("oauth_token", "foo-token");
         pluginSettingsMap.put("kubernetes_cluster_ca_cert", "foo-ca-certs");
-        pluginSettingsMap.put("client_key_data", "client-key");
-        pluginSettingsMap.put("client_cert_data", "client-cert");
 
         PluginSettings pluginSettings = PluginSettings.fromJSON(new Gson().toJson(pluginSettingsMap));
 
         assertThat(pluginSettings.getGoServerUrl(), is("https://foo.go.cd/go"));
         assertThat(pluginSettings.getAutoRegisterTimeout(), is(13));
         assertThat(pluginSettings.getMaxPendingPods(), is(14));
-        assertThat(pluginSettings.getAuthenticationStrategy(), is(AuthenticationStrategy.CLUSTER_CERTS));
         assertThat(pluginSettings.getClusterUrl(), is("https://cloud.example.com"));
         assertThat(pluginSettings.getCaCertData(), is("foo-ca-certs"));
-        assertThat(pluginSettings.getClientKeyData(), is("client-key"));
-        assertThat(pluginSettings.getClientCertData(), is("client-cert"));
         assertThat(pluginSettings.getOauthToken(), is("foo-token"));
 
     }
@@ -63,7 +56,6 @@ public class PluginSettingsTest {
         assertNull(pluginSettings.getGoServerUrl());
         assertThat(pluginSettings.getAutoRegisterTimeout(), is(10));
         assertThat(pluginSettings.getMaxPendingPods(), is(10));
-        assertThat(pluginSettings.getAuthenticationStrategy(), is(AuthenticationStrategy.OAUTH_TOKEN));
         assertNull(pluginSettings.getClusterUrl());
         assertNull(pluginSettings.getCaCertData());
     }

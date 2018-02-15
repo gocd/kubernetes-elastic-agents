@@ -20,11 +20,7 @@ import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
-import java.util.Base64;
-
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
-import static cd.go.contrib.elasticagent.model.AuthenticationStrategy.CLUSTER_CERTS;
-import static cd.go.contrib.elasticagent.model.AuthenticationStrategy.OAUTH_TOKEN;
 import static java.text.MessageFormat.format;
 
 public class KubernetesClientFactory {
@@ -45,29 +41,16 @@ public class KubernetesClientFactory {
         LOG.debug(format("Creating a new client because {0}.", (client == null) ? "client is null" : "plugin setting is changed"));
         this.pluginSettings = pluginSettings;
         this.client = createClientFor(pluginSettings);
-        LOG.debug(format("New client is created using authentication strategy {0}.", pluginSettings.getAuthenticationStrategy()));
+        LOG.debug("New client is created.");
         return this.client;
     }
 
     private KubernetesClient createClientFor(PluginSettings pluginSettings) {
-        LOG.debug(format("Creating config using authentication strategy {0}.", pluginSettings.getAuthenticationStrategy().name()));
-        final ConfigBuilder configBuilder = new ConfigBuilder();
-
-        if (pluginSettings.getAuthenticationStrategy() == OAUTH_TOKEN) {
-            configBuilder.withOauthToken(pluginSettings.getOauthToken());
-
-        } else if (pluginSettings.getAuthenticationStrategy() == CLUSTER_CERTS) {
-            configBuilder
-                    .withMasterUrl(pluginSettings.getClusterUrl())
-                    .withCaCertData(pluginSettings.getCaCertData())
-                    .withClientKeyData(encodeToBase64(pluginSettings.getClientKeyData()))
-                    .withClientCertData(pluginSettings.getClientCertData());
-        }
+        final ConfigBuilder configBuilder = new ConfigBuilder()
+                .withOauthToken(pluginSettings.getOauthToken())
+                .withMasterUrl(pluginSettings.getClusterUrl())
+                .withCaCertData(pluginSettings.getCaCertData());
 
         return new DefaultKubernetesClient(configBuilder.build());
-    }
-
-    private String encodeToBase64(String stringToEncode) {
-        return Base64.getEncoder().encodeToString(stringToEncode.getBytes());
     }
 }

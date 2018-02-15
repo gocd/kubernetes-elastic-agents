@@ -78,14 +78,14 @@
 	</div>
 
 	<div class="row">
-		<label>Agent auto-register timeout (in minutes)<span class='asterix'>*</span></label>
+		<label>Agent auto-register timeout (in minutes)</label>
 		<input type="text" ng-model="auto_register_timeout" ng-required="true"/>
 		<span class="form_error" ng-show="GOINPUTNAME[auto_register_timeout].$error.server">{{GOINPUTNAME[auto_register_timeout].$error.server}}</span>
 		<label class="form-help-content">Defaults to <code>10 minutes</code>.</label>
 	</div>
 
 	<div class="row">
-		<label>Maximum pending pods<span class='asterix'>*</span></label>
+		<label>Maximum pending pods</label>
 		<input type="text" ng-model="pending_pods_count" ng-required="true"/>
 		<span class="form_error" ng-show="GOINPUTNAME[pending_pods_count].$error.server">{{GOINPUTNAME[pending_pods_count].$error.server}}</span>
 		<label class="form-help-content">Defaults to <code>10 pods</code>.</label>
@@ -94,68 +94,34 @@
 	<fieldset>
 		<legend>Cluster credentials</legend>
 		<div class="row">
-			<div class="columns small-3 medium-2 larger-2 no-padding">
-				<label>Authentication Strategy</label>
-			</div>
-			<div class="columns small-9 medium-10 larger-10 no-padding"
-				 ng-init="authentication_strategy = (authentication_strategy || 'OAUTH_TOKEN')">
-				<input type="radio" ng-model="authentication_strategy" value="OAUTH_TOKEN" id="oauth-token"
-					   ng-checked="(authentication_strategy == 'OAUTH_TOKEN')"/>
-				<label for="oauth-token">OAuth token</label>
-
-				<input type="radio" ng-model="authentication_strategy" value="CLUSTER_CERTS"
-					   id="cluster-certs"/>
-				<label for="cluster-certs">Cluster credentials</label>
-				<span class="form_error form-error" ng-show="GOINPUTNAME[authentication_strategy].$error.server">
-					{{GOINPUTNAME[authentication_strategy].$error.server}}
-				</span>
-			</div>
+			<label>Cluster URL<span class='asterix'>*</span></label>
+			<input type="text" ng-model="kubernetes_cluster_url" ng-required="true"/>
+			<span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_url].$error.server">{{GOINPUTNAME[kubernetes_cluster_url].$error.server}}</span>
+			<label class="form-help-content">
+				Kubernetes Cluster URL. Can be obtained by running <code>kubectl cluster-info</code>
+			</label>
 		</div>
 
-		<div ng-show="authentication_strategy == 'OAUTH_TOKEN'" class="row">
+		<div class="row">
 			<label>OAuth token
 				<span class='asterix'>*</span>
 			</label>
 			<textarea rows="5" ng-model="oauth_token"></textarea>
 			<span class="form_error form-error" ng-show="GOINPUTNAME[oauth_token].$error.server">{{GOINPUTNAME[oauth_token].$error.server}}</span>
+			<label class="form-help-content">
+				Get the service account token by running following command <code>kubectl describe secret
+				TOKEN_NAME</code> and copy the value of token here.
+			</label>
 		</div>
 
-		<div ng-show="authentication_strategy == 'CLUSTER_CERTS'">
-			<div class="row">
-				<label>Cluster URL<span class='asterix'>*</span></label>
-				<input type="text" ng-model="kubernetes_cluster_url" ng-required="true"/>
-				<span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_url].$error.server">{{GOINPUTNAME[kubernetes_cluster_url].$error.server}}</span>
-				<label class="form-help-content">
-					Kubernetes Cluster URL. Can be obtained by running <code>kubectl cluster-info</code>
-				</label>
-			</div>
 
-			<div class="row">
-				<label>Cluster ca certificate data<span class='asterix'>*</span></label>
-				<textarea ng-model="kubernetes_cluster_ca_cert" rows="7"></textarea>
-				<span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server">{{GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server}}</span>
-				<label class="form-help-content">
-					Kubernetes cluster ca certificate data.
-				</label>
-			</div>
-
-			<div class="row">
-				<label>Cluster client key data<span class='asterix'>*</span></label>
-				<textarea ng-model="client_key_data" rows="7"></textarea>
-				<span class="form_error" ng-show="GOINPUTNAME[client_key_data].$error.server">{{GOINPUTNAME[client_key_data].$error.server}}</span>
-				<label class="form-help-content">
-					Kubernetes cluster client key data.
-				</label>
-			</div>
-
-			<div class="row">
-				<label>Cluster client key<span class='asterix'>*</span></label>
-				<textarea ng-model="client_cert_data" rows="7"></textarea>
-				<span class="form_error" ng-show="GOINPUTNAME[client_cert_data].$error.server">{{GOINPUTNAME[client_cert_data].$error.server}}</span>
-				<label class="form-help-content">
-					Kubernetes cluster client certificate data.
-				</label>
-			</div>
+		<div class="row">
+			<label>Cluster ca certificate data<span class='asterix'>*</span></label>
+			<textarea ng-model="kubernetes_cluster_ca_cert" rows="7"></textarea>
+			<span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server">{{GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server}}</span>
+			<label class="form-help-content">
+				Kubernetes cluster ca certificate data.
+			</label>
 		</div>
 	</fieldset>
 </div>

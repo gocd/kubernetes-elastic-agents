@@ -16,7 +16,6 @@
 
 package cd.go.contrib.elasticagent;
 
-import cd.go.contrib.elasticagent.model.AuthenticationStrategy;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import org.joda.time.Period;
@@ -37,28 +36,16 @@ public class PluginSettings {
     private Integer maxPendingPods = 10;
 
     @Expose
-    @SerializedName("authentication_strategy")
-    private String authenticationStrategy = AuthenticationStrategy.OAUTH_TOKEN.name();
+    @SerializedName("kubernetes_cluster_url")
+    private String clusterUrl;
 
     @Expose
     @SerializedName("oauth_token")
     private String oauthToken;
 
     @Expose
-    @SerializedName("kubernetes_cluster_url")
-    private String clusterUrl;
-
-    @Expose
     @SerializedName("kubernetes_cluster_ca_cert")
     private String clusterCACertData;
-
-    @Expose
-    @SerializedName("client_key_data")
-    private String clientKeyData;
-
-    @Expose
-    @SerializedName("client_cert_data")
-    private String clientCertData;
 
     private Period autoRegisterPeriod;
 
@@ -94,10 +81,6 @@ public class PluginSettings {
         return goServerUrl;
     }
 
-    public AuthenticationStrategy getAuthenticationStrategy() {
-        return AuthenticationStrategy.from(authenticationStrategy);
-    }
-
     public String getOauthToken() {
         return oauthToken;
     }
@@ -108,14 +91,6 @@ public class PluginSettings {
 
     public String getCaCertData() {
         return clusterCACertData;
-    }
-
-    public String getClientKeyData() {
-        return clientKeyData;
-    }
-
-    public String getClientCertData() {
-        return clientCertData;
     }
 
     @Override
@@ -130,15 +105,9 @@ public class PluginSettings {
             return false;
         if (maxPendingPods != null ? !maxPendingPods.equals(that.maxPendingPods) : that.maxPendingPods != null)
             return false;
-        if (authenticationStrategy != null ? !authenticationStrategy.equals(that.authenticationStrategy) : that.authenticationStrategy != null)
-            return false;
         if (clusterUrl != null ? !clusterUrl.equals(that.clusterUrl) : that.clusterUrl != null) return false;
-        if (clusterCACertData != null ? !clusterCACertData.equals(that.clusterCACertData) : that.clusterCACertData != null)
-            return false;
         if (oauthToken != null ? !oauthToken.equals(that.oauthToken) : that.oauthToken != null) return false;
-        if (clientKeyData != null ? !clientKeyData.equals(that.clientKeyData) : that.clientKeyData != null)
-            return false;
-        return clientCertData != null ? clientCertData.equals(that.clientCertData) : that.clientCertData == null;
+        return clusterCACertData != null ? clusterCACertData.equals(that.clusterCACertData) : that.clusterCACertData == null;
     }
 
     @Override
@@ -146,12 +115,9 @@ public class PluginSettings {
         int result = goServerUrl != null ? goServerUrl.hashCode() : 0;
         result = 31 * result + (autoRegisterTimeout != null ? autoRegisterTimeout.hashCode() : 0);
         result = 31 * result + (maxPendingPods != null ? maxPendingPods.hashCode() : 0);
-        result = 31 * result + (authenticationStrategy != null ? authenticationStrategy.hashCode() : 0);
         result = 31 * result + (clusterUrl != null ? clusterUrl.hashCode() : 0);
-        result = 31 * result + (clusterCACertData != null ? clusterCACertData.hashCode() : 0);
         result = 31 * result + (oauthToken != null ? oauthToken.hashCode() : 0);
-        result = 31 * result + (clientKeyData != null ? clientKeyData.hashCode() : 0);
-        result = 31 * result + (clientCertData != null ? clientCertData.hashCode() : 0);
+        result = 31 * result + (clusterCACertData != null ? clusterCACertData.hashCode() : 0);
         return result;
     }
 }

@@ -56,8 +56,12 @@ public class ValidateConfigurationExecutorTest {
         assertThat(response.responseCode(), is(200));
         JSONAssert.assertEquals("[\n" +
                 "  {\n" +
-                "    \"message\": \"Authentication strategy must not be blank.\",\n" +
-                "    \"key\": \"authentication_strategy\"\n" +
+                "    \"message\": \"Cluster URL must not be blank.\",\n" +
+                "    \"key\": \"kubernetes_cluster_url\"\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"message\": \"Oauth token must not be blank.\",\n" +
+                "    \"key\": \"oauth_token\"\n" +
                 "  }\n" +
                 "]", response.responseBody(), true);
     }
@@ -67,7 +71,6 @@ public class ValidateConfigurationExecutorTest {
         ValidatePluginSettings settings = new ValidatePluginSettings();
         settings.put("go_server_url", "https://ci.example.com/go");
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
-        settings.put("authentication_strategy", "oauth_token");
         settings.put("oauth_token", "some-token");
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, null).execute();
 
@@ -80,7 +83,6 @@ public class ValidateConfigurationExecutorTest {
         ValidatePluginSettings settings = new ValidatePluginSettings();
         serverInfo.setSecureSiteUrl(null);
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
-        settings.put("authentication_strategy", "oauth_token");
         settings.put("oauth_token", "some-token");
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, pluginRequest).execute();
 
@@ -98,7 +100,6 @@ public class ValidateConfigurationExecutorTest {
         ValidatePluginSettings settings = new ValidatePluginSettings();
         settings.put("go_server_url", "foo.com/go(");
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
-        settings.put("authentication_strategy", "oauth_token");
         settings.put("oauth_token", "some-token");
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, pluginRequest).execute();
 
@@ -116,7 +117,6 @@ public class ValidateConfigurationExecutorTest {
         ValidatePluginSettings settings = new ValidatePluginSettings();
         settings.put("go_server_url", "https://foo.com");
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
-        settings.put("authentication_strategy", "oauth_token");
         settings.put("oauth_token", "some-token");
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, pluginRequest).execute();
 
@@ -134,7 +134,6 @@ public class ValidateConfigurationExecutorTest {
         ValidatePluginSettings settings = new ValidatePluginSettings();
         settings.put("go_server_url", "https://foo.com/go");
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
-        settings.put("authentication_strategy", "oauth_token");
 
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, pluginRequest).execute();
 
@@ -142,34 +141,8 @@ public class ValidateConfigurationExecutorTest {
 
         JSONAssert.assertEquals("[" +
                 "  {\n" +
-                "    \"message\": \"Oauth Token is required when authentication strategy is set to OAUTH_TOKEN.\",\n" +
+                "    \"message\": \"Oauth token must not be blank.\",\n" +
                 "    \"key\": \"oauth_token\"\n" +
-                "  }\n" +
-                "]", response.responseBody(), true);
-    }
-
-    @Test
-    public void shouldValidateCertificatesWhenAuthenticationStrategyIsSetToClusterCerts() throws JSONException {
-        ValidatePluginSettings settings = new ValidatePluginSettings();
-        settings.put("go_server_url", "https://foo.com/go");
-        settings.put("kubernetes_cluster_url", "https://cluster.example.com");
-        settings.put("authentication_strategy", "cluster_certs");
-
-        GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, pluginRequest).execute();
-
-        assertThat(response.responseCode(), is(200));
-        JSONAssert.assertEquals("[\n" +
-                "  {\n" +
-                "    \"message\": \"Cluster ca certificate is required when authentication strategy is set to CLUSTER_CERTS.\",\n" +
-                "    \"key\": \"kubernetes_cluster_ca_cert\"\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"message\": \"Client key data is required when authentication strategy is set to CLUSTER_CERTS.\",\n" +
-                "    \"key\": \"client_key_data\"\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"message\": \"client cert data is required when authentication strategy is set to CLUSTER_CERTS.\",\n" +
-                "    \"key\": \"client_cert_data\"\n" +
                 "  }\n" +
                 "]", response.responseBody(), true);
     }
