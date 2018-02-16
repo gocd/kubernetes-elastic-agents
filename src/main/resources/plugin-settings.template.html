@@ -15,94 +15,122 @@
   -->
 
 <div data-plugin-style-id="kubernetes-plugin">
-    <style>
-        [data-plugin-style-id="kubernetes-plugin"] fieldset {
-            padding: 20px;
-            background-color: transparent;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-        }
+	<style>
+		[data-plugin-style-id="kubernetes-plugin"] .row {
+			width:  100%;
+			margin: auto;
+		}
 
-        [data-plugin-style-id="kubernetes-plugin"] fieldset legend {
-            font-size: 0.875rem;
-            background-color: #fff;
-            padding: 5px;
-        }
+		[data-plugin-style-id="kubernetes-plugin"] .no-padding {
+			padding: 0 !important;
+		}
 
-        [data-plugin-style-id="kubernetes-plugin"] .form-help-content {
-            color: #666;
-            font-style: italic;
-            clear: both;
-            font-size: 0.82rem;
-        }
+		[data-plugin-style-id="kubernetes-plugin"] fieldset {
+			border:           1px solid #ddd;
+			padding:          20px;
+			margin-bottom:    20px;
+			border-radius:    3px;
+			background-color: transparent;
+		}
 
-        [data-plugin-style-id="kubernetes-plugin"] .form-help-content code {
-            background-color: #eee;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
+		[data-plugin-style-id="kubernetes-plugin"] fieldset legend {
+			padding:          5px;
+			font-size:        0.875rem;
+			margin-bottom:    0px;
+			background-color: #fff;
+		}
 
-        [data-plugin-style-id="kubernetes-plugin"] .form-help-content .code {
-            padding: 16px;
-            overflow: auto;
-            font-size: 85%;
-            line-height: 1.45;
-            background-color: #f6f8fa;
-            border-radius: 3px;
-        }
-    </style>
+		[data-plugin-style-id="kubernetes-plugin"] .form-help-content {
+			color:         #666;
+			clear:         both;
+			font-size:     0.82rem;
+			font-style:    italic;
+			margin-top:    -15px;
+			padding-left:  2px;
+			margin-bottom: 10px;
+		}
 
-    <div class="form_item_block">
-        <label>Go Server URL:</label>
-        <input type="text" ng-model="go_server_url" ng-required="false"/>
-        <span class="form_error" ng-show="GOINPUTNAME[go_server_url].$error.server">{{GOINPUTNAME[go_server_url].$error.server}}</span>
-        <label class="form-help-content">
-            Server hostname must resolve in your container. Don't use <code>localhost</code> or <code>127.0.0.1</code>.
-            Defaults to GoCD Secure site URL if not specified.
-        </label>
-    </div>
+		[data-plugin-style-id="kubernetes-plugin"] .form-help-content code {
+			border:           0px;
+			padding:          2px 5px;
+			border-radius:    3px;
+			background-color: #eee;
+		}
 
-    <div class="form_item_block">
-        <label>Agent auto-register Timeout (in minutes)<span class='asterix'>*</span></label>
-        <input type="text" ng-model="auto_register_timeout" ng-required="true"/>
-        <span class="form_error" ng-show="GOINPUTNAME[auto_register_timeout].$error.server">{{GOINPUTNAME[auto_register_timeout].$error.server}}</span>
-    </div>
+		[data-plugin-style-id="kubernetes-plugin"] .form-help-content .code {
+			padding:          16px;
+			overflow:         auto;
+			font-size:        85%;
+			line-height:      1.45;
+			border-radius:    3px;
+			background-color: #f6f8fa;
+		}
+	</style>
 
-    <div class="form_item_block">
-        <label>Maximum Pending Kubernetes Pods Count<span class='asterix'>*</span></label>
-        <input type="text" ng-model="pending_pods_count" ng-required="true"/>
-        <span class="form_error" ng-show="GOINPUTNAME[pending_pods_count].$error.server">{{GOINPUTNAME[pending_pods_count].$error.server}}</span>
-    </div>
+	<div class="row">
+		<label>Go Server URL</label>
+		<input type="text" ng-model="go_server_url" ng-required="false"/>
+		<span class="form_error" ng-show="GOINPUTNAME[go_server_url].$error.server">{{GOINPUTNAME[go_server_url].$error.server}}</span>
+		<label class="form-help-content">
+			Server hostname must resolve in your container. Don't use <code>localhost</code> or <code>127.0.0.1</code>.
+			Defaults to GoCD Secure site URL if not specified.
+		</label>
+	</div>
 
-    <div class="form_item_block">
-        <label>Kubernetes Cluster URL:<span class='asterix'>*</span></label>
-        <input type="text" ng-model="kubernetes_cluster_url" ng-required="true"/>
-        <span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_url].$error.server">{{GOINPUTNAME[kubernetes_cluster_url].$error.server}}</span>
-        <label class="form-help-content">
-            Kubernetes Cluster URL.
-            Can be obtained by running <code> kubectl cluster-info</code>
-        </label>
-    </div>
+	<div class="row">
+		<label>Agent auto-register timeout (in minutes)</label>
+		<input type="text" ng-model="auto_register_timeout" ng-required="true"/>
+		<span class="form_error" ng-show="GOINPUTNAME[auto_register_timeout].$error.server">{{GOINPUTNAME[auto_register_timeout].$error.server}}</span>
+		<label class="form-help-content">Defaults to <code>10 minutes</code>.</label>
+	</div>
 
-    <div class="form_item_block">
-        <label>Kubernetes Cluster Username:</label>
-        <input type="text" ng-model="kubernetes_cluster_username" ng-required="false"/>
-        <span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_username].$error.server">{{GOINPUTNAME[kubernetes_cluster_username].$error.server}}</span>
-    </div>
+	<div class="row">
+		<label>Maximum pending pods</label>
+		<input type="text" ng-model="pending_pods_count" ng-required="true"/>
+		<span class="form_error" ng-show="GOINPUTNAME[pending_pods_count].$error.server">{{GOINPUTNAME[pending_pods_count].$error.server}}</span>
+		<label class="form-help-content">Defaults to <code>10 pods</code>.</label>
+	</div>
 
-    <div class="form_item_block">
-        <label>Kubernetes Cluster Password:</label>
-        <input type="password" ng-model="kubernetes_cluster_password" ng-required="false"/>
-        <span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_password].$error.server">{{GOINPUTNAME[kubernetes_cluster_password].$error.server}}</span>
-    </div>
+	<fieldset>
+		<legend>Cluster credentials</legend>
+		<div class="row">
+			<div class="columns large-6">
+				<label>Cluster URL<span class='asterix'>*</span></label>
+				<input type="text" ng-model="kubernetes_cluster_url" ng-required="true"/>
+				<span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_url].$error.server">{{GOINPUTNAME[kubernetes_cluster_url].$error.server}}</span>
+				<label class="form-help-content">
+					Kubernetes Cluster URL. Can be obtained by running <code>kubectl cluster-info</code>
+				</label>
+			</div>
+			<div class="columns large-6">
+				<label>Namespace</label>
+				<input type="text" ng-model="namespace" ng-required="true"/>
+				<span class="form_error" ng-show="GOINPUTNAME[namespace].$error.server">{{GOINPUTNAME[namespace].$error.server}}</span>
+				<label class="form-help-content">
+					Namespace in which plugin will create the agent pods. defaults to <code>default</code> namespace.
+				</label>
+			</div>
+		</div>
 
-    <div class="form_item_block">
-        <label>Kubernetes Cluster CA Certificate:</label>
-        <textarea type="text" ng-model="kubernetes_cluster_ca_cert" rows="7"></textarea>
-        <span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server">{{GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server}}</span>
-        <label class="form-help-content">
-            Kubernetes Cluster CA Certificate.
-            Do not provide <code> -----BEGIN * </code> and <code> -----END * </code> in your certificate data.
-        </label>
-    </div>
+		<div class="row">
+			<label>OAuth token
+				<span class='asterix'>*</span>
+			</label>
+			<textarea rows="5" ng-model="oauth_token"></textarea>
+			<span class="form_error form-error" ng-show="GOINPUTNAME[oauth_token].$error.server">{{GOINPUTNAME[oauth_token].$error.server}}</span>
+			<label class="form-help-content">
+				Get the service account token by running following command <code>kubectl describe secret
+				TOKEN_NAME</code> and copy the value of token here.
+			</label>
+		</div>
+
+		<div class="row">
+			<label>Cluster ca certificate data</label>
+			<textarea ng-model="kubernetes_cluster_ca_cert" rows="7"></textarea>
+			<span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server">{{GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server}}</span>
+			<label class="form-help-content">
+				Kubernetes cluster ca certificate data.
+			</label>
+		</div>
+	</fieldset>
 </div>

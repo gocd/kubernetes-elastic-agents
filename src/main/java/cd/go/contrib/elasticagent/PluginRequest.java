@@ -25,6 +25,7 @@ import java.util.Collection;
 
 import static cd.go.contrib.elasticagent.Constants.*;
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
+import static java.text.MessageFormat.format;
 
 public class PluginRequest {
     private final GoApplicationAccessor accessor;
@@ -52,10 +53,11 @@ public class PluginRequest {
             throw ServerRequestFailedException.getPluginSettings(response);
         }
 
-        final PluginSettings pluginSettings = PluginSettings.fromJSON(response.responseBody());
+        PluginSettings pluginSettings = PluginSettings.fromJSON(response.responseBody());
         if (pluginSettings == null) {
             throw new PluginSettingsNotConfiguredException();
         }
+
         return pluginSettings;
     }
 
@@ -71,7 +73,7 @@ public class PluginRequest {
     }
 
     public void disableAgents(Collection<Agent> toBeDisabled) throws ServerRequestFailedException {
-        LOG.debug("[Server Ping] Disabling Agents:"+toBeDisabled.toString());
+        LOG.debug(format("[Server Ping] Disabling Agents: {0}", toBeDisabled.toString()));
         if (toBeDisabled.isEmpty()) {
             return;
         }
@@ -87,7 +89,7 @@ public class PluginRequest {
     }
 
     public void deleteAgents(Collection<Agent> toBeDeleted) throws ServerRequestFailedException {
-        LOG.debug("[Server Ping] Deleting Agents:"+toBeDeleted.toString());
+        LOG.debug(format("[Server Ping] Deleting Agents: {0}", toBeDeleted.toString()));
         if (toBeDeleted.isEmpty()) {
             return;
         }

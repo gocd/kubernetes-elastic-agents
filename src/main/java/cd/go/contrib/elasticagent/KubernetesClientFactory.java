@@ -16,11 +16,12 @@
 
 package cd.go.contrib.elasticagent;
 
-import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import org.apache.commons.lang3.StringUtils;
+
+import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
+import static java.text.MessageFormat.format;
 
 public class KubernetesClientFactory {
     private static final KubernetesClientFactory KUBERNETES_CLIENT_FACTORY = new KubernetesClientFactory();
@@ -31,31 +32,26 @@ public class KubernetesClientFactory {
         return KUBERNETES_CLIENT_FACTORY;
     }
 
-    private static KubernetesClient createClient(PluginSettings pluginSettings) throws Exception {
-        ConfigBuilder configBuilder = new ConfigBuilder().withMasterUrl(pluginSettings.getKubernetesClusterUrl());
-        if (StringUtils.isNotBlank(pluginSettings.getKubernetesClusterUsername())) {
-            configBuilder.withUsername(pluginSettings.getKubernetesClusterUsername());
-        }
-
-        if (StringUtils.isNotBlank(pluginSettings.getKubernetesClusterPassword())) {
-            configBuilder.withPassword(pluginSettings.getKubernetesClusterPassword());
-        }
-
-        if (StringUtils.isNotBlank(pluginSettings.getKubernetesClusterCACert())) {
-            configBuilder.withCaCertData(pluginSettings.getKubernetesClusterCACert());
-        }
-
-        Config build = configBuilder.build();
-        return new DefaultKubernetesClient(build);
-    }
-
-    public synchronized KubernetesClient kubernetes(PluginSettings pluginSettings) throws Exception {
+    public synchronized KubernetesClient client(PluginSettings pluginSettings) {
         if (pluginSettings.equals(this.pluginSettings) && this.client != null) {
+            LOG.debug("Using previously created client.");
             return this.client;
         }
 
+        LOG.debug(format("Creating a new client because {0}.", (client == null) ? "client is null" : "plugin setting is changed"));
         this.pluginSettings = pluginSettings;
-        this.client = createClient(pluginSettings);
+        this.client = createClientFor(pluginSettings);
+        LOG.debug("New client is created.");
         return this.client;
+    }
+
+    private KubernetesClient createClientFor(PluginSettings pluginSettings) {
+        final ConfigBuilder configBuilder = new ConfigBuilder()
+                .withOauthToken(pluginSettings.getOauthToken())
+                .withMasterUrl(pluginSettings.getClusterUrl())
+                .withCaCertData(pluginSettings.getCaCertData());
+
+        return new DefaultKubernetesClient(configBuilder.build())
+                .inNamespace(pluginSettings.getNamespace());
     }
 }

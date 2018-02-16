@@ -19,13 +19,13 @@ package cd.go.contrib.elasticagent.executors;
 import cd.go.contrib.elasticagent.model.Metadata;
 import cd.go.contrib.elasticagent.utils.Util;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
@@ -36,7 +36,8 @@ public class GetProfileViewExecutorTest {
     public void shouldRenderTheTemplateInJSON() throws Exception {
         GoPluginApiResponse response = new GetProfileViewExecutor().execute();
         assertThat(response.responseCode(), is(200));
-        Map<String, String> hashSet = new Gson().fromJson(response.responseBody(), HashMap.class);
+        Map<String, String> hashSet = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
+        }.getType());
         assertThat(hashSet, hasEntry("template", Util.readResource("/profile.template.html")));
     }
 

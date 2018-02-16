@@ -24,18 +24,22 @@ import cd.go.contrib.elasticagent.model.ServerInfo;
 import cd.go.contrib.elasticagent.requests.ValidatePluginSettings;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
+import static cd.go.contrib.elasticagent.executors.GetPluginConfigurationExecutor.FIELDS;
+import static cd.go.contrib.elasticagent.executors.GetPluginConfigurationExecutor.GO_SERVER_URL;
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class ValidateConfigurationExecutor implements RequestExecutor {
     private final ValidatePluginSettings settings;
     private PluginRequest pluginRequest;
+    private List<Map<String, String>> result = new ArrayList<>();
 
     public ValidateConfigurationExecutor(ValidatePluginSettings settings, PluginRequest pluginRequest) {
         this.settings = settings;
@@ -44,9 +48,8 @@ public class ValidateConfigurationExecutor implements RequestExecutor {
 
     public GoPluginApiResponse execute() throws ServerRequestFailedException {
         LOG.debug("Validating plugin settings.");
-        ArrayList<Map<String, String>> result = new ArrayList<>();
 
-        for (Map.Entry<String, Field> entry : GetPluginConfigurationExecutor.FIELDS.entrySet()) {
+        for (Map.Entry<String, Field> entry : FIELDS.entrySet()) {
             Field field = entry.getValue();
             Map<String, String> validationError = field.validate(settings.get(entry.getKey()));
 
@@ -55,16 +58,25 @@ public class ValidateConfigurationExecutor implements RequestExecutor {
             }
         }
 
-        if(StringUtils.isBlank(settings.get("go_server_url"))) {
+        validateGoServerUrl();
+
+        return DefaultGoPluginApiResponse.success(GSON.toJson(result));
+    }
+
+    private void validateGoServerUrl() {
+        if (isBlank(settings.get(GO_SERVER_URL.key()))) {
             ServerInfo severInfo = pluginRequest.getSeverInfo();
-            if(StringUtils.isBlank(severInfo.getSecureSiteUrl())) {
-                HashMap<String, String> error = new HashMap<>();
-                error.put("key", "go_server_url");
-                error.put("message", "Secure site url is not configured. Please specify Go Server Url.");
+            if (isBlank(severInfo.getSecureSiteUrl())) {
+                Map<String, String> error = error(GO_SERVER_URL.key(), "Secure site url is not configured. Please specify Go Server Url.");
                 result.add(error);
             }
         }
+    }
 
-        return DefaultGoPluginApiResponse.success(GSON.toJson(result));
+    private Map<String, String> error(String key, String errorMessage) {
+        Map<String, String> error = new HashMap<>();
+        error.put("key", key);
+        error.put("message", errorMessage);
+        return error;
     }
 }

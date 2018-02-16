@@ -20,6 +20,7 @@ import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.model.ServerInfo;
 import cd.go.contrib.elasticagent.requests.ValidatePluginSettings;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
+import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -37,7 +38,7 @@ public class ValidateConfigurationExecutorTest {
     private ServerInfo serverInfo;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         initMocks(this);
         serverInfo = ServerInfo.fromJSON("{\n" +
                 "\"server_id\": \"df0cb9be-2696-4689-8d46-1ef3c4e4447c\",\n" +
@@ -55,16 +56,12 @@ public class ValidateConfigurationExecutorTest {
         assertThat(response.responseCode(), is(200));
         JSONAssert.assertEquals("[\n" +
                 "  {\n" +
-                "    \"message\": \"Agent auto-register Timeout (in minutes) must be a positive integer.\",\n" +
-                "    \"key\": \"auto_register_timeout\"\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"message\": \"Maximum Pending Kuberneted Pods Count must be a positive integer.\",\n" +
-                "    \"key\": \"pending_pods_count\"\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"message\": \"Kubernetes Cluster URL must not be blank.\",\n" +
+                "    \"message\": \"Cluster URL must not be blank.\",\n" +
                 "    \"key\": \"kubernetes_cluster_url\"\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"message\": \"Oauth token must not be blank.\",\n" +
+                "    \"key\": \"oauth_token\"\n" +
                 "  }\n" +
                 "]", response.responseBody(), true);
     }
@@ -74,8 +71,7 @@ public class ValidateConfigurationExecutorTest {
         ValidatePluginSettings settings = new ValidatePluginSettings();
         settings.put("go_server_url", "https://ci.example.com/go");
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
-        settings.put("auto_register_timeout", "10");
-        settings.put("pending_pods_count", "10");
+        settings.put("oauth_token", "some-token");
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, null).execute();
 
         assertThat(response.responseCode(), is(200));
@@ -83,12 +79,11 @@ public class ValidateConfigurationExecutorTest {
     }
 
     @Test
-    public void shouldValidateSecureSiteUrl() throws Exception {
+    public void shouldValidateGoServerUrl() throws Exception {
         ValidatePluginSettings settings = new ValidatePluginSettings();
         serverInfo.setSecureSiteUrl(null);
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
-        settings.put("auto_register_timeout", "10");
-        settings.put("pending_pods_count", "10");
+        settings.put("oauth_token", "some-token");
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, pluginRequest).execute();
 
         assertThat(response.responseCode(), is(200));
@@ -105,14 +100,13 @@ public class ValidateConfigurationExecutorTest {
         ValidatePluginSettings settings = new ValidatePluginSettings();
         settings.put("go_server_url", "foo.com/go(");
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
-        settings.put("auto_register_timeout", "10");
-        settings.put("pending_pods_count", "10");
+        settings.put("oauth_token", "some-token");
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, pluginRequest).execute();
 
         assertThat(response.responseCode(), is(200));
         JSONAssert.assertEquals("[" +
                 "  {\n" +
-                "    \"message\": \"Go Server URL must be a valid HTTPs URL (https://example.com).\",\n" +
+                "    \"message\": \"GoCD server URL must be a valid HTTPs URL (https://example.com).\",\n" +
                 "    \"key\": \"go_server_url\"\n" +
                 "  }\n" +
                 "]", response.responseBody(), true);
@@ -123,15 +117,32 @@ public class ValidateConfigurationExecutorTest {
         ValidatePluginSettings settings = new ValidatePluginSettings();
         settings.put("go_server_url", "https://foo.com");
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
-        settings.put("auto_register_timeout", "10");
-        settings.put("pending_pods_count", "10");
+        settings.put("oauth_token", "some-token");
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, pluginRequest).execute();
 
         assertThat(response.responseCode(), is(200));
         JSONAssert.assertEquals("[" +
                 "  {\n" +
-                "    \"message\": \"Go Server URL must be in format https://<GO_SERVER_URL>:<GO_SERVER_PORT>/go.\",\n" +
+                "    \"message\": \"GoCD server URL must be in format https://<GO_SERVER_URL>:<GO_SERVER_PORT>/go.\",\n" +
                 "    \"key\": \"go_server_url\"\n" +
+                "  }\n" +
+                "]", response.responseBody(), true);
+    }
+
+    @Test
+    public void shouldValidateOAuthTokenWhenAuthenticationStrategyIsSetToOauthToken() throws JSONException {
+        ValidatePluginSettings settings = new ValidatePluginSettings();
+        settings.put("go_server_url", "https://foo.com/go");
+        settings.put("kubernetes_cluster_url", "https://cluster.example.com");
+
+        GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, pluginRequest).execute();
+
+        assertThat(response.responseCode(), is(200));
+
+        JSONAssert.assertEquals("[" +
+                "  {\n" +
+                "    \"message\": \"Oauth token must not be blank.\",\n" +
+                "    \"key\": \"oauth_token\"\n" +
                 "  }\n" +
                 "]", response.responseBody(), true);
     }

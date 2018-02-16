@@ -33,6 +33,7 @@ import java.util.*;
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.*;
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
+import static java.text.MessageFormat.format;
 
 public class ProfileValidateRequestExecutor implements RequestExecutor {
     private final ProfileValidateRequest request;
@@ -42,7 +43,7 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
     }
 
     @Override
-    public GoPluginApiResponse execute() throws Exception {
+    public GoPluginApiResponse execute() {
         LOG.debug("Validating elastic profile.");
         ArrayList<Map<String, String>> result = new ArrayList<>();
         List<String> knownFields = new ArrayList<>();
@@ -104,7 +105,7 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
     }
 
     private void addNotBlankError(ArrayList<Map<String, String>> result, String key, String value) {
-        addError(result, key, String.format("%s must not be blank.", value));
+        addError(result, key, format("{0} must not be blank.", value));
     }
 
     private void addError(ArrayList<Map<String, String>> result, String key, String message) {

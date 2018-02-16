@@ -58,9 +58,9 @@ public class ServerPingRequestExecutorTest extends BaseTest {
     private ObjectMeta objectMetadata;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         initMocks(this);
-        when(factory.kubernetes(any(PluginSettings.class))).thenReturn(mockedClient);
+        when(factory.client(any(PluginSettings.class))).thenReturn(mockedClient);
         when(mockedClient.pods()).thenReturn(mockedOperation);
         when(mockedOperation.inNamespace(Constants.KUBERNETES_NAMESPACE)).thenReturn(mockedNamespaceOperation);
 
@@ -85,7 +85,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
     public void testShouldDisableIdleAgents() throws Exception {
         String agentId = UUID.randomUUID().toString();
         final Agents agents = new Agents(Arrays.asList(new Agent(agentId, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled)));
-        AgentInstances agentInstances = new KubernetesAgentInstances(factory);
+        AgentInstances<KubernetesInstance> agentInstances = new KubernetesAgentInstances(factory);
 
         PluginRequest pluginRequest = mock(PluginRequest.class);
         when(pluginRequest.getPluginSettings()).thenReturn(createSettings());
@@ -110,7 +110,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
     public void testShouldTerminateDisabledAgents() throws Exception {
         String agentId = UUID.randomUUID().toString();
         final Agents agents = new Agents(Arrays.asList(new Agent(agentId, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Disabled)));
-        AgentInstances agentInstances = new KubernetesAgentInstances(factory);
+        AgentInstances<KubernetesInstance> agentInstances = new KubernetesAgentInstances(factory);
 
         PluginRequest pluginRequest = mock(PluginRequest.class);
         when(pluginRequest.getPluginSettings()).thenReturn(createSettings());
@@ -151,7 +151,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         when(pluginRequest.listAgents()).thenReturn(new Agents(Arrays.asList(new Agent("foo", Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled))));
         verifyNoMoreInteractions(pluginRequest);
 
-        AgentInstances agentInstances = new KubernetesAgentInstances(factory);
+        AgentInstances<KubernetesInstance> agentInstances = new KubernetesAgentInstances(factory);
         ServerPingRequestExecutor serverPingRequestExecutor = new ServerPingRequestExecutor(agentInstances, pluginRequest);
         serverPingRequestExecutor.execute();
     }

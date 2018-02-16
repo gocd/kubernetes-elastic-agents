@@ -16,10 +16,7 @@
 
 package cd.go.contrib.elasticagent.requests;
 
-import cd.go.contrib.elasticagent.AgentInstances;
-import cd.go.contrib.elasticagent.Constants;
-import cd.go.contrib.elasticagent.PluginRequest;
-import cd.go.contrib.elasticagent.RequestExecutor;
+import cd.go.contrib.elasticagent.*;
 import cd.go.contrib.elasticagent.executors.CreateAgentRequestExecutor;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
 import com.google.gson.annotations.Expose;
@@ -82,7 +79,7 @@ public class CreateAgentRequest {
         return jobIdentifier;
     }
 
-    public RequestExecutor executor(AgentInstances agentInstances, PluginRequest pluginRequest) {
+    public RequestExecutor executor(AgentInstances<KubernetesInstance> agentInstances, PluginRequest pluginRequest) {
         return new CreateAgentRequestExecutor(this, agentInstances, pluginRequest);
     }
 

@@ -20,9 +20,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
 
-public class SecureURLField extends Field {
+public class HttpsURLField extends Field {
 
-    public SecureURLField(String key, String displayName, Boolean required, String displayOrder) {
+    public HttpsURLField(String key, String displayName, Boolean required, String displayOrder) {
         super(key, displayName, null, required, false, displayOrder);
     }
 

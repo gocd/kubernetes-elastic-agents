@@ -72,4 +72,8 @@ public class Field {
     public String key() {
         return key;
     }
+
+    public String displayName() {
+        return displayName;
+    }
 }

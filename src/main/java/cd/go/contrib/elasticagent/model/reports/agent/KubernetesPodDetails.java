@@ -6,6 +6,8 @@ import io.fabric8.kubernetes.api.model.PodCondition;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import static java.text.MessageFormat.format;
+
 public class KubernetesPodDetails {
     private String name;
     private String clusterName;
@@ -104,7 +106,7 @@ public class KubernetesPodDetails {
 
         @Override
         public String toString() {
-            return String.format("%s: %s", type, status);
+            return format("{0}: {1}", type, status);
         }
     }
 }

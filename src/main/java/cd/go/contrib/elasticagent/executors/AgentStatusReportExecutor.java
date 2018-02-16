@@ -5,6 +5,8 @@ import cd.go.contrib.elasticagent.KubernetesClientFactory;
 import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.builders.PluginStatusReportViewBuilder;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
+import cd.go.contrib.elasticagent.model.reports.StatusReportGenerationErrorHandler;
+import cd.go.contrib.elasticagent.model.reports.StatusReportGenerationException;
 import cd.go.contrib.elasticagent.model.reports.agent.KubernetesElasticAgent;
 import cd.go.contrib.elasticagent.requests.AgentStatusReportRequest;
 import com.google.gson.JsonObject;
@@ -17,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
+import static java.text.MessageFormat.format;
 
 public class AgentStatusReportExecutor {
     private final AgentStatusReportRequest request;
@@ -35,11 +38,11 @@ public class AgentStatusReportExecutor {
         this.statusReportViewBuilder = builder;
     }
 
-    public GoPluginApiResponse execute() throws Exception {
+    public GoPluginApiResponse execute() {
         String elasticAgentId = request.getElasticAgentId();
         JobIdentifier jobIdentifier = request.getJobIdentifier();
-        LOG.info(String.format("[status-report] Generating status report for agent: %s with job: %s", elasticAgentId, jobIdentifier));
-        KubernetesClient client = factory.kubernetes(pluginRequest.getPluginSettings());
+        LOG.info(format("[status-report] Generating status report for agent: {0} with job: {1}", elasticAgentId, jobIdentifier));
+        KubernetesClient client = factory.client(pluginRequest.getPluginSettings());
 
         try {
             Pod pod;
@@ -53,17 +56,12 @@ public class AgentStatusReportExecutor {
 
             final String statusReportView = statusReportViewBuilder.build(statusReportViewBuilder.getTemplate("agent-status-report.template.ftlh"), elasticAgent);
 
-            JsonObject responseJSON = new JsonObject();
+            final JsonObject responseJSON = new JsonObject();
             responseJSON.addProperty("view", statusReportView);
 
             return DefaultGoPluginApiResponse.success(responseJSON.toString());
         } catch (Exception e) {
-            final String statusReportView = statusReportViewBuilder.build(statusReportViewBuilder.getTemplate("error.template.ftlh"), e);
-
-            JsonObject responseJSON = new JsonObject();
-            responseJSON.addProperty("view", statusReportView);
-
-            return DefaultGoPluginApiResponse.success(responseJSON.toString());
+            return StatusReportGenerationErrorHandler.handle(statusReportViewBuilder, e);
         }
     }
 
@@ -73,7 +71,7 @@ public class AgentStatusReportExecutor {
                     .withLabel(Constants.JOB_ID_LABEL_KEY, String.valueOf(jobIdentifier.getJobId()))
                     .list().getItems().get(0);
         } catch (Exception e) {
-            throw new RuntimeException(String.format("Can not find a running Pod for the provided job identifier '%s'", jobIdentifier));
+            throw new StatusReportGenerationException(format("Can not find a running Pod for the provided job identifier: {0}.", jobIdentifier.representation()));
         }
     }
 
@@ -85,6 +83,6 @@ public class AgentStatusReportExecutor {
             }
         }
 
-        throw new RuntimeException(String.format("Can not find a running Pod for the provided elastic agent id '%s'", elasticAgentId));
+        throw new StatusReportGenerationException(format("Can not find a running Pod for the provided elastic agent id: {0}.", elasticAgentId));
     }
 }

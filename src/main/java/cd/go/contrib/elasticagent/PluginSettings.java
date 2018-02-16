@@ -29,103 +29,106 @@ public class PluginSettings {
 
     @Expose
     @SerializedName("auto_register_timeout")
-    private String autoRegisterTimeout;
+    private Integer autoRegisterTimeout = 10;
 
     @Expose
     @SerializedName("pending_pods_count")
-    private String pendingPodsCount;
+    private Integer maxPendingPods = 10;
 
     @Expose
     @SerializedName("kubernetes_cluster_url")
-    private String kubernetesClusterUrl;
+    private String clusterUrl;
 
     @Expose
-    @SerializedName("kubernetes_cluster_username")
-    private String kubernetesClusterUsername;
-
-    @Expose
-    @SerializedName("kubernetes_cluster_password")
-    private String kubernetesClusterPassword;
+    @SerializedName("oauth_token")
+    private String oauthToken;
 
     @Expose
     @SerializedName("kubernetes_cluster_ca_cert")
-    private String kubernetesClusterCACert;
+    private String clusterCACertData;
+
+    @Expose
+    @SerializedName("namespace")
+    private String namespace = "default";
 
     private Period autoRegisterPeriod;
+
+    public PluginSettings() {
+    }
+
+    public PluginSettings(String goServerUrl, String clusterUrl, String clusterCACertData) {
+        this.goServerUrl = goServerUrl;
+        this.clusterUrl = clusterUrl;
+        this.clusterCACertData = clusterCACertData;
+    }
 
     public static PluginSettings fromJSON(String json) {
         return GSON.fromJson(json, PluginSettings.class);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PluginSettings)) return false;
-        PluginSettings that = (PluginSettings) o;
-
-        if (goServerUrl != null ? !goServerUrl.equals(that.goServerUrl) : that.goServerUrl != null) return false;
-        if (autoRegisterTimeout != null ? !autoRegisterTimeout.equals(that.autoRegisterTimeout) : that.autoRegisterTimeout != null)
-            return false;
-        if (pendingPodsCount != null ? !pendingPodsCount.equals(that.pendingPodsCount) : that.pendingPodsCount != null)
-            return false;
-        if (kubernetesClusterUrl != null ? !kubernetesClusterUrl.equals(that.kubernetesClusterUrl) : that.kubernetesClusterUrl != null)
-            return false;
-        return autoRegisterPeriod != null ? autoRegisterPeriod.equals(that.autoRegisterPeriod) : that.autoRegisterPeriod == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = goServerUrl != null ? goServerUrl.hashCode() : 0;
-        result = 31 * result + (autoRegisterTimeout != null ? autoRegisterTimeout.hashCode() : 0);
-        result = 31 * result + (pendingPodsCount != null ? pendingPodsCount.hashCode() : 0);
-        result = 31 * result + (kubernetesClusterUrl != null ? kubernetesClusterUrl.hashCode() : 0);
-        result = 31 * result + (autoRegisterPeriod != null ? autoRegisterPeriod.hashCode() : 0);
-        return result;
-    }
-
     public Period getAutoRegisterPeriod() {
         if (this.autoRegisterPeriod == null) {
-            this.autoRegisterPeriod = new Period().withMinutes(Integer.parseInt(getAutoRegisterTimeout()));
+            this.autoRegisterPeriod = new Period().withMinutes(getAutoRegisterTimeout());
         }
         return this.autoRegisterPeriod;
     }
 
-    String getAutoRegisterTimeout() {
-        if (autoRegisterTimeout == null) {
-            autoRegisterTimeout = "10";
-        }
+    Integer getAutoRegisterTimeout() {
         return autoRegisterTimeout;
     }
 
-    public Integer getMaximumPendingAgentsCount() {
-        if (pendingPodsCount == null) {
-            pendingPodsCount = "10";
-        }
-
-        return Integer.valueOf(pendingPodsCount);
+    public Integer getMaxPendingPods() {
+        return Integer.valueOf(maxPendingPods);
     }
 
     public String getGoServerUrl() {
         return goServerUrl;
     }
 
-    public String getKubernetesClusterUrl() {
-        return kubernetesClusterUrl;
+    public String getOauthToken() {
+        return oauthToken;
     }
 
-    public String getKubernetesClusterUsername() {
-        return kubernetesClusterUsername;
+    public String getClusterUrl() {
+        return clusterUrl;
     }
 
-    public String getKubernetesClusterPassword() {
-        return kubernetesClusterPassword;
+    public String getCaCertData() {
+        return clusterCACertData;
     }
 
-    public String getKubernetesClusterCACert() {
-        return kubernetesClusterCACert;
+    public String getNamespace() {
+        return namespace;
     }
 
-    public void setGoServerUrl(String goServerUrl) {
-        this.goServerUrl = goServerUrl;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PluginSettings)) return false;
+
+        PluginSettings that = (PluginSettings) o;
+
+        if (goServerUrl != null ? !goServerUrl.equals(that.goServerUrl) : that.goServerUrl != null) return false;
+        if (autoRegisterTimeout != null ? !autoRegisterTimeout.equals(that.autoRegisterTimeout) : that.autoRegisterTimeout != null)
+            return false;
+        if (maxPendingPods != null ? !maxPendingPods.equals(that.maxPendingPods) : that.maxPendingPods != null)
+            return false;
+        if (clusterUrl != null ? !clusterUrl.equals(that.clusterUrl) : that.clusterUrl != null) return false;
+        if (oauthToken != null ? !oauthToken.equals(that.oauthToken) : that.oauthToken != null) return false;
+        if (clusterCACertData != null ? !clusterCACertData.equals(that.clusterCACertData) : that.clusterCACertData != null)
+            return false;
+        return namespace != null ? namespace.equals(that.namespace) : that.namespace == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = goServerUrl != null ? goServerUrl.hashCode() : 0;
+        result = 31 * result + (autoRegisterTimeout != null ? autoRegisterTimeout.hashCode() : 0);
+        result = 31 * result + (maxPendingPods != null ? maxPendingPods.hashCode() : 0);
+        result = 31 * result + (clusterUrl != null ? clusterUrl.hashCode() : 0);
+        result = 31 * result + (oauthToken != null ? oauthToken.hashCode() : 0);
+        result = 31 * result + (clusterCACertData != null ? clusterCACertData.hashCode() : 0);
+        result = 31 * result + (namespace != null ? namespace.hashCode() : 0);
+        return result;
     }
 }
