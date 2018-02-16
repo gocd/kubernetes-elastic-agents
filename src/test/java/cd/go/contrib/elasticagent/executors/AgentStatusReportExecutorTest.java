@@ -7,6 +7,7 @@ import cd.go.contrib.elasticagent.PluginSettings;
 import cd.go.contrib.elasticagent.builders.PluginStatusReportViewBuilder;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
 import cd.go.contrib.elasticagent.model.reports.agent.KubernetesElasticAgent;
+import cd.go.contrib.elasticagent.model.reports.agent.StatusReportGenerationError;
 import cd.go.contrib.elasticagent.requests.AgentStatusReportRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import freemarker.template.Template;
@@ -80,7 +81,7 @@ public class AgentStatusReportExecutorTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        pod = creatdDefaultPod();
+        pod = createDefaultPod();
         pod.getMetadata().setName(elasticAgentId);
         executor = new AgentStatusReportExecutor(statusReportRequest, pluginRequest, kubernetesClientFactory, builder);
 
@@ -130,7 +131,7 @@ public class AgentStatusReportExecutorTest {
         when(kubernetesClientFactory.client(pluginSettings)).thenReturn(client);
 
         when(builder.getTemplate("error.template.ftlh")).thenReturn(template);
-        when(builder.build(eq(template), any(RuntimeException.class))).thenReturn("my-error-view");
+        when(builder.build(eq(template), any(StatusReportGenerationError.class))).thenReturn("my-error-view");
 
         GoPluginApiResponse response = executor.execute();
 
@@ -152,7 +153,7 @@ public class AgentStatusReportExecutorTest {
         when(kubernetesClientFactory.client(pluginSettings)).thenReturn(client);
 
         when(builder.getTemplate("error.template.ftlh")).thenReturn(template);
-        when(builder.build(eq(template), any(RuntimeException.class))).thenReturn("my-error-view");
+        when(builder.build(eq(template), any(StatusReportGenerationError.class))).thenReturn("my-error-view");
 
         GoPluginApiResponse response = executor.execute();
 
@@ -160,7 +161,7 @@ public class AgentStatusReportExecutorTest {
         assertThat(response.responseBody(), is("{\"view\":\"my-error-view\"}"));
     }
 
-    private Pod creatdDefaultPod() {
+    private Pod createDefaultPod() {
         Pod pod = new Pod();
         pod.setMetadata(new ObjectMeta());
         PodSpec spec = new PodSpec();

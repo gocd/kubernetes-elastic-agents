@@ -114,9 +114,8 @@
 			</label>
 		</div>
 
-
 		<div class="row">
-			<label>Cluster ca certificate data<span class='asterix'>*</span></label>
+			<label>Cluster ca certificate data</label>
 			<textarea ng-model="kubernetes_cluster_ca_cert" rows="7"></textarea>
 			<span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server">{{GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server}}</span>
 			<label class="form-help-content">
