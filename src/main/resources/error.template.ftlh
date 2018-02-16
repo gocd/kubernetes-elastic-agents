@@ -26,6 +26,8 @@
 		background:     #d1c4e9;
 		font-weight:    600;
 		vertical-align: middle;
+		margin:         -1px -1px 0px -1px;
+		border-radius:  3px 3px 0px 0px;
 	}
 
 	[data-plugin-style-id="kubernetes-plugin"] .stacktrace {
