@@ -94,12 +94,22 @@
 	<fieldset>
 		<legend>Cluster credentials</legend>
 		<div class="row">
-			<label>Cluster URL<span class='asterix'>*</span></label>
-			<input type="text" ng-model="kubernetes_cluster_url" ng-required="true"/>
-			<span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_url].$error.server">{{GOINPUTNAME[kubernetes_cluster_url].$error.server}}</span>
-			<label class="form-help-content">
-				Kubernetes Cluster URL. Can be obtained by running <code>kubectl cluster-info</code>
-			</label>
+			<div class="columns large-6">
+				<label>Cluster URL<span class='asterix'>*</span></label>
+				<input type="text" ng-model="kubernetes_cluster_url" ng-required="true"/>
+				<span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_url].$error.server">{{GOINPUTNAME[kubernetes_cluster_url].$error.server}}</span>
+				<label class="form-help-content">
+					Kubernetes Cluster URL. Can be obtained by running <code>kubectl cluster-info</code>
+				</label>
+			</div>
+			<div class="columns large-6">
+				<label>Namespace</label>
+				<input type="text" ng-model="namespace" ng-required="true"/>
+				<span class="form_error" ng-show="GOINPUTNAME[namespace].$error.server">{{GOINPUTNAME[namespace].$error.server}}</span>
+				<label class="form-help-content">
+					Namespace in which plugin will create the agent pods. defaults to <code>default</code> namespace.
+				</label>
+			</div>
 		</div>
 
 		<div class="row">

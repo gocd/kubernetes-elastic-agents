@@ -47,6 +47,10 @@ public class PluginSettings {
     @SerializedName("kubernetes_cluster_ca_cert")
     private String clusterCACertData;
 
+    @Expose
+    @SerializedName("namespace")
+    private String namespace = "default";
+
     private Period autoRegisterPeriod;
 
     public PluginSettings() {
@@ -93,6 +97,10 @@ public class PluginSettings {
         return clusterCACertData;
     }
 
+    public String getNamespace() {
+        return namespace;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -107,7 +115,9 @@ public class PluginSettings {
             return false;
         if (clusterUrl != null ? !clusterUrl.equals(that.clusterUrl) : that.clusterUrl != null) return false;
         if (oauthToken != null ? !oauthToken.equals(that.oauthToken) : that.oauthToken != null) return false;
-        return clusterCACertData != null ? clusterCACertData.equals(that.clusterCACertData) : that.clusterCACertData == null;
+        if (clusterCACertData != null ? !clusterCACertData.equals(that.clusterCACertData) : that.clusterCACertData != null)
+            return false;
+        return namespace != null ? namespace.equals(that.namespace) : that.namespace == null;
     }
 
     @Override
@@ -118,6 +128,7 @@ public class PluginSettings {
         result = 31 * result + (clusterUrl != null ? clusterUrl.hashCode() : 0);
         result = 31 * result + (oauthToken != null ? oauthToken.hashCode() : 0);
         result = 31 * result + (clusterCACertData != null ? clusterCACertData.hashCode() : 0);
+        result = 31 * result + (namespace != null ? namespace.hashCode() : 0);
         return result;
     }
 }

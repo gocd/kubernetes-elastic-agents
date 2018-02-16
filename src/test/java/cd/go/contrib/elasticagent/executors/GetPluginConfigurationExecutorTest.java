@@ -71,19 +71,25 @@ public class GetPluginConfigurationExecutorTest {
                 "    \"display-name\": \"Cluster URL\",\n" +
                 "    \"required\": true,\n" +
                 "    \"secure\": false,\n" +
-                "    \"display-order\": \"4\"\n" +
+                "    \"display-order\": \"3\"\n" +
                 "  },\n" +
-                "  \"kubernetes_cluster_ca_cert\": {\n" +
-                "    \"display-name\": \"Cluster ca certificate\",\n" +
+                "  \"namespace\": {\n" +
+                "    \"display-name\": \"Namespace\",\n" +
                 "    \"required\": false,\n" +
-                "    \"secure\": true,\n" +
-                "    \"display-order\": \"5\"\n" +
+                "    \"secure\": false,\n" +
+                "    \"display-order\": \"4\"\n" +
                 "  },\n" +
                 "  \"oauth_token\": {\n" +
                 "    \"display-name\": \"Oauth token\",\n" +
                 "    \"required\": true,\n" +
                 "    \"secure\": true,\n" +
-                "    \"display-order\": \"3\"\n" +
+                "    \"display-order\": \"5\"\n" +
+                "  },\n" +
+                "  \"kubernetes_cluster_ca_cert\": {\n" +
+                "    \"display-name\": \"Cluster ca certificate\",\n" +
+                "    \"required\": false,\n" +
+                "    \"secure\": true,\n" +
+                "    \"display-order\": \"6\"\n" +
                 "  }\n" +
                 "}";
 

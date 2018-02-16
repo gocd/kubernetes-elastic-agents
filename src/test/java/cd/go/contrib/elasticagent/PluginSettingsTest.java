@@ -56,6 +56,7 @@ public class PluginSettingsTest {
         assertNull(pluginSettings.getGoServerUrl());
         assertThat(pluginSettings.getAutoRegisterTimeout(), is(10));
         assertThat(pluginSettings.getMaxPendingPods(), is(10));
+        assertThat(pluginSettings.getNamespace(), is("default"));
         assertNull(pluginSettings.getClusterUrl());
         assertNull(pluginSettings.getCaCertData());
     }

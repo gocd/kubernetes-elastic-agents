@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class GoServerUrlField extends SecureURLField {
+public class GoServerUrlField extends HttpsURLField {
     public GoServerUrlField(String key, String displayName, Boolean required, String displayOrder) {
         super(key, displayName, required, displayOrder);
     }

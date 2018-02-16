@@ -51,6 +51,7 @@ public class KubernetesClientFactory {
                 .withMasterUrl(pluginSettings.getClusterUrl())
                 .withCaCertData(pluginSettings.getCaCertData());
 
-        return new DefaultKubernetesClient(configBuilder.build());
+        return new DefaultKubernetesClient(configBuilder.build())
+                .inNamespace(pluginSettings.getNamespace());
     }
 }
