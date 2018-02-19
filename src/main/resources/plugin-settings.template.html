@@ -94,7 +94,7 @@
 	<fieldset>
 		<legend>Cluster credentials</legend>
 		<div class="row">
-			<div class="columns large-6">
+			<div class="columns large-5">
 				<label>Cluster URL<span class='asterix'>*</span></label>
 				<input type="text" ng-model="kubernetes_cluster_url" ng-required="true"/>
 				<span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_url].$error.server">{{GOINPUTNAME[kubernetes_cluster_url].$error.server}}</span>
@@ -102,7 +102,7 @@
 					Kubernetes Cluster URL. Can be obtained by running <code>kubectl cluster-info</code>
 				</label>
 			</div>
-			<div class="columns large-6">
+			<div class="columns large-5 end">
 				<label>Namespace</label>
 				<input type="text" ng-model="namespace" ng-required="true"/>
 				<span class="form_error" ng-show="GOINPUTNAME[namespace].$error.server">{{GOINPUTNAME[namespace].$error.server}}</span>
@@ -129,7 +129,8 @@
 			<textarea ng-model="kubernetes_cluster_ca_cert" rows="7"></textarea>
 			<span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server">{{GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server}}</span>
 			<label class="form-help-content">
-				Kubernetes cluster ca certificate data.
+				Kubernetes cluster ca certificate data. Do not provide <code> -----BEGIN * </code> and <code> -----END
+				* </code> in your certificate data.
 			</label>
 		</div>
 	</fieldset>

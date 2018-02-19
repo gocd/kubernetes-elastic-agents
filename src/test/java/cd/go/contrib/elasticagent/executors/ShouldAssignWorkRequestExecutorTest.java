@@ -26,7 +26,6 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
-import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +37,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static cd.go.contrib.elasticagent.Constants.KUBERNETES_NAMESPACE;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -55,8 +53,6 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     private KubernetesClient mockedClient;
     @Mock
     private MixedOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>> mockedOperation;
-    @Mock
-    private NonNamespaceOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>> mockedNamespaceOperation;
     private String environment = "QA";
 
     @Before
@@ -64,8 +60,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
         initMocks(this);
         when(factory.client(any(PluginSettings.class))).thenReturn(mockedClient);
         when(mockedClient.pods()).thenReturn(mockedOperation);
-        when(mockedOperation.inNamespace(KUBERNETES_NAMESPACE)).thenReturn(mockedNamespaceOperation);
-        when(mockedNamespaceOperation.create(any(Pod.class))).thenAnswer(new Answer<Pod>() {
+        when(mockedOperation.create(any(Pod.class))).thenAnswer(new Answer<Pod>() {
             @Override
             public Pod answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();

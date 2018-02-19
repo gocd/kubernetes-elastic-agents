@@ -25,7 +25,6 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
-import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 import org.joda.time.Period;
 import org.junit.Before;
@@ -50,8 +49,6 @@ public class ServerPingRequestExecutorTest extends BaseTest {
     @Mock
     private MixedOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>> mockedOperation;
     @Mock
-    private NonNamespaceOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>> mockedNamespaceOperation;
-    @Mock
     private Pod mockedPod;
     @Mock
     private PodResource podResource;
@@ -62,9 +59,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         initMocks(this);
         when(factory.client(any(PluginSettings.class))).thenReturn(mockedClient);
         when(mockedClient.pods()).thenReturn(mockedOperation);
-        when(mockedOperation.inNamespace(Constants.KUBERNETES_NAMESPACE)).thenReturn(mockedNamespaceOperation);
-
-        when(mockedNamespaceOperation.create(any(Pod.class))).thenAnswer(new Answer<Pod>() {
+        when(mockedOperation.create(any(Pod.class))).thenAnswer(new Answer<Pod>() {
             @Override
             public Pod answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
@@ -72,7 +67,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
             }
         });
 
-        when(mockedNamespaceOperation.withName(anyString())).thenReturn(podResource);
+        when(mockedOperation.withName(anyString())).thenReturn(podResource);
         when(podResource.get()).thenReturn(mockedPod);
 
         objectMetadata = new ObjectMeta();

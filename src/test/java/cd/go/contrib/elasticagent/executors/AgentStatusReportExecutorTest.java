@@ -1,6 +1,5 @@
 package cd.go.contrib.elasticagent.executors;
 
-import cd.go.contrib.elasticagent.Constants;
 import cd.go.contrib.elasticagent.KubernetesClientFactory;
 import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.PluginSettings;
@@ -58,9 +57,6 @@ public class AgentStatusReportExecutorTest {
     private MixedOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>> mockedOperation;
 
     @Mock
-    private NonNamespaceOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>> mockedNamespaceOperation;
-
-    @Mock
     private PodList podList;
 
     @Mock
@@ -79,18 +75,17 @@ public class AgentStatusReportExecutorTest {
     private Template template;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         initMocks(this);
         pod = createDefaultPod();
         pod.getMetadata().setName(elasticAgentId);
         executor = new AgentStatusReportExecutor(statusReportRequest, pluginRequest, kubernetesClientFactory, builder);
 
         when(client.pods()).thenReturn(mockedOperation);
-        when(mockedOperation.inNamespace(Constants.KUBERNETES_NAMESPACE)).thenReturn(mockedNamespaceOperation);
-        when(mockedNamespaceOperation.list()).thenReturn(podList);
+        when(mockedOperation.list()).thenReturn(podList);
         when(podList.getItems()).thenReturn(Arrays.asList(pod));
 
-        when(mockedNamespaceOperation.withName(elasticAgentId)).thenReturn(podresource);
+        when(mockedOperation.withName(elasticAgentId)).thenReturn(podresource);
         when(podresource.getLog()).thenReturn("agent-logs");
 
         when(client.events()).thenReturn(events);
