@@ -76,11 +76,9 @@ public class ValidateConfigurationExecutor implements RequestExecutor {
     private void validateNamespaceExistence() {
         try {
             final String namespace = validatePluginSettingsRequest.getPluginSettingsMap().getNamespace();
-            if (isBlank(namespace)) {
-                return;
-            }
             final KubernetesClient client = factory.client(validatePluginSettingsRequest.getPluginSettingsMap());
             final List<Namespace> namespaceList = client.namespaces().list().getItems();
+            
             if (namespaceList.stream().anyMatch(n -> n.getMetadata().getName().equals(namespace))) {
                 return;
             }

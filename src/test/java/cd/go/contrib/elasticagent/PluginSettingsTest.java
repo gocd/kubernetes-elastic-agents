@@ -62,4 +62,14 @@ public class PluginSettingsTest {
         assertNull(pluginSettings.getClusterUrl());
         assertNull(pluginSettings.getCaCertData());
     }
+
+    @Test
+    public void shouldConsiderBlankStringAsNull() {
+        final Map<String, Object> pluginSettingsMap = new HashMap<>();
+        pluginSettingsMap.put("namespace", "   ");
+
+        PluginSettings pluginSettings = PluginSettings.fromJSON(new Gson().toJson(pluginSettingsMap));
+
+        assertThat(pluginSettings.getNamespace(), is("default"));
+    }
 }
