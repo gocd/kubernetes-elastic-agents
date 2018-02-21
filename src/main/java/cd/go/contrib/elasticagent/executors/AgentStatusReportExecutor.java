@@ -67,7 +67,7 @@ public class AgentStatusReportExecutor {
 
     private Pod findPodUsingJobIdentifier(JobIdentifier jobIdentifier, KubernetesClient client) {
         try {
-            return client.pods().inNamespace(Constants.KUBERNETES_NAMESPACE)
+            return client.pods()
                     .withLabel(Constants.JOB_ID_LABEL_KEY, String.valueOf(jobIdentifier.getJobId()))
                     .list().getItems().get(0);
         } catch (Exception e) {
@@ -76,7 +76,7 @@ public class AgentStatusReportExecutor {
     }
 
     private Pod findPodUsingElasticAgentId(String elasticAgentId, KubernetesClient client) {
-        List<Pod> pods = client.pods().inNamespace(Constants.KUBERNETES_NAMESPACE).list().getItems();
+        List<Pod> pods = client.pods().list().getItems();
         for (Pod pod : pods) {
             if (pod.getMetadata().getName().equals(elasticAgentId)) {
                 return pod;

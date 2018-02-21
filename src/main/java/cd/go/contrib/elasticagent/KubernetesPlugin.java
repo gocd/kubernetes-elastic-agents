@@ -56,7 +56,7 @@ public class KubernetesPlugin implements GoPlugin {
                 case PLUGIN_SETTINGS_GET_VIEW:
                     return new GetViewRequestExecutor().execute();
                 case PLUGIN_SETTINGS_VALIDATE_CONFIGURATION:
-                    return ValidatePluginSettings.fromJSON(request.requestBody()).executor(pluginRequest).execute();
+                    return ValidatePluginSettingsRequest.fromJSON(request.requestBody()).executor(pluginRequest).execute();
                 case REQUEST_GET_PROFILE_METADATA:
                     return new GetProfileMetadataExecutor().execute();
                 case REQUEST_GET_PROFILE_VIEW:
@@ -67,13 +67,16 @@ public class KubernetesPlugin implements GoPlugin {
                     refreshInstances();
                     return CreateAgentRequest.fromJSON(request.requestBody()).executor(agentInstances, pluginRequest).execute();
                 case REQUEST_SHOULD_ASSIGN_WORK:
+                    refreshInstances();
                     return ShouldAssignWorkRequest.fromJSON(request.requestBody()).executor(agentInstances).execute();
                 case REQUEST_SERVER_PING:
                     refreshInstances();
                     return new ServerPingRequestExecutor(agentInstances, pluginRequest).execute();
                 case REQUEST_STATUS_REPORT:
+                    refreshInstances();
                     return new StatusReportExecutor(pluginRequest).execute();
                 case REQUEST_ELASTIC_AGENT_STATUS_REPORT:
+                    refreshInstances();
                     return AgentStatusReportRequest.fromJSON(request.requestBody()).executor(pluginRequest).execute();
                 default:
                     throw new UnhandledRequestTypeException(request.requestName());

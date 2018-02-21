@@ -18,6 +18,7 @@ package cd.go.contrib.elasticagent;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Period;
 
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
@@ -29,11 +30,11 @@ public class PluginSettings {
 
     @Expose
     @SerializedName("auto_register_timeout")
-    private Integer autoRegisterTimeout = 10;
+    private Integer autoRegisterTimeout;
 
     @Expose
     @SerializedName("pending_pods_count")
-    private Integer maxPendingPods = 10;
+    private Integer maxPendingPods;
 
     @Expose
     @SerializedName("kubernetes_cluster_url")
@@ -49,7 +50,7 @@ public class PluginSettings {
 
     @Expose
     @SerializedName("namespace")
-    private String namespace = "default";
+    private String namespace;
 
     private Period autoRegisterPeriod;
 
@@ -74,11 +75,11 @@ public class PluginSettings {
     }
 
     Integer getAutoRegisterTimeout() {
-        return autoRegisterTimeout;
+        return getOrDefault(autoRegisterTimeout, 10);
     }
 
     public Integer getMaxPendingPods() {
-        return Integer.valueOf(maxPendingPods);
+        return getOrDefault(this.maxPendingPods, 10);
     }
 
     public String getGoServerUrl() {
@@ -98,7 +99,19 @@ public class PluginSettings {
     }
 
     public String getNamespace() {
-        return namespace;
+        return getOrDefault(this.namespace, "default");
+    }
+
+    private <T> T getOrDefault(T t, T defaultValue) {
+        if (t instanceof String && StringUtils.isBlank(String.valueOf(t))) {
+            return defaultValue;
+        }
+
+        if (t == null) {
+            return defaultValue;
+        }
+
+        return t;
     }
 
     @Override

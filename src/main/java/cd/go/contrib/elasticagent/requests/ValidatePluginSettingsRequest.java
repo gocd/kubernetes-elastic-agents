@@ -17,8 +17,10 @@
 package cd.go.contrib.elasticagent.requests;
 
 import cd.go.contrib.elasticagent.PluginRequest;
+import cd.go.contrib.elasticagent.PluginSettings;
 import cd.go.contrib.elasticagent.RequestExecutor;
 import cd.go.contrib.elasticagent.executors.ValidateConfigurationExecutor;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -26,16 +28,16 @@ import java.util.HashMap;
 
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
 
-public class ValidatePluginSettings {
+public class ValidatePluginSettingsRequest {
     @Expose
     @SerializedName("plugin-settings")
-    private PluginSettings pluginSettings = new PluginSettings();
+    private PluginSettingsMap pluginSettingsMap = new PluginSettingsMap();
 
-    public ValidatePluginSettings() {
+    public ValidatePluginSettingsRequest() {
     }
 
-    public static ValidatePluginSettings fromJSON(String json) {
-        return GSON.fromJson(json, ValidatePluginSettings.class);
+    public static ValidatePluginSettingsRequest fromJSON(String json) {
+        return GSON.fromJson(json, ValidatePluginSettingsRequest.class);
     }
 
     public RequestExecutor executor(PluginRequest pluginRequest) {
@@ -43,18 +45,37 @@ public class ValidatePluginSettings {
     }
 
     public String get(String key) {
-        if (pluginSettings == null || pluginSettings.get(key) == null) {
+        if (pluginSettingsMap == null || pluginSettingsMap.get(key) == null) {
             return null;
         }
 
-        return pluginSettings.get(key).value;
+        return pluginSettingsMap.get(key).value;
+    }
+
+    public PluginSettings getPluginSettingsMap() {
+        return pluginSettingsMap.toPluginSettings();
     }
 
     public void put(String key, String value) {
-        pluginSettings.put(key, new Value(value));
+        pluginSettingsMap.put(key, new Value(value));
     }
 
-    private static class PluginSettings extends HashMap<String, Value> {
+    private static class PluginSettingsMap extends HashMap<String, Value> {
+        private PluginSettings pluginSettings;
+
+        public PluginSettings toPluginSettings() {
+            if (pluginSettings != null) {
+                return pluginSettings;
+            }
+
+            final JsonObject jsonObject = new JsonObject();
+            for (String key : keySet()) {
+                jsonObject.addProperty(key, get(key).value);
+            }
+
+            pluginSettings = PluginSettings.fromJSON(jsonObject.toString());
+            return pluginSettings;
+        }
     }
 
     private static class Value {

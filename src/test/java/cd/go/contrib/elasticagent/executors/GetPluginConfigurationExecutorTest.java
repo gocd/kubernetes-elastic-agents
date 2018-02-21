@@ -75,6 +75,7 @@ public class GetPluginConfigurationExecutorTest {
                 "  },\n" +
                 "  \"namespace\": {\n" +
                 "    \"display-name\": \"Namespace\",\n" +
+                "    \"default-value\": \"default\",\n" +
                 "    \"required\": false,\n" +
                 "    \"secure\": false,\n" +
                 "    \"display-order\": \"4\"\n" +

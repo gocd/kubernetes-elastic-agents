@@ -37,7 +37,6 @@ public class KubernetesClusterTest {
         when(nodes.list()).thenReturn(new NodeList());
         when(kubernetesClient.nodes()).thenReturn(nodes);
 
-        when(pods.inNamespace(Constants.KUBERNETES_NAMESPACE)).thenReturn(pods);
         when(pods.withLabel(Constants.CREATED_BY_LABEL_KEY, Constants.PLUGIN_ID)).thenReturn(pods);
         when(pods.list()).thenReturn(new PodList());
         when(kubernetesClient.pods()).thenReturn(pods);

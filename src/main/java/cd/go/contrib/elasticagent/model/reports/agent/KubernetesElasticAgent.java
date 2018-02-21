@@ -92,7 +92,7 @@ public class KubernetesElasticAgent {
     }
 
     private static String getPodLogs(Pod pod, KubernetesClient client) {
-        return client.pods().inNamespace(Constants.KUBERNETES_NAMESPACE)
+        return client.pods()
                 .withName(pod.getMetadata().getName()).getLog(true);
     }
 

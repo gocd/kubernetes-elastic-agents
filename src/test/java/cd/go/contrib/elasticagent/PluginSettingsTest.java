@@ -37,6 +37,7 @@ public class PluginSettingsTest {
         pluginSettingsMap.put("kubernetes_cluster_url", "https://cloud.example.com");
         pluginSettingsMap.put("oauth_token", "foo-token");
         pluginSettingsMap.put("kubernetes_cluster_ca_cert", "foo-ca-certs");
+        pluginSettingsMap.put("namespace", "gocd");
 
         PluginSettings pluginSettings = PluginSettings.fromJSON(new Gson().toJson(pluginSettingsMap));
 
@@ -46,6 +47,7 @@ public class PluginSettingsTest {
         assertThat(pluginSettings.getClusterUrl(), is("https://cloud.example.com"));
         assertThat(pluginSettings.getCaCertData(), is("foo-ca-certs"));
         assertThat(pluginSettings.getOauthToken(), is("foo-token"));
+        assertThat(pluginSettings.getNamespace(), is("gocd"));
 
     }
 
@@ -59,5 +61,15 @@ public class PluginSettingsTest {
         assertThat(pluginSettings.getNamespace(), is("default"));
         assertNull(pluginSettings.getClusterUrl());
         assertNull(pluginSettings.getCaCertData());
+    }
+
+    @Test
+    public void shouldConsiderBlankStringAsNull() {
+        final Map<String, Object> pluginSettingsMap = new HashMap<>();
+        pluginSettingsMap.put("namespace", "   ");
+
+        PluginSettings pluginSettings = PluginSettings.fromJSON(new Gson().toJson(pluginSettingsMap));
+
+        assertThat(pluginSettings.getNamespace(), is("default"));
     }
 }

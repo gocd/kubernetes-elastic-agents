@@ -21,7 +21,7 @@ import org.junit.Test;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ValidatePluginSettingsTest {
+public class ValidatePluginSettingsRequestTest {
 
     @Test
     public void shouldDeserializeFromJSON() throws Exception {
@@ -39,7 +39,7 @@ public class ValidatePluginSettingsTest {
                 "  }\n" +
                 "}";
 
-        ValidatePluginSettings request = ValidatePluginSettings.fromJSON(json);
+        ValidatePluginSettingsRequest request = ValidatePluginSettingsRequest.fromJSON(json);
 
         assertThat(request.get("server_url"), is("http://localhost"));
         assertThat(request.get("username"), is("bob"));

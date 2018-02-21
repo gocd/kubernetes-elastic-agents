@@ -49,9 +49,9 @@ public class KubernetesClientFactory {
         final ConfigBuilder configBuilder = new ConfigBuilder()
                 .withOauthToken(pluginSettings.getOauthToken())
                 .withMasterUrl(pluginSettings.getClusterUrl())
-                .withCaCertData(pluginSettings.getCaCertData());
+                .withCaCertData(pluginSettings.getCaCertData())
+                .withNamespace(pluginSettings.getNamespace());
 
-        return new DefaultKubernetesClient(configBuilder.build())
-                .inNamespace(pluginSettings.getNamespace());
+        return new DefaultKubernetesClient(configBuilder.build());
     }
 }

@@ -63,9 +63,6 @@ public class KubernetesAgentInstancesIntegrationTest {
         initMocks(this);
         kubernetesAgentInstances = new KubernetesAgentInstances(mockedKubernetesClientFactory);
         when(mockedKubernetesClientFactory.client(any())).thenReturn(mockKubernetesClient);
-
-        when(pods.inNamespace(Constants.KUBERNETES_NAMESPACE)).thenReturn(pods);
-
         when(pods.create(any())).thenAnswer((Answer<Pod>) invocation -> {
             Object[] args = invocation.getArguments();
             return (Pod) args[0];
