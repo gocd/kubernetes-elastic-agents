@@ -248,7 +248,7 @@
 			<li class="job_label">
 				<span class="label">Job</span>
 				<a href="/go/tab/build/detail/${jobIdentifier.pipelineName!''}/${jobIdentifier.pipelineCounter!''}/${jobIdentifier.stageName!''}/${jobIdentifier.stageCounter!''}/${jobIdentifier.jobName!''}"
-				   title="View this job's details">${jobIdentifier.jobName!''}(${jobIdentifier.jobId!''})</a>
+				   title="View this job's details">${jobIdentifier.jobName!''}</a>
 			</li>
 
 			<li class="last">
