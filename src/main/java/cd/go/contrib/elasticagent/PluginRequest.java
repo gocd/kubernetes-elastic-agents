@@ -46,7 +46,7 @@ public class PluginRequest {
     }
 
     public PluginSettings getPluginSettings() throws ServerRequestFailedException {
-        DefaultGoApiRequest request = new DefaultGoApiRequest(Constants.REQUEST_SERVER_GET_PLUGIN_SETTINGS, API_VERSION, PLUGIN_IDENTIFIER);
+        DefaultGoApiRequest request = new DefaultGoApiRequest(Constants.REQUEST_SERVER_GET_PLUGIN_SETTINGS, PROCESSOR_API_VERSION, PLUGIN_IDENTIFIER);
         GoApiResponse response = accessor.submit(request);
 
         if (response.responseCode() != 200) {
@@ -62,7 +62,7 @@ public class PluginRequest {
     }
 
     public Agents listAgents() throws ServerRequestFailedException {
-        DefaultGoApiRequest request = new DefaultGoApiRequest(Constants.REQUEST_SERVER_LIST_AGENTS, API_VERSION, PLUGIN_IDENTIFIER);
+        DefaultGoApiRequest request = new DefaultGoApiRequest(Constants.REQUEST_SERVER_LIST_AGENTS, PROCESSOR_API_VERSION, PLUGIN_IDENTIFIER);
         GoApiResponse response = accessor.submit(request);
 
         if (response.responseCode() != 200) {
@@ -78,7 +78,7 @@ public class PluginRequest {
             return;
         }
 
-        DefaultGoApiRequest request = new DefaultGoApiRequest(Constants.REQUEST_SERVER_DISABLE_AGENT, API_VERSION, PLUGIN_IDENTIFIER);
+        DefaultGoApiRequest request = new DefaultGoApiRequest(Constants.REQUEST_SERVER_DISABLE_AGENT, PROCESSOR_API_VERSION, PLUGIN_IDENTIFIER);
         request.setRequestBody(Agent.toJSONArray(toBeDisabled));
 
         GoApiResponse response = accessor.submit(request);
@@ -94,7 +94,7 @@ public class PluginRequest {
             return;
         }
 
-        DefaultGoApiRequest request = new DefaultGoApiRequest(Constants.REQUEST_SERVER_DELETE_AGENT, API_VERSION, PLUGIN_IDENTIFIER);
+        DefaultGoApiRequest request = new DefaultGoApiRequest(Constants.REQUEST_SERVER_DELETE_AGENT, PROCESSOR_API_VERSION, PLUGIN_IDENTIFIER);
         request.setRequestBody(Agent.toJSONArray(toBeDeleted));
         GoApiResponse response = accessor.submit(request);
 
