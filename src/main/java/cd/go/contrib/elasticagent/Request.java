@@ -57,7 +57,7 @@ public enum Request {
     }
 
     private static class Constants {
-        public static final String ELASTIC_AGENT_REQUEST_PREFIX = "go.cd.elastic-agent";
+        public static final String ELASTIC_AGENT_REQUEST_PREFIX = "cd.go.elastic-agent";
         public static final String GO_PLUGIN_SETTINGS_PREFIX = "go.plugin-settings";
     }
 }
