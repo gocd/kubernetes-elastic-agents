@@ -74,6 +74,10 @@ processResources {
         filesMatching('plugin.properties') {
             expand project.pluginDesc
         }
+
+        filesMatching('version.properties') {
+            expand project.pluginDesc
+        }
     }
 }
 

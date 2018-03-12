@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 ThoughtWorks, Inc.
+ * Copyright 2018 ThoughtWorks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import static com.thoughtworks.go.plugin.api.response.DefaultGoApiResponse.SUCCE
 
 public class GetCapabilitiesExecutor implements RequestExecutor {
     public GoPluginApiResponse execute() {
-        String capabilities = new Capabilities(true).toJSON();
+        String capabilities = new Capabilities(true, true).toJSON();
         LOG.debug("Plugin capabilities:" + capabilities);
         return new DefaultGoPluginApiResponse(SUCCESS_RESPONSE_CODE, capabilities);
     }

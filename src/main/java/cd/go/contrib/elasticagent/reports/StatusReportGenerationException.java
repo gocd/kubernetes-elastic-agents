@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagent.model.reports;
+package cd.go.contrib.elasticagent.reports;
+
+import cd.go.contrib.elasticagent.model.JobIdentifier;
+
+import static java.lang.String.format;
 
 public class StatusReportGenerationException extends RuntimeException {
     private final String message;
     private final String detailedMessage;
-
-    public StatusReportGenerationException(String message) {
-        this(message, null);
-    }
+    private static final String MISSING_SERVICE = "Can not find a running pod for the provided %s '%s'.";
 
     public StatusReportGenerationException(String message, String detailedMessage) {
         this.message = message;
@@ -35,5 +36,13 @@ public class StatusReportGenerationException extends RuntimeException {
 
     public String getDetailedMessage() {
         return detailedMessage;
+    }
+
+    public static StatusReportGenerationException noRunningPod(JobIdentifier jobIdentifier) {
+        return new StatusReportGenerationException("Pod is not running.", format(MISSING_SERVICE, "job identifier", jobIdentifier.getRepresentation()));
+    }
+
+    public static StatusReportGenerationException noRunningPod(String elasticAgentId) {
+        return new StatusReportGenerationException("Pod is not running.", format(MISSING_SERVICE, "elastic agent id", elasticAgentId));
     }
 }

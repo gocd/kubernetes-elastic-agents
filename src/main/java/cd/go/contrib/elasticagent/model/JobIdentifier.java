@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 ThoughtWorks, Inc.
+ * Copyright 2018 ThoughtWorks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@ package cd.go.contrib.elasticagent.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import static cd.go.contrib.elasticagent.utils.Util.GSON;
+import static java.text.MessageFormat.format;
+
 public class JobIdentifier {
     @Expose
     @SerializedName("pipeline_name")
@@ -26,29 +29,30 @@ public class JobIdentifier {
 
     @Expose
     @SerializedName("pipeline_counter")
-    private Long pipelineCounter;
+    private final Long pipelineCounter;
 
     @Expose
     @SerializedName("pipeline_label")
-    private String pipelineLabel;
+    private final String pipelineLabel;
 
     @Expose
     @SerializedName("stage_name")
-    private String stageName;
+    private final String stageName;
 
     @Expose
     @SerializedName("stage_counter")
-    private String stageCounter;
+    private final String stageCounter;
 
     @Expose
     @SerializedName("job_name")
-    private String jobName;
+    private final String jobName;
 
     @Expose
     @SerializedName("job_id")
-    private Long jobId;
+    private final Long jobId;
 
     public JobIdentifier() {
+        this(null, null, null, null, null, null, null);
     }
 
     public JobIdentifier(Long jobId) {
@@ -93,8 +97,33 @@ public class JobIdentifier {
         return jobId;
     }
 
-    public String representation() {
-        return pipelineName + "/" + pipelineCounter + "/" + stageName + "/" + stageCounter + "/" + jobName;
+    public String getRepresentation() {
+        return String.format("%s/%s/%s/%s/%s", pipelineName, pipelineCounter, stageName, stageCounter, jobName);
+    }
+
+    public String getPipelineHistoryPageLink() {
+        return String.format("/go/tab/pipeline/history/%s", pipelineName);
+    }
+
+    public String getVsmPageLink() {
+        return String.format("/go/pipelines/value_stream_map/%s/%s", pipelineName, pipelineCounter);
+    }
+
+    public String getStageDetailsPageLink() {
+        return String.format("/go/pipelines/%s/%s/%s/%s", pipelineName, pipelineCounter, stageName, stageCounter);
+    }
+
+    public String getJobDetailsPageLink() {
+        return String.format("/go/tab/build/detail/%s", getRepresentation());
+    }
+
+    public String toJson() {
+        return GSON.toJson(this);
+    }
+
+    @Override
+    public String toString() {
+        return format("JobIdentifier'{'pipelineName=''{0}'', pipelineCounter={1}, pipelineLabel=''{2}'', stageName=''{3}'', stageCounter=''{4}'', jobName=''{5}'', jobId={6}'}'", pipelineName, pipelineCounter, pipelineLabel, stageName, stageCounter, jobName, jobId);
     }
 
     @Override
@@ -104,38 +133,31 @@ public class JobIdentifier {
 
         JobIdentifier that = (JobIdentifier) o;
 
-        if (pipelineCounter != that.pipelineCounter) return false;
-        if (jobId != that.jobId) return false;
         if (pipelineName != null ? !pipelineName.equals(that.pipelineName) : that.pipelineName != null) return false;
+        if (pipelineCounter != null ? !pipelineCounter.equals(that.pipelineCounter) : that.pipelineCounter != null)
+            return false;
         if (pipelineLabel != null ? !pipelineLabel.equals(that.pipelineLabel) : that.pipelineLabel != null)
             return false;
         if (stageName != null ? !stageName.equals(that.stageName) : that.stageName != null) return false;
         if (stageCounter != null ? !stageCounter.equals(that.stageCounter) : that.stageCounter != null) return false;
-        return jobName != null ? jobName.equals(that.jobName) : that.jobName == null;
+        if (jobName != null ? !jobName.equals(that.jobName) : that.jobName != null) return false;
+        return jobId != null ? jobId.equals(that.jobId) : that.jobId == null;
     }
 
     @Override
     public int hashCode() {
         int result = pipelineName != null ? pipelineName.hashCode() : 0;
-        result = 31 * result + (int) (pipelineCounter ^ (pipelineCounter >>> 32));
+        result = 31 * result + (pipelineCounter != null ? pipelineCounter.hashCode() : 0);
         result = 31 * result + (pipelineLabel != null ? pipelineLabel.hashCode() : 0);
         result = 31 * result + (stageName != null ? stageName.hashCode() : 0);
         result = 31 * result + (stageCounter != null ? stageCounter.hashCode() : 0);
         result = 31 * result + (jobName != null ? jobName.hashCode() : 0);
-        result = 31 * result + (int) (jobId ^ (jobId >>> 32));
+        result = 31 * result + (jobId != null ? jobId.hashCode() : 0);
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "JobIdentifier{" +
-                "pipelineName='" + pipelineName + '\'' +
-                ", pipelineCounter=" + pipelineCounter +
-                ", pipelineLabel='" + pipelineLabel + '\'' +
-                ", staqeName='" + stageName + '\'' +
-                ", stageCounter='" + stageCounter + '\'' +
-                ", jobName='" + jobName + '\'' +
-                ", jobId=" + jobId +
-                '}';
+    public static JobIdentifier fromJson(String json) {
+        return GSON.fromJson(json, JobIdentifier.class);
     }
+
 }
