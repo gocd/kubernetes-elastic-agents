@@ -33,7 +33,7 @@ public class GetPluginConfigurationExecutorTest {
     @Test
     public void shouldSerializeAllFields() {
         GoPluginApiResponse response = new GetPluginConfigurationExecutor().execute();
-        Map hashMap = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String, Object>>() {
+        Map<String, Object> hashMap = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String, Object>>() {
         }.getType());
         assertEquals("Are you using anonymous inner classes — see https://github.com/google/gson/issues/298",
                 hashMap.size(),
