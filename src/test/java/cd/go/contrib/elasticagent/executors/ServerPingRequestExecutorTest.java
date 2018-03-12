@@ -51,7 +51,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
     @Mock
     private Pod mockedPod;
     @Mock
-    private PodResource podResource;
+    private PodResource<Pod, DoneablePod> podResource;
     private ObjectMeta objectMetadata;
 
     @Before
