@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 ThoughtWorks, Inc.
+ * Copyright 2018 ThoughtWorks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import cd.go.contrib.elasticagent.KubernetesClientFactory;
 import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.builders.PluginStatusReportViewBuilder;
 import cd.go.contrib.elasticagent.model.KubernetesCluster;
-import cd.go.contrib.elasticagent.model.reports.StatusReportGenerationErrorHandler;
+import cd.go.contrib.elasticagent.reports.StatusReportGenerationErrorHandler;
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -47,7 +47,7 @@ public class StatusReportExecutor {
 
     public GoPluginApiResponse execute() {
         try {
-            LOG.info("[status-report] Generating status report");
+            LOG.info("[status-report] Generating status report.");
             KubernetesClient client = factory.client(pluginRequest.getPluginSettings());
             final KubernetesCluster kubernetesCluster = new KubernetesCluster(client);
             final Template template = statusReportViewBuilder.getTemplate("status-report.template.ftlh");

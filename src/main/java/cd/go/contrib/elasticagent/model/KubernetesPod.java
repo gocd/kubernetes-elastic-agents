@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 ThoughtWorks, Inc.
+ * Copyright 2018 ThoughtWorks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public class KubernetesPod {
     private JobIdentifier jobIdentifier;
 
     public KubernetesPod(Pod pod) throws ParseException {
-        jobIdentifier = Util.GSON.fromJson(pod.getMetadata().getAnnotations().get(Constants.JOB_IDENTIFIER_LABEL_KEY), JobIdentifier.class);
+        jobIdentifier = JobIdentifier.fromJson(pod.getMetadata().getAnnotations().get(Constants.JOB_IDENTIFIER_LABEL_KEY));
         podName = pod.getMetadata().getName();
         image = pod.getSpec().getContainers().get(0).getImage();
         podIP = pod.getStatus().getPodIP();
@@ -68,8 +68,8 @@ public class KubernetesPod {
     }
 
     public String getJobInformation() {
-        if(jobIdentifier != null) {
-            return jobIdentifier.representation();
+        if (jobIdentifier != null) {
+            return jobIdentifier.getRepresentation();
         }
         return "No Job Information Available!";
     }

@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagent.model.reports;
+package cd.go.contrib.elasticagent.reports;
 
 import cd.go.contrib.elasticagent.builders.PluginStatusReportViewBuilder;
-import cd.go.contrib.elasticagent.model.reports.agent.StatusReportGenerationError;
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import freemarker.template.Template;
 
+import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static java.text.MessageFormat.format;
 
 public class StatusReportGenerationErrorHandler {
 
     public static GoPluginApiResponse handle(PluginStatusReportViewBuilder builder, Exception e) {
         try {
+            LOG.error(format("Error while generating status report: {0}", e.getMessage()), e);
             final Template template = builder.getTemplate("error.template.ftlh");
             final String errorView = builder.build(template, new StatusReportGenerationError(e));
 
@@ -37,7 +38,8 @@ public class StatusReportGenerationErrorHandler {
 
             return DefaultGoPluginApiResponse.success(responseJSON.toString());
         } catch (Exception ex) {
-            return DefaultGoPluginApiResponse.error(format("Error while generating status report: {0}.", e.toString()));
+            LOG.error(format("Failed to generate error report: {0}", e.getMessage()), e);
+            return DefaultGoPluginApiResponse.error(format("Failed to generate error report: {0}", e.toString()));
         }
     }
 

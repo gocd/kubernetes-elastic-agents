@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 ThoughtWorks, Inc.
+ * Copyright 2018 ThoughtWorks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,13 @@ public class Capabilities {
     @SerializedName("supports_status_report")
     private boolean supportsStatusReport;
 
-    public Capabilities(boolean supportsStatusReport) {
+    @Expose
+    @SerializedName("supports_agent_status_report")
+    private boolean supportsAgentStatusReport;
+
+    public Capabilities(boolean supportsStatusReport, boolean supportsAgentStatusReport) {
         this.supportsStatusReport = supportsStatusReport;
+        this.supportsAgentStatusReport = supportsAgentStatusReport;
     }
 
     public static Capabilities fromJSON(String json) {

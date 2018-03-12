@@ -1,3 +1,19 @@
+/*
+ * Copyright 2018 ThoughtWorks, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package cd.go.contrib.elasticagent.executors;
 
 import cd.go.contrib.elasticagent.Constants;
@@ -5,9 +21,9 @@ import cd.go.contrib.elasticagent.KubernetesClientFactory;
 import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.builders.PluginStatusReportViewBuilder;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
-import cd.go.contrib.elasticagent.model.reports.StatusReportGenerationErrorHandler;
-import cd.go.contrib.elasticagent.model.reports.StatusReportGenerationException;
 import cd.go.contrib.elasticagent.model.reports.agent.KubernetesElasticAgent;
+import cd.go.contrib.elasticagent.reports.StatusReportGenerationErrorHandler;
+import cd.go.contrib.elasticagent.reports.StatusReportGenerationException;
 import cd.go.contrib.elasticagent.requests.AgentStatusReportRequest;
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
@@ -71,7 +87,7 @@ public class AgentStatusReportExecutor {
                     .withLabel(Constants.JOB_ID_LABEL_KEY, String.valueOf(jobIdentifier.getJobId()))
                     .list().getItems().get(0);
         } catch (Exception e) {
-            throw new StatusReportGenerationException(format("Can not find a running Pod for the provided job identifier: {0}.", jobIdentifier.representation()));
+            throw StatusReportGenerationException.noRunningPod(jobIdentifier);
         }
     }
 
@@ -83,6 +99,6 @@ public class AgentStatusReportExecutor {
             }
         }
 
-        throw new StatusReportGenerationException(format("Can not find a running Pod for the provided elastic agent id: {0}.", elasticAgentId));
+        throw StatusReportGenerationException.noRunningPod(elasticAgentId);
     }
 }

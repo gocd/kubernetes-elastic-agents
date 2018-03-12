@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 ThoughtWorks, Inc.
+ * Copyright 2018 ThoughtWorks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,14 @@ package cd.go.contrib.elasticagent;
 
 import cd.go.contrib.elasticagent.executors.*;
 import cd.go.contrib.elasticagent.requests.*;
+import cd.go.contrib.elasticagent.utils.Util;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.GoPlugin;
 import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
 import com.thoughtworks.go.plugin.api.annotation.Extension;
+import com.thoughtworks.go.plugin.api.annotation.Load;
 import com.thoughtworks.go.plugin.api.exceptions.UnhandledRequestTypeException;
+import com.thoughtworks.go.plugin.api.info.PluginContext;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
@@ -43,8 +46,13 @@ public class KubernetesPlugin implements GoPlugin {
         agentInstances = new KubernetesAgentInstances();
     }
 
+    @Load
+    public void onLoad(PluginContext ctx) {
+        LOG.info("Loading plugin " + Util.pluginId() + " version " + Util.fullVersion());
+    }
+
     @Override
-    public GoPluginApiResponse handle(GoPluginApiRequest request) throws UnhandledRequestTypeException {
+    public GoPluginApiResponse handle(GoPluginApiRequest request) {
         try {
             switch (Request.fromString(request.requestName())) {
                 case REQUEST_GET_CAPABILITIES:

@@ -16,20 +16,52 @@
 
 package cd.go.contrib.elasticagent.model.reports.agent;
 
+import cd.go.contrib.elasticagent.builders.PluginStatusReportViewBuilder;
+import cd.go.contrib.elasticagent.reports.StatusReportGenerationErrorHandler;
+import cd.go.contrib.elasticagent.reports.StatusReportGenerationException;
+import com.google.gson.JsonParser;
+import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
+import freemarker.template.TemplateException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.junit.Test;
 
+import java.io.IOException;
+
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class StatusReportGenerationErrorTest {
 
     @Test
-    public void shouldConvertThrowableToStatusReportGenerationErrorObject() {
-        final StatusReportGenerationError statusReportGenerationError = new StatusReportGenerationError(new RuntimeException("Some error."));
+    public void shouldGenerateErrorViewForException() {
+        final StatusReportGenerationException exception = StatusReportGenerationException.noRunningPod("foo");
 
-        assertThat(statusReportGenerationError.getMessage(), is("Some error."));
-        assertThat(statusReportGenerationError.getStacktrace(), startsWith("java.lang.RuntimeException: Some error.\n" +
-                "\tat cd.go.contrib.elasticagent.model.reports.agent.StatusReportGenerationErrorTest.shouldConvertThrowableToStatusReportGenerationErrorObject"));
+        final GoPluginApiResponse response = StatusReportGenerationErrorHandler.handle(PluginStatusReportViewBuilder.instance(), exception);
+
+        assertThat(response.responseCode(), is(200));
+
+        final String view = new JsonParser().parse(response.responseBody()).getAsJsonObject().get("view").getAsString();
+        final Document document = Jsoup.parse(view);
+
+        assertThat(document.select(".outer-container .container .error-container blockquote header").text(), is("Pod is not running."));
+        assertThat(document.select(".outer-container .container .error-container blockquote p").text(), is("Can not find a running pod for the provided elastic agent id 'foo'."));
+    }
+
+    @Test
+    public void shouldReturnErrorResponseWhenItFailsToGenerateErrorView() throws IOException, TemplateException {
+        final StatusReportGenerationException exception = StatusReportGenerationException.noRunningPod("foo");
+        final PluginStatusReportViewBuilder viewBuilder = mock(PluginStatusReportViewBuilder.class);
+
+        when(viewBuilder.build(any(), any()))
+                .thenThrow(new RuntimeException("error-in-generating-view"));
+
+        final GoPluginApiResponse response = StatusReportGenerationErrorHandler.handle(viewBuilder, exception);
+
+        assertThat(response.responseCode(), is(500));
+        assertThat(response.responseBody(), is("Failed to generate error report: cd.go.contrib.elasticagent.reports.StatusReportGenerationException: Pod is not running."));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 ThoughtWorks, Inc.
+ * Copyright 2018 ThoughtWorks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,6 @@ public class GetCapabilitiesExecutorTest {
         final GoPluginApiResponse response = new GetCapabilitiesExecutor().execute();
 
         assertThat(response.responseCode(), is(200));
-        JSONAssert.assertEquals("{\"supports_status_report\":true}", response.responseBody(), true);
+        JSONAssert.assertEquals("{\"supports_status_report\":true,\"supports_agent_status_report\":true}", response.responseBody(), true);
     }
 }
