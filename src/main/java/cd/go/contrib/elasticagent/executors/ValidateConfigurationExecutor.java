@@ -74,18 +74,19 @@ public class ValidateConfigurationExecutor implements RequestExecutor {
     }
 
     private void validateNamespaceExistence() {
+        final String namespace = validatePluginSettingsRequest.getPluginSettingsMap().getNamespace();
         try {
-            final String namespace = validatePluginSettingsRequest.getPluginSettingsMap().getNamespace();
             final KubernetesClient client = factory.client(validatePluginSettingsRequest.getPluginSettingsMap());
             final List<Namespace> namespaceList = client.namespaces().list().getItems();
-            
+
             if (namespaceList.stream().anyMatch(n -> n.getMetadata().getName().equals(namespace))) {
                 return;
             }
 
             result.add(error(NAMESPACE.key(), format("Namespace `{0}` does not exist in you cluster. Run \"kubectl create namespace {1}\" to create a namespace.", namespace, namespace)));
         } catch (Exception e) {
-            result.add(error(NAMESPACE.key(), format("Failed to validate namespace existence: {0} Please check plugin log for more detail.", e.getMessage())));
+            LOG.error(format("Failed to validate namespace existence: {0} Please check plugin log for more detail.", namespace), e);
+            result.add(error(NAMESPACE.key(), format("Failed to validate namespace existence: {0} Please check plugin log for more detail.", namespace)));
         }
     }
 
