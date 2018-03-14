@@ -41,8 +41,8 @@ public class PluginSettings {
     private String clusterUrl;
 
     @Expose
-    @SerializedName("oauth_token")
-    private String oauthToken;
+    @SerializedName("security_token")
+    private String securityToken;
 
     @Expose
     @SerializedName("kubernetes_cluster_ca_cert")
@@ -86,8 +86,8 @@ public class PluginSettings {
         return goServerUrl;
     }
 
-    public String getOauthToken() {
-        return oauthToken;
+    public String getSecurityToken() {
+        return securityToken;
     }
 
     public String getClusterUrl() {
@@ -127,7 +127,7 @@ public class PluginSettings {
         if (maxPendingPods != null ? !maxPendingPods.equals(that.maxPendingPods) : that.maxPendingPods != null)
             return false;
         if (clusterUrl != null ? !clusterUrl.equals(that.clusterUrl) : that.clusterUrl != null) return false;
-        if (oauthToken != null ? !oauthToken.equals(that.oauthToken) : that.oauthToken != null) return false;
+        if (securityToken != null ? !securityToken.equals(that.securityToken) : that.securityToken != null) return false;
         if (clusterCACertData != null ? !clusterCACertData.equals(that.clusterCACertData) : that.clusterCACertData != null)
             return false;
         return namespace != null ? namespace.equals(that.namespace) : that.namespace == null;
@@ -139,7 +139,7 @@ public class PluginSettings {
         result = 31 * result + (autoRegisterTimeout != null ? autoRegisterTimeout.hashCode() : 0);
         result = 31 * result + (maxPendingPods != null ? maxPendingPods.hashCode() : 0);
         result = 31 * result + (clusterUrl != null ? clusterUrl.hashCode() : 0);
-        result = 31 * result + (oauthToken != null ? oauthToken.hashCode() : 0);
+        result = 31 * result + (securityToken != null ? securityToken.hashCode() : 0);
         result = 31 * result + (clusterCACertData != null ? clusterCACertData.hashCode() : 0);
         result = 31 * result + (namespace != null ? namespace.hashCode() : 0);
         return result;

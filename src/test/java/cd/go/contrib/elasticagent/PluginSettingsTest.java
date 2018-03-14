@@ -35,7 +35,7 @@ public class PluginSettingsTest {
         pluginSettingsMap.put("auto_register_timeout", "13");
         pluginSettingsMap.put("pending_pods_count", 14);
         pluginSettingsMap.put("kubernetes_cluster_url", "https://cloud.example.com");
-        pluginSettingsMap.put("oauth_token", "foo-token");
+        pluginSettingsMap.put("security_token", "foo-token");
         pluginSettingsMap.put("kubernetes_cluster_ca_cert", "foo-ca-certs");
         pluginSettingsMap.put("namespace", "gocd");
 
@@ -46,7 +46,7 @@ public class PluginSettingsTest {
         assertThat(pluginSettings.getMaxPendingPods(), is(14));
         assertThat(pluginSettings.getClusterUrl(), is("https://cloud.example.com"));
         assertThat(pluginSettings.getCaCertData(), is("foo-ca-certs"));
-        assertThat(pluginSettings.getOauthToken(), is("foo-token"));
+        assertThat(pluginSettings.getSecurityToken(), is("foo-token"));
         assertThat(pluginSettings.getNamespace(), is("gocd"));
 
     }
