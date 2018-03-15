@@ -33,7 +33,7 @@ public class GetPluginConfigurationExecutor implements RequestExecutor {
     public static final Field MAX_PENDING_PODS = new PositiveNumberField("pending_pods_count", "Maximum pending pods", "10", false, false, "2");
     public static final Field CLUSTER_URL = new HttpsURLField("kubernetes_cluster_url", "Cluster URL", true, "3");
     public static final Field NAMESPACE = new Field("namespace", "Namespace", "default", false, false, "4");
-    public static final Field OAUTH_TOKEN = new NonBlankField("oauth_token", "Oauth token", true, "5");
+    public static final Field SECURITY_TOKEN = new NonBlankField("security_token", "Security token", true, "5");
     public static final Field CLUSTER_CA_CERT = new Field("kubernetes_cluster_ca_cert", "Cluster ca certificate", null, false, true, "6");
 
     static {
@@ -42,7 +42,7 @@ public class GetPluginConfigurationExecutor implements RequestExecutor {
         FIELDS.put(MAX_PENDING_PODS.key(), MAX_PENDING_PODS);
         FIELDS.put(CLUSTER_URL.key(), CLUSTER_URL);
         FIELDS.put(CLUSTER_CA_CERT.key(), CLUSTER_CA_CERT);
-        FIELDS.put(OAUTH_TOKEN.key(), OAUTH_TOKEN);
+        FIELDS.put(SECURITY_TOKEN.key(), SECURITY_TOKEN);
         FIELDS.put(NAMESPACE.key(), NAMESPACE);
     }
 

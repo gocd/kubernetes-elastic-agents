@@ -87,8 +87,8 @@ public class ValidateConfigurationExecutorTest {
                 "    \"key\": \"kubernetes_cluster_url\"\n" +
                 "  },\n" +
                 "  {\n" +
-                "    \"message\": \"Oauth token must not be blank.\",\n" +
-                "    \"key\": \"oauth_token\"\n" +
+                "    \"message\": \"Security token must not be blank.\",\n" +
+                "    \"key\": \"security_token\"\n" +
                 "  }\n" +
                 "]", response.responseBody(), true);
     }
@@ -100,7 +100,7 @@ public class ValidateConfigurationExecutorTest {
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
         settings.put("go_server_url", "https://ci.example.com/go");
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
-        settings.put("oauth_token", "some-token");
+        settings.put("security_token", "some-token");
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, null, factory).execute();
 
         assertThat(response.responseCode(), is(200));
@@ -114,7 +114,7 @@ public class ValidateConfigurationExecutorTest {
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
         serverInfo.setSecureSiteUrl(null);
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
-        settings.put("oauth_token", "some-token");
+        settings.put("security_token", "some-token");
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, pluginRequest, factory).execute();
 
         assertThat(response.responseCode(), is(200));
@@ -133,7 +133,7 @@ public class ValidateConfigurationExecutorTest {
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
         settings.put("go_server_url", "foo.com/go(");
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
-        settings.put("oauth_token", "some-token");
+        settings.put("security_token", "some-token");
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, pluginRequest, factory).execute();
 
         assertThat(response.responseCode(), is(200));
@@ -152,7 +152,7 @@ public class ValidateConfigurationExecutorTest {
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
         settings.put("go_server_url", "https://foo.com");
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
-        settings.put("oauth_token", "some-token");
+        settings.put("security_token", "some-token");
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, pluginRequest, factory).execute();
 
         assertThat(response.responseCode(), is(200));
@@ -178,8 +178,8 @@ public class ValidateConfigurationExecutorTest {
 
         JSONAssert.assertEquals("[" +
                 "  {\n" +
-                "    \"message\": \"Oauth token must not be blank.\",\n" +
-                "    \"key\": \"oauth_token\"\n" +
+                "    \"message\": \"Security token must not be blank.\",\n" +
+                "    \"key\": \"security_token\"\n" +
                 "  }\n" +
                 "]", response.responseBody(), true);
     }
@@ -191,7 +191,7 @@ public class ValidateConfigurationExecutorTest {
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
         settings.put("go_server_url", "https://ci.example.com/go");
         settings.put("kubernetes_cluster_url", "https://cluster.example.com");
-        settings.put("oauth_token", "some-token");
+        settings.put("security_token", "some-token");
         settings.put("namespace", "gocd");
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, null, factory).execute();
 
