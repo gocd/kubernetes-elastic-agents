@@ -51,13 +51,15 @@ public class ServerPingRequestExecutorTest extends BaseTest {
     @Mock
     private Pod mockedPod;
     @Mock
+    private PluginRequest pluginRequest;
+    @Mock
     private PodResource<Pod, DoneablePod> podResource;
     private ObjectMeta objectMetadata;
 
     @Before
     public void setUp() {
         initMocks(this);
-        when(factory.client(any(PluginSettings.class))).thenReturn(mockedClient);
+        when(factory.client(any())).thenReturn(mockedClient);
         when(mockedClient.pods()).thenReturn(mockedOperation);
         when(mockedOperation.create(any(Pod.class))).thenAnswer(new Answer<Pod>() {
             @Override
@@ -74,6 +76,10 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         objectMetadata.setCreationTimestamp(getSimpleDateFormat().format(new Date()));
 
         when(mockedPod.getMetadata()).thenReturn(objectMetadata);
+
+        final PodList podList = mock(PodList.class);
+        when(mockedOperation.list()).thenReturn(podList);
+        when(podList.getItems()).thenReturn(Collections.emptyList());
     }
 
     @Test
@@ -122,7 +128,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         KubernetesAgentInstances agentInstances = new KubernetesAgentInstances(factory);
         HashMap<String, String> properties = new HashMap<>();
         properties.put("Image", "foo");
-        KubernetesInstance container = agentInstances.create(new CreateAgentRequest(null, properties, null, new JobIdentifier(1L)), createSettings(), null);
+        KubernetesInstance container = agentInstances.create(new CreateAgentRequest(null, properties, null, new JobIdentifier(1L)), createSettings(), pluginRequest);
 
         agentInstances.clock = new Clock.TestClock().forward(Period.minutes(11));
         PluginRequest pluginRequest = mock(PluginRequest.class);

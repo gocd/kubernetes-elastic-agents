@@ -72,7 +72,6 @@ public class KubernetesPlugin implements GoPlugin {
                 case REQUEST_VALIDATE_PROFILE:
                     return ProfileValidateRequest.fromJSON(request.requestBody()).executor().execute();
                 case REQUEST_CREATE_AGENT:
-                    refreshInstances();
                     return CreateAgentRequest.fromJSON(request.requestBody()).executor(agentInstances, pluginRequest).execute();
                 case REQUEST_SHOULD_ASSIGN_WORK:
                     refreshInstances();
