@@ -150,7 +150,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
 
     @Override
     public void refreshAll(PluginRequest pluginRequest) {
-        LOG.debug("[Refresh Instances]. Syncing k8s elastic agent pod information.");
+        LOG.debug("[Refresh Instances] Syncing k8s elastic agent pod information.");
         KubernetesClient client = factory.client(pluginRequest.getPluginSettings());
         PodList list = client.pods().list();
 

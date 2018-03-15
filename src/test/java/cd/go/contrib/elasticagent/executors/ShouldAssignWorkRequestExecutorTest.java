@@ -33,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -40,6 +41,7 @@ import java.util.UUID;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -52,14 +54,21 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     @Mock
     private KubernetesClient mockedClient;
     @Mock
+    private PluginRequest pluginRequest;
+    @Mock
     private MixedOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>> mockedOperation;
     private String environment = "QA";
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        when(factory.client(any(PluginSettings.class))).thenReturn(mockedClient);
+        when(factory.client(any())).thenReturn(mockedClient);
         when(mockedClient.pods()).thenReturn(mockedOperation);
+        
+        final PodList podList = mock(PodList.class);
+        when(mockedOperation.list()).thenReturn(podList);
+        when(podList.getItems()).thenReturn(Collections.emptyList());
+
         when(mockedOperation.create(any(Pod.class))).thenAnswer(new Answer<Pod>() {
             @Override
             public Pod answer(InvocationOnMock invocation) throws Throwable {
@@ -71,7 +80,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
         agentInstances = new KubernetesAgentInstances(factory);
         properties.put("foo", "bar");
         properties.put("Image", "gocdcontrib/ubuntu-docker-elastic-agent");
-        instance = agentInstances.create(new CreateAgentRequest(UUID.randomUUID().toString(), properties, environment, new JobIdentifier(100L)), createSettings(), null);
+        instance = agentInstances.create(new CreateAgentRequest(UUID.randomUUID().toString(), properties, environment, new JobIdentifier(100L)), createSettings(), pluginRequest);
     }
 
     @Test

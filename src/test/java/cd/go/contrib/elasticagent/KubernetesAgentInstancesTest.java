@@ -71,6 +71,12 @@ public class KubernetesAgentInstancesTest {
         when(factory.client(mockPluginSettings)).thenReturn(mockKubernetesClient);
         JobIdentifier jobId = new JobIdentifier("test", 1L, "Test pipeline", "test name", "1", "test job", 100L);
         when(mockCreateAgentRequest.jobIdentifier()).thenReturn(jobId);
+
+        final PodList podList = mock(PodList.class);
+        when(mockKubernetesClient.pods()).thenReturn(mockedOperation);
+        when(mockPluginRequest.getPluginSettings()).thenReturn(mockPluginSettings);
+        when(mockedOperation.list()).thenReturn(podList);
+        when(podList.getItems()).thenReturn(Collections.emptyList());
     }
 
     @Test
@@ -141,11 +147,6 @@ public class KubernetesAgentInstancesTest {
 
     @Test
     public void shouldSyncPodsStateFromClusterBeforeCreatingPod() {
-        final PodList podList = mock(PodList.class);
-        when(mockKubernetesClient.pods()).thenReturn(mockedOperation);
-        when(mockPluginRequest.getPluginSettings()).thenReturn(mockPluginSettings);
-        when(mockedOperation.list()).thenReturn(podList);
-        when(podList.getItems()).thenReturn(Collections.emptyList());
         when(mockKubernetesInstanceFactory.create(mockCreateAgentRequest, mockPluginSettings, mockKubernetesClient, mockPluginRequest, false)).
                 thenReturn(new KubernetesInstance(new DateTime(), "test", "test-agent", new HashMap<>(), 100L, PodState.Running));
 
