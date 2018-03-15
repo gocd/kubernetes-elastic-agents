@@ -116,8 +116,8 @@
 			<label>Security token
 				<span class='asterix'>*</span>
 			</label>
-			<textarea rows="5" ng-model="oauth_token"></textarea>
-			<span class="form_error form-error" ng-show="GOINPUTNAME[oauth_token].$error.server">{{GOINPUTNAME[oauth_token].$error.server}}</span>
+			<textarea rows="5" ng-model="security_token"></textarea>
+			<span class="form_error form-error" ng-show="GOINPUTNAME[security_token].$error.server">{{GOINPUTNAME[security_token].$error.server}}</span>
 			<label class="form-help-content">
 				Get the service account token by running following command <code>kubectl describe secret
 				TOKEN_NAME</code> and copy the value of token here.

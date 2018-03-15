@@ -80,8 +80,8 @@ public class GetPluginConfigurationExecutorTest {
                 "    \"secure\": false,\n" +
                 "    \"display-order\": \"4\"\n" +
                 "  },\n" +
-                "  \"oauth_token\": {\n" +
-                "    \"display-name\": \"Oauth token\",\n" +
+                "  \"security_token\": {\n" +
+                "    \"display-name\": \"Security token\",\n" +
                 "    \"required\": true,\n" +
                 "    \"secure\": true,\n" +
                 "    \"display-order\": \"5\"\n" +
