@@ -58,15 +58,16 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     }
 
     @Override
-    public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) throws Exception {
+    public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) {
         final Integer maxAllowedContainers = settings.getMaxPendingPods();
         synchronized (instances) {
+            refreshAll(pluginRequest);
             doWithLockOnSemaphore(new SetupSemaphore(maxAllowedContainers, instances, semaphore));
 
             if (semaphore.tryAcquire()) {
                 return createKubernetesInstance(request, settings, pluginRequest);
             } else {
-                LOG.warn(format("The number of pending kubernetes pods is currently at the maximum permissible limit ({0}). Total kubernetes pods ({1}). Not creating any more containers.", maxAllowedContainers, instances.size()));
+                LOG.warn(format("Create Agent Request] The number of pending kubernetes pods is currently at the maximum permissible limit ({0}). Total kubernetes pods ({1}). Not creating any more containers.", maxAllowedContainers, instances.size()));
                 return null;
             }
         }
@@ -107,7 +108,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     }
 
     @Override
-    public void terminate(String agentId, PluginSettings settings) throws Exception {
+    public void terminate(String agentId, PluginSettings settings) {
         KubernetesInstance instance = instances.get(agentId);
         if (instance != null) {
             KubernetesClient client = factory.client(settings);
