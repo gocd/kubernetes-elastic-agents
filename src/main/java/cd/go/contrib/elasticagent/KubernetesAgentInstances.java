@@ -127,8 +127,8 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         }
 
         LOG.warn(format("Terminating instances that did not register {0}.", toTerminate.instances.keySet()));
-        for (KubernetesInstance container : toTerminate.instances.values()) {
-            terminate(container.name(), settings);
+        for (String podName : toTerminate.instances.keySet()) {
+            terminate(podName, settings);
         }
     }
 
@@ -154,6 +154,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         KubernetesClient client = factory.client(pluginRequest.getPluginSettings());
         PodList list = client.pods().list();
 
+        instances.clear();
         for (Pod pod : list.getItems()) {
             Map<String, String> podLabels = pod.getMetadata().getLabels();
             if (podLabels != null) {
@@ -162,6 +163,8 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
                 }
             }
         }
+
+        LOG.info(String.format("[refresh-pod-state] Pod information successfully synced. All(Running/Pending) pod count is %d.", instances.size()));
     }
 
     @Override
@@ -182,7 +185,13 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
             if (knownAgents.containsAgentWithId(instanceName)) {
                 continue;
             }
-            Pod pod = client.pods().withName(instanceName).get();
+
+            Pod pod = getPod(client, instanceName);
+            if (pod == null) {
+                LOG.debug(String.format("[server-ping] Pod with name %s is already deleted.", instanceName));
+                continue;
+            }
+
             Date createdAt = getSimpleDateFormat().parse(pod.getMetadata().getCreationTimestamp());
             DateTime dateTimeCreated = new DateTime(createdAt);
 
@@ -191,6 +200,15 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
             }
         }
         return unregisteredInstances;
+    }
+
+    private Pod getPod(KubernetesClient client, String instanceName) {
+        try {
+            return client.pods().withName(instanceName).get();
+        } catch (Exception e) {
+            LOG.warn(String.format("[server-ping] Failed to fetch pod[%s] information:", instanceName), e);
+            return null;
+        }
     }
 
     public boolean instanceExists(KubernetesInstance instance) {
