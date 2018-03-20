@@ -2,7 +2,7 @@
 
 ## Requirements
 
-* GoCD server version v17.9.0 or above
+* GoCD server version v18.2.0 or above
 * Kubernetes Cluster
 
 ## Installation
@@ -18,17 +18,25 @@ on Windows.
 1. Login to `GoCD server` as admin and navigate to **_Admin_** _>_ **_Plugins_**
 2. Click on **_Settings icon_** of `Kubernetes Elastic Agent Plugin` to update plugin settings configuration.
     1. Optionally specify `Go Server URL`, if GoCD secure site URL is not configured.
-    2. Specify `Agent auto-register Timeout`
-    3. Specify `Kubernetes Cluster URL`.
-    4. Optionally specify `Kubernetes Cluster Username`, `Kubernetes Cluster Password` and `Kubernetes Cluster CA Certificate`, for secure Kubernetes Cluster.
-
+    2. Optionally Specify `Agent auto-register Timeout`, Defaults to `10 mintues`.
+    3. Optionally Specify `Maximum pending pods`, Defaults to `10 pods`.
+    4. Specify `Kubernetes Cluster URL`.
+    5. Optionally Specify `Namespace`, Defaults to `default`.
+    6. Specify `Security token`, The token must have permission to do following operations -
+        ```
+        - nodes: list, get
+        - events: list, watch
+        - namespace: list, get
+        - pods, pods/log: *
+        ```
+    7. Optionally, Specify `Cluster ca certificate data`.
+    
     !["Kubernetes Plugin settings"][1]
 
 ## Create an elastic profile
 
 1. Login to `GoCD server` as admin and navigate to **_Admin_** _>_ **_Elastic Agent Profiles_**
-
-![Elastic Profiles][2]
+    ![Elastic Profiles][2]
 
 2. Click on **_Add_** to create new elastic agent profile
     1. Specify `id` for profile.
