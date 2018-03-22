@@ -1,6 +1,10 @@
 # Kubernetes Elastic agent plugin for GoCD
 
-Kubernetes Elastic Agent Plugin provides production grade support to run GoCD Elastic Agents on Kubernetes Cluster.
+Kubernetes Elastic Agent Plugin provides production grade support to run GoCD Elastic Agents on Kubernetes Cluster. 
+
+# Documentation
+
+Read about setting up a Kubernetes cluster and using the GoCD elastic agent for Kubernetes in our [documentation](https://docs.gocd.org/current/gocd_on_kubernetes/).
 
 # Installation
 
