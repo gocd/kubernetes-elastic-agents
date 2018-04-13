@@ -31,9 +31,14 @@ public class GoCDContainerDetails {
         for (EnvVar var : container.getEnv()) {
             containerDetails.env.add(new EnvironmentVariable(var.getName(), var.getValue()));
         }
-
-        containerDetails.ready = containerStatus.getReady();
-        containerDetails.restartCount = containerStatus.getRestartCount();
+        if (containerStatus != null) {
+            containerDetails.ready = containerStatus.getReady();
+            containerDetails.restartCount = containerStatus.getRestartCount();
+        }
+        else {
+            containerDetails.ready = false;
+            containerDetails.restartCount = 0;
+        }
 
         return containerDetails;
     }
