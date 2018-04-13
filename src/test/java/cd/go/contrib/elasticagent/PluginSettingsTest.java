@@ -52,6 +52,28 @@ public class PluginSettingsTest {
     }
 
     @Test
+    public void shouldHandleEmptyValuesForPendingPodsAndAutoRegisterTimeout() {
+        final Map<String, Object> pluginSettingsMap = new HashMap<>();
+        pluginSettingsMap.put("go_server_url", "https://foo.go.cd/go");
+        pluginSettingsMap.put("auto_register_timeout", "");
+        pluginSettingsMap.put("pending_pods_count", null);
+        pluginSettingsMap.put("kubernetes_cluster_url", "https://cloud.example.com");
+        pluginSettingsMap.put("security_token", "foo-token");
+        pluginSettingsMap.put("kubernetes_cluster_ca_cert", "foo-ca-certs");
+        pluginSettingsMap.put("namespace", "gocd");
+
+        PluginSettings pluginSettings = PluginSettings.fromJSON(new Gson().toJson(pluginSettingsMap));
+
+        assertThat(pluginSettings.getGoServerUrl(), is("https://foo.go.cd/go"));
+        assertThat(pluginSettings.getAutoRegisterTimeout(), is(10));
+        assertThat(pluginSettings.getMaxPendingPods(), is(10));
+        assertThat(pluginSettings.getClusterUrl(), is("https://cloud.example.com"));
+        assertThat(pluginSettings.getCaCertData(), is("foo-ca-certs"));
+        assertThat(pluginSettings.getSecurityToken(), is("foo-token"));
+        assertThat(pluginSettings.getNamespace(), is("gocd"));
+    }
+
+    @Test
     public void shouldHaveDefaultValueAfterDeSerialization() {
         PluginSettings pluginSettings = PluginSettings.fromJSON("{}");
 

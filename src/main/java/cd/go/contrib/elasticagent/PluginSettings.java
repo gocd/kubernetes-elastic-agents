@@ -16,12 +16,14 @@
 
 package cd.go.contrib.elasticagent;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Period;
 
-import static cd.go.contrib.elasticagent.utils.Util.GSON;
+import static cd.go.contrib.elasticagent.utils.Util.IntTypeAdapter;
 
 public class PluginSettings {
     @Expose
@@ -64,7 +66,10 @@ public class PluginSettings {
     }
 
     public static PluginSettings fromJSON(String json) {
-        return GSON.fromJson(json, PluginSettings.class);
+        GsonBuilder gsonBuilder = new GsonBuilder().excludeFieldsWithoutExposeAnnotation();
+        gsonBuilder.registerTypeAdapter(Integer.class, IntTypeAdapter);
+        Gson gson = gsonBuilder.create();
+        return gson.fromJson(json, PluginSettings.class);
     }
 
     public Period getAutoRegisterPeriod() {
