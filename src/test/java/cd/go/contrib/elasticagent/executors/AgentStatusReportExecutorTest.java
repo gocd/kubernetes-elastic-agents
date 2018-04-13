@@ -50,7 +50,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AgentStatusReportExecutorTest {
 
-    private Pod pod;
     private AgentStatusReportExecutor executor;
     private String elasticAgentId = "elastic-agent-id";
 
@@ -93,7 +92,7 @@ public class AgentStatusReportExecutorTest {
     @Before
     public void setUp() {
         initMocks(this);
-        pod = createDefaultPod();
+        Pod pod = createDefaultPod();
         pod.getMetadata().setName(elasticAgentId);
         executor = new AgentStatusReportExecutor(statusReportRequest, pluginRequest, kubernetesClientFactory, builder);
 

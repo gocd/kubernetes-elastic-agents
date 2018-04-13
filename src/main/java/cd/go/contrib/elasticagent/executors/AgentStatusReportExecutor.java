@@ -47,7 +47,7 @@ public class AgentStatusReportExecutor {
         this(request, pluginRequest, KubernetesClientFactory.instance(), PluginStatusReportViewBuilder.instance());
     }
 
-    public AgentStatusReportExecutor(AgentStatusReportRequest request, PluginRequest pluginRequest, KubernetesClientFactory kubernetesClientFactory, PluginStatusReportViewBuilder builder) {
+    AgentStatusReportExecutor(AgentStatusReportRequest request, PluginRequest pluginRequest, KubernetesClientFactory kubernetesClientFactory, PluginStatusReportViewBuilder builder) {
         this.request = request;
         this.pluginRequest = pluginRequest;
         this.factory = kubernetesClientFactory;

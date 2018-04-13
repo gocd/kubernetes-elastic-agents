@@ -21,11 +21,13 @@ import cd.go.contrib.elasticagent.model.JobIdentifier;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.fabric8.kubernetes.api.model.ContainerStatus;
 import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class KubernetesElasticAgent {
     private JobIdentifier jobIdentifier;
@@ -41,7 +43,9 @@ public class KubernetesElasticAgent {
         agent.jobIdentifier = getJobIdentifier(pod, jobIdentifier);
         agent.elasticAgentId = pod.getMetadata().getName();
         agent.podDetails = KubernetesPodDetails.fromPod(pod);
-        agent.agentDetails = GoCDContainerDetails.fromContainer(pod.getSpec().getContainers().get(0), pod.getStatus().getContainerStatuses().get(0));
+        List<ContainerStatus> containerStatuses = pod.getStatus().getContainerStatuses();
+        ContainerStatus containerStatus = containerStatuses.isEmpty() ? null : containerStatuses.get(0);
+        agent.agentDetails = GoCDContainerDetails.fromContainer(pod.getSpec().getContainers().get(0), containerStatus);
         agent.events = getAllEventsForPod(pod, client);
         agent.logs = getPodLogs(pod, client);
         agent.configuration = getPodConfiguration(pod);
