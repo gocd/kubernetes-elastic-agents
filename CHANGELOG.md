@@ -1,3 +1,9 @@
+## 1.0.1 - 2018-04-19
+
+* [9f879b8](https://github.com/gocd/kubernetes-elastic-agents/commit/9f879b8) - Handle IndexOutOfBounds when container hasn't been brough up within a pod.
+* [316eb28](https://github.com/gocd/kubernetes-elastic-agents/commit/316eb28) - Handle NumberFormatException when desrializing agent autoregister count and maximum pending pods.
+* [5d3bb9c](https://github.com/gocd/kubernetes-elastic-agents/commit/5d3bb9c) - Improve the error message if accessing cluster during validation fails.
+
 ## 1.0.0 - 2018-03-19
 
 ### Added
