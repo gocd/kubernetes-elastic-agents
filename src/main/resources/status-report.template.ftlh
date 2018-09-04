@@ -1,4 +1,33 @@
 <style>
+	.main-container {
+		margin-top: 0;
+	}
+
+	#status_reports {
+		margin-top: 50px;
+	}
+
+	[data-plugin-style-id="kubernetes-plugin"] .status-report-page-header {
+		top:             40px;
+		width:           100%;
+		height:          50px;
+		display:         flex;
+		z-index:         10;
+		position:        fixed;
+		background:      #fff;
+		box-shadow:      0 0 0 #000;
+		border-bottom:   1px solid #ddd;
+		background-size: cover;
+	}
+
+	[data-plugin-style-id="kubernetes-plugin"] .page_title {
+		font-size:   17px;
+		font-weight: 600;
+		margin:      0;
+		padding:     0 30px;
+		align-self:  center;
+	}
+
 	[data-plugin-style-id="kubernetes-plugin"] .cluster {
 		padding: 20px;
 	}
@@ -170,6 +199,9 @@
 </style>
 
 <div data-plugin-style-id="kubernetes-plugin">
+	<div class="status-report-page-header">
+		<h1 class="page_title">Kubernetes Plugin Status Report</h1>
+	</div>
 	<div class="cluster">
     <#if nodes?size != 0>
         <#list nodes as node>
