@@ -17,7 +17,7 @@
 apply plugin: 'java'
 apply from: 'plugin-common.gradle'
 
-project.ext.pluginVersion = '1.0.1'
+project.ext.pluginVersion = '1.0.2'
 project.ext.fullVersion = project.distVersion ? "${project.pluginVersion}-${project.distVersion}" : project.pluginVersion
 
 group = 'cd.go.contrib'

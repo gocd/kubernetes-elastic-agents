@@ -1,6 +1,11 @@
 <style>
+	.main-container {
+		margin-top: 0;
+	}
+
+
 	[data-plugin-style-id="kubernetes-plugin"] .kubernetes-elastic-agent {
-		padding: 60px 20px 0 20px;
+		padding: 70px 20px 0 20px;
 	}
 
 	[data-plugin-style-id="kubernetes-plugin"] .sub-nav {

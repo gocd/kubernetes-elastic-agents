@@ -1,3 +1,6 @@
+## 1.0.2 - 2018-09-04
+- Removed additional margin from status report pages
+
 ## 1.0.1 - 2018-04-19
 
 * [9f879b8](https://github.com/gocd/kubernetes-elastic-agents/commit/9f879b8) - Handle IndexOutOfBounds when container hasn't been brough up within a pod.
