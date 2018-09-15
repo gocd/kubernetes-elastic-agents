@@ -29,20 +29,22 @@ public class KubernetesInstance {
     private final Map<String, String> properties;
     private final Long jobId;
     private final PodState state;
+    private final KubernetesSettings settings;
 
-    public KubernetesInstance(DateTime createdAt, String environment, String name, Map<String, String> properties, Long jobId, PodState state) {
+    public KubernetesInstance(DateTime createdAt, KubernetesSettings settings,String environment, String name, Map<String, String> properties, Long jobId, PodState state) {
         this.createdAt = createdAt.withZone(DateTimeZone.UTC);
         this.environment = environment;
         this.name = name;
         this.properties = properties;
         this.jobId = jobId;
         this.state = state;
+        this.settings = settings;
     }
 
     public void terminate(KubernetesClient client) {
         client.pods().withName(name).delete();
     }
-
+    
     public String name() {
         return name;
     }
@@ -66,4 +68,8 @@ public class KubernetesInstance {
     public boolean isPending() {
         return this.state.equals(PodState.Pending);
     }
+    
+    public KubernetesSettings getSettings() {
+		return settings;
+	}
 }

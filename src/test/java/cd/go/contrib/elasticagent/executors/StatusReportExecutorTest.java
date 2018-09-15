@@ -16,44 +16,63 @@
 
 package cd.go.contrib.elasticagent.executors;
 
-import cd.go.contrib.elasticagent.Constants;
-import cd.go.contrib.elasticagent.KubernetesClientFactory;
-import cd.go.contrib.elasticagent.PluginRequest;
-import cd.go.contrib.elasticagent.PluginSettings;
-import cd.go.contrib.elasticagent.builders.PluginStatusReportViewBuilder;
-import cd.go.contrib.elasticagent.model.KubernetesCluster;
-import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import freemarker.template.Template;
-import io.fabric8.kubernetes.api.model.NodeList;
-import io.fabric8.kubernetes.api.model.PodList;
-import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.dsl.internal.NodeOperationsImpl;
-import io.fabric8.kubernetes.client.dsl.internal.PodOperationsImpl;
-import org.junit.Before;
-import org.junit.Test;
-
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
+
+import cd.go.contrib.elasticagent.Agent;
+import cd.go.contrib.elasticagent.AgentInstances;
+import cd.go.contrib.elasticagent.Agents;
+import cd.go.contrib.elasticagent.Constants;
+import cd.go.contrib.elasticagent.KubernetesClientFactory;
+import cd.go.contrib.elasticagent.KubernetesInstance;
+import cd.go.contrib.elasticagent.PluginRequest;
+import cd.go.contrib.elasticagent.PluginSettings;
+import cd.go.contrib.elasticagent.builders.PluginStatusReportViewBuilder;
+import cd.go.contrib.elasticagent.model.KubernetesCluster;
+import freemarker.template.Template;
+import io.fabric8.kubernetes.api.model.NodeList;
+import io.fabric8.kubernetes.api.model.PodList;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.dsl.internal.NodeOperationsImpl;
+import io.fabric8.kubernetes.client.dsl.internal.PodOperationsImpl;
 
 public class StatusReportExecutorTest {
     private KubernetesClientFactory kubernetesClientFactory;
     private PluginRequest pluginRequest;
     private PluginSettings pluginSettings;
     private KubernetesClient kubernetesClient;
+    @Mock
+    private AgentInstances<KubernetesInstance> agentInstances;
+    
+    @Mock
+    private Agents agents;
+    
+    @Mock
+    private Agent agent;
 
     @Before
     public void setUp() throws Exception {
+    	
+    	initMocks(this);
+    	
         kubernetesClientFactory = mock(KubernetesClientFactory.class);
         pluginRequest = mock(PluginRequest.class);
         pluginSettings = mock(PluginSettings.class);
         kubernetesClient = mock(KubernetesClient.class);
 
         when(pluginRequest.getPluginSettings()).thenReturn(pluginSettings);
-        when(kubernetesClientFactory.client(pluginSettings)).thenReturn(kubernetesClient);
+        when(pluginRequest.listAgents()).thenReturn(agents);
     }
 
     @Test
@@ -67,6 +86,7 @@ public class StatusReportExecutorTest {
         when(pods.withLabel(Constants.CREATED_BY_LABEL_KEY, Constants.PLUGIN_ID)).thenReturn(pods);
         when(pods.list()).thenReturn(new PodList());
         when(kubernetesClient.pods()).thenReturn(pods);
+        when(kubernetesClientFactory.client(pluginSettings)).thenReturn(kubernetesClient);
 
         final PluginStatusReportViewBuilder builder = mock(PluginStatusReportViewBuilder.class);
         final Template template = mock(Template.class);
@@ -74,7 +94,7 @@ public class StatusReportExecutorTest {
         when(builder.getTemplate("status-report.template.ftlh")).thenReturn(template);
         when(builder.build(eq(template), any(KubernetesCluster.class))).thenReturn("status-report");
 
-        final GoPluginApiResponse response = new StatusReportExecutor(pluginRequest, kubernetesClientFactory, builder).execute();
+        final GoPluginApiResponse response = new StatusReportExecutor(agentInstances,pluginRequest, kubernetesClientFactory, builder).execute();
 
         assertThat(response.responseCode(), is(200));
         assertThat(response.responseBody(), is("{\"view\":\"status-report\"}"));

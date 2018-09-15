@@ -96,17 +96,65 @@
         }
 
     </style>
+    
+     <div>
+          
+    	  <div class="form_item_block">
+                <label ng-class="{'is-invalid-label': GOINPUTNAME[ProfileNamespace].$error.server}">Profile Name Space:
+                    <div class="tooltip-info">
+                  <span class="tooltip-content">
+                    The namespace for this profile, if its not specified the default plugin namespace applies<br/>
+                  </span>
+                    </div>
+                </label>
+                <input ng-class="{'is-invalid-input': GOINPUTNAME[ProfileNamespace].$error.server}" type="text"
+                       ng-model="ProfileNamespace" ng-required="false"/>
+                <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[ProfileNamespace].$error.server}"
+                      ng-show="GOINPUTNAME[ProfileNamespace].$error.server">{{GOINPUTNAME[ProfileNamespace].$error.server}}</span>
+         </div>
+         
+         <div class="form_item_block">
+	                <label ng-class="{'is-invalid-label': GOINPUTNAME[Profile_auto_register_timeout].$error.server}">Agent auto-register timeout (in minutes)
+	                    <div class="tooltip-info">
+	                  <span class="tooltip-content">
+	                    Agent auto-register timeout (in minutes) , if its not specified the default plugin Agent auto-register timeout applies<br/>
+	                  </span>
+	                    </div>
+	                </label>
+	                <input ng-class="{'is-invalid-input': GOINPUTNAME[Profile_auto_register_timeout].$error.server}" type="text"
+	                       ng-model="Profile_auto_register_timeout" ng-required="false"/>
+	                <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[Profile_auto_register_timeout].$error.server}"
+	                      ng-show="GOINPUTNAME[Profile_auto_register_timeout].$error.server">{{GOINPUTNAME[Profile_auto_register_timeout].$error.server}}</span>
+	     </div>
+	     
+	     <div class="form_item_block">
+	                <label ng-class="{'is-invalid-label': GOINPUTNAME[Profile_security_token].$error.server}">Security token
+	                    <div class="tooltip-info">
+	                  <span class="tooltip-content">
+	                    Get the service account token by running following command <code>kubectl describe secret TOKEN_NAME</code> and copy the value of token here.
+	                  </span>
+	                    </div>
+	                </label>
+	                <textarea rows="5" ng-class="{'is-invalid-input': GOINPUTNAME[Profile_security_token].$error.server}" type="text"
+	                       ng-model="Profile_security_token" ng-required="ProfileNamespace"/>
+	                <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[Profile_security_token].$error.server}"
+	                      ng-show="GOINPUTNAME[Profile_security_token].$error.server].$error.server">{{GOINPUTNAME[Profile_security_token].$error.server}}</span>
+	     </div>
+	     	
+	</div>     
 
     <div class="row collapse">
         <label>Specify Elastic Agent Pod Configuration using</label>
         <div class="form_item_block row" style="padding-top: 10px">
             <div class="columns small-9 medium-10 larger-10"
                  ng-init="SpecifiedUsingPodConfiguration = SpecifiedUsingPodConfiguration || 'false'">
-                <input type="radio" ng-model="SpecifiedUsingPodConfiguration" value="false"
+                <input ng-class="{'is-invalid-input': GOINPUTNAME[SpecifiedUsingPodConfiguration].$error.server}"  
+                   type="radio" ng-model="SpecifiedUsingPodConfiguration" value="false"
                        id="login-using-github"/>
                 <label for="login-using-github">Config Properties</label>
 
-                <input type="radio" ng-model="SpecifiedUsingPodConfiguration" value="true"
+                <input ng-class="{'is-invalid-input': GOINPUTNAME[SpecifiedUsingPodConfiguration].$error.server}" 
+                   type="radio" ng-model="SpecifiedUsingPodConfiguration" value="true"
                        id="login-using-github-enterprise"/>
                 <label for="login-using-github-enterprise">Pod Yaml</label>
             </div>
@@ -120,7 +168,7 @@
                     <span class="asterix">*</span>
                 </label>
                 <input ng-class="{'is-invalid-input': GOINPUTNAME[Image].$error.server}" type="text" ng-model="Image"
-                       ng-required="true" placeholder="alpine:latest"/>
+                       ng-required="!SpecifiedUsingPodConfiguration" placeholder="alpine:latest"/>
                 <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[Image].$error.server}"
                       ng-show="GOINPUTNAME[Image].$error.server">{{GOINPUTNAME[Image].$error.server}}</span>
             </div>
@@ -137,7 +185,7 @@
                     </div>
                 </label>
                 <input ng-class="{'is-invalid-input': GOINPUTNAME[MaxMemory].$error.server}" type="text"
-                       ng-model="MaxMemory" ng-required="false"/>
+                       ng-model="MaxMemory" ng-required="!SpecifiedUsingPodConfiguration"/>
                 <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[MaxMemory].$error.server}"
                       ng-show="GOINPUTNAME[MaxMemory].$error.server">{{GOINPUTNAME[MaxMemory].$error.server}}</span>
             </div>
@@ -153,7 +201,7 @@
                     </div>
                 </label>
                 <input ng-class="{'is-invalid-input': GOINPUTNAME[MaxCPU].$error.server}" type="text" ng-model="MaxCPU"
-                       ng-required="false"/>
+                       ng-required="!SpecifiedUsingPodConfiguration"/>
                 <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[MaxCPU].$error.server}"
                       ng-show="GOINPUTNAME[MaxCPU].$error.server">{{GOINPUTNAME[MaxCPU].$error.server}}</span>
             </div>
@@ -194,6 +242,8 @@
     </div>
 
     <div ng-show="SpecifiedUsingPodConfiguration == 'true'">
+          
+    	
         <div class="form_item_block">
             <label ng-class="{'is-invalid-label': GOINPUTNAME[PodConfiguration].$error.server}">Specify Elastic Agent
                 <code>pod.yaml</code> here

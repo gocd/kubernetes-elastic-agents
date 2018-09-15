@@ -60,6 +60,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
     public void setUp() {
         initMocks(this);
         when(factory.client(any())).thenReturn(mockedClient);
+        when(factory.createClientFor(any())).thenReturn(mockedClient);
         when(mockedClient.pods()).thenReturn(mockedOperation);
         when(mockedOperation.create(any(Pod.class))).thenAnswer(new Answer<Pod>() {
             @Override

@@ -45,7 +45,7 @@ import static java.text.MessageFormat.format;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class KubernetesInstanceFactory {
-    public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest, Boolean usesPodYaml) {
+    public KubernetesInstance create(CreateAgentRequest request, KubernetesSettings settings, KubernetesClient client, PluginRequest pluginRequest, Boolean usesPodYaml) {
         if (usesPodYaml) {
             return createUsingPodYaml(request, settings, client, pluginRequest);
         } else {
@@ -53,7 +53,7 @@ public class KubernetesInstanceFactory {
         }
     }
 
-    private KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
+    private KubernetesInstance create(CreateAgentRequest request, KubernetesSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
         String containerName = format("{0}-{1}", KUBERNETES_POD_NAME_PREFIX, UUID.randomUUID().toString());
 
         Container container = new Container();
@@ -74,7 +74,7 @@ public class KubernetesInstanceFactory {
 
         setGoCDMetadata(request, settings, pluginRequest, elasticAgentPod);
 
-        return createKubernetesPod(client, elasticAgentPod);
+        return createKubernetesPod(client,settings, elasticAgentPod);
     }
 
     private Boolean privileged(CreateAgentRequest request) {
@@ -85,7 +85,7 @@ public class KubernetesInstanceFactory {
         return Boolean.valueOf(privilegedMode);
     }
 
-    private void setGoCDMetadata(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest, Pod elasticAgentPod) {
+    private void setGoCDMetadata(CreateAgentRequest request, KubernetesSettings settings, PluginRequest pluginRequest, Pod elasticAgentPod) {
         elasticAgentPod.getMetadata().setCreationTimestamp(getSimpleDateFormat().format(new Date()));
 
         setContainerEnvVariables(elasticAgentPod, request, settings, pluginRequest);
@@ -128,13 +128,13 @@ public class KubernetesInstanceFactory {
         pod.getMetadata().setAnnotations(existingAnnotations);
     }
 
-    private KubernetesInstance createKubernetesPod(KubernetesClient client, Pod elasticAgentPod) {
+    private KubernetesInstance createKubernetesPod(KubernetesClient client,KubernetesSettings settings, Pod elasticAgentPod) {
         LOG.info(format("[Create Agent] Creating K8s pod with spec: {0}.", elasticAgentPod.toString()));
         Pod pod = client.pods().create(elasticAgentPod);
-        return fromKubernetesPod(pod);
+        return fromKubernetesPod(pod,settings);
     }
 
-    public KubernetesInstance fromKubernetesPod(Pod elasticAgentPod) {
+    public KubernetesInstance fromKubernetesPod(Pod elasticAgentPod,KubernetesSettings settings) {
         KubernetesInstance kubernetesInstance;
         try {
             ObjectMeta metadata = elasticAgentPod.getMetadata();
@@ -144,14 +144,14 @@ public class KubernetesInstanceFactory {
             }
             String environment = metadata.getLabels().get(ENVIRONMENT_LABEL_KEY);
             Long jobId = Long.valueOf(metadata.getLabels().get(JOB_ID_LABEL_KEY));
-            kubernetesInstance = new KubernetesInstance(createdAt, environment, metadata.getName(), metadata.getAnnotations(), jobId, PodState.fromPod(elasticAgentPod));
+            kubernetesInstance = new KubernetesInstance(createdAt, settings,environment, metadata.getName(), metadata.getAnnotations(), jobId, PodState.fromPod(elasticAgentPod));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
         return kubernetesInstance;
     }
 
-    private static List<EnvVar> environmentFrom(CreateAgentRequest request, PluginSettings settings, String podName, PluginRequest pluginRequest) {
+    private static List<EnvVar> environmentFrom(CreateAgentRequest request, KubernetesSettings settings, String podName, PluginRequest pluginRequest) {
         ArrayList<EnvVar> env = new ArrayList<>();
         String goServerUrl = StringUtils.isBlank(settings.getGoServerUrl()) ? pluginRequest.getSeverInfo().getSecureSiteUrl() : settings.getGoServerUrl();
         env.add(new EnvVar("GO_EA_SERVER_URL", goServerUrl, null));
@@ -164,7 +164,7 @@ public class KubernetesInstanceFactory {
         return new ArrayList<>(env);
     }
 
-    private static void setContainerEnvVariables(Pod pod, CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) {
+    private static void setContainerEnvVariables(Pod pod, CreateAgentRequest request, KubernetesSettings settings, PluginRequest pluginRequest) {
         for (Container container : pod.getSpec().getContainers()) {
             List<EnvVar> existingEnv = (container.getEnv() != null) ? container.getEnv() : new ArrayList<>();
             existingEnv.addAll(environmentFrom(request, settings, pod.getMetadata().getName(), pluginRequest));
@@ -210,7 +210,7 @@ public class KubernetesInstanceFactory {
         return image;
     }
 
-    private KubernetesInstance createUsingPodYaml(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
+    private KubernetesInstance createUsingPodYaml(CreateAgentRequest request, KubernetesSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         String podYaml = request.properties().get(POD_CONFIGURATION.getKey());
         String templatizedPodYaml = getTemplatizedPodYamlString(podYaml);
@@ -224,7 +224,7 @@ public class KubernetesInstanceFactory {
         }
 
         setGoCDMetadata(request, settings, pluginRequest, elasticAgentPod);
-        return createKubernetesPod(client, elasticAgentPod);
+        return createKubernetesPod(client, settings,elasticAgentPod);
     }
 
     public static String getTemplatizedPodYamlString(String podYaml) {

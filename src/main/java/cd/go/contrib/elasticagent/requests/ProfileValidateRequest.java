@@ -16,17 +16,20 @@
 
 package cd.go.contrib.elasticagent.requests;
 
-import cd.go.contrib.elasticagent.RequestExecutor;
-import cd.go.contrib.elasticagent.executors.ProfileValidateRequestExecutor;
-import com.google.gson.reflect.TypeToken;
+import static cd.go.contrib.elasticagent.utils.Util.GSON;
 
 import java.util.Map;
 
-import static cd.go.contrib.elasticagent.utils.Util.GSON;
+import com.google.gson.reflect.TypeToken;
+
+import cd.go.contrib.elasticagent.KubernetesClientFactory;
+import cd.go.contrib.elasticagent.PluginRequest;
+import cd.go.contrib.elasticagent.RequestExecutor;
+import cd.go.contrib.elasticagent.executors.ProfileValidateRequestExecutor;
 
 public class ProfileValidateRequest {
     private Map<String, String> properties;
-
+    
     public ProfileValidateRequest(Map<String, String> properties) {
         this.properties = properties;
     }
@@ -40,7 +43,9 @@ public class ProfileValidateRequest {
         return properties;
     }
 
-    public RequestExecutor executor() {
-        return new ProfileValidateRequestExecutor(this);
+    public RequestExecutor executor(PluginRequest pluginRequest) {
+        return new ProfileValidateRequestExecutor(this,pluginRequest, KubernetesClientFactory.instance());
     }
+    
+    
 }

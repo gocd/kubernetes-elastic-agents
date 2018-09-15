@@ -16,61 +16,90 @@
 
 package cd.go.contrib.elasticagent;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Period;
 
-import static cd.go.contrib.elasticagent.utils.Util.IntTypeAdapter;
-
-public class PluginSettings {
-    @Expose
-    @SerializedName("go_server_url")
+public class KubernetesSettings {
     private String goServerUrl;
 
-    @Expose
-    @SerializedName("auto_register_timeout")
     private Integer autoRegisterTimeout;
 
-    @Expose
-    @SerializedName("pending_pods_count")
     private Integer maxPendingPods;
 
-    @Expose
-    @SerializedName("kubernetes_cluster_url")
     private String clusterUrl;
 
-    @Expose
-    @SerializedName("security_token")
     private String securityToken;
 
-    @Expose
-    @SerializedName("kubernetes_cluster_ca_cert")
     private String clusterCACertData;
 
-    @Expose
-    @SerializedName("namespace")
     private String namespace;
 
     private Period autoRegisterPeriod;
 
-    public PluginSettings() {
+    public KubernetesSettings() {
     }
 
-    public PluginSettings(String goServerUrl, String clusterUrl, String clusterCACertData) {
+    public KubernetesSettings(String goServerUrl, String clusterUrl, String clusterCACertData) {
         this.goServerUrl = goServerUrl;
         this.clusterUrl = clusterUrl;
         this.clusterCACertData = clusterCACertData;
     }
 
-    public static PluginSettings fromJSON(String json) {
-        GsonBuilder gsonBuilder = new GsonBuilder().excludeFieldsWithoutExposeAnnotation();
-        gsonBuilder.registerTypeAdapter(Integer.class, IntTypeAdapter);
-        Gson gson = gsonBuilder.create();
-        return gson.fromJson(json, PluginSettings.class);
-    }
+    public String getGoServerUrl() {
+		return goServerUrl;
+	}
+
+	public void setGoServerUrl(String goServerUrl) {
+		this.goServerUrl = goServerUrl;
+	}
+
+	public Integer getAutoRegisterTimeout() {
+		return autoRegisterTimeout;
+	}
+
+	public void setAutoRegisterTimeout(Integer autoRegisterTimeout) {
+		this.autoRegisterTimeout = autoRegisterTimeout;
+	}
+
+	public Integer getMaxPendingPods() {
+		return maxPendingPods;
+	}
+
+	public void setMaxPendingPods(Integer maxPendingPods) {
+		this.maxPendingPods = maxPendingPods;
+	}
+
+	public String getClusterUrl() {
+		return clusterUrl;
+	}
+
+	public void setClusterUrl(String clusterUrl) {
+		this.clusterUrl = clusterUrl;
+	}
+
+	public String getSecurityToken() {
+		return securityToken;
+	}
+
+	public void setSecurityToken(String securityToken) {
+		this.securityToken = securityToken;
+	}
+
+	public String getClusterCACertData() {
+		return clusterCACertData;
+	}
+
+	public void setClusterCACertData(String clusterCACertData) {
+		this.clusterCACertData = clusterCACertData;
+	}
+
+	public String getNamespace() {
+		return namespace;
+	}
+
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
+	}
 
     public Period getAutoRegisterPeriod() {
         if (this.autoRegisterPeriod == null) {
@@ -79,35 +108,11 @@ public class PluginSettings {
         return this.autoRegisterPeriod;
     }
 
-    public Integer getAutoRegisterTimeout() {
-        return getOrDefault(autoRegisterTimeout, 10);
-    }
+	public void setAutoRegisterPeriod(Period autoRegisterPeriod) {
+		this.autoRegisterPeriod = autoRegisterPeriod;
+	}
 
-    public Integer getMaxPendingPods() {
-        return getOrDefault(this.maxPendingPods, 10);
-    }
-
-    public String getGoServerUrl() {
-        return goServerUrl;
-    }
-
-    public String getSecurityToken() {
-        return securityToken;
-    }
-
-    public String getClusterUrl() {
-        return clusterUrl;
-    }
-
-    public String getCaCertData() {
-        return clusterCACertData;
-    }
-
-    public String getNamespace() {
-        return getOrDefault(this.namespace, "default");
-    }
-
-    private <T> T getOrDefault(T t, T defaultValue) {
+	private <T> T getOrDefault(T t, T defaultValue) {
         if (t instanceof String && StringUtils.isBlank(String.valueOf(t))) {
             return defaultValue;
         }
@@ -122,9 +127,9 @@ public class PluginSettings {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof PluginSettings)) return false;
+        if (!(o instanceof KubernetesSettings)) return false;
 
-        PluginSettings that = (PluginSettings) o;
+        KubernetesSettings that = (KubernetesSettings) o;
 
         if (goServerUrl != null ? !goServerUrl.equals(that.goServerUrl) : that.goServerUrl != null) return false;
         if (autoRegisterTimeout != null ? !autoRegisterTimeout.equals(that.autoRegisterTimeout) : that.autoRegisterTimeout != null)

@@ -16,32 +16,45 @@
 
 package cd.go.contrib.elasticagent.model;
 
+import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import cd.go.contrib.elasticagent.Constants;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
-import java.text.ParseException;
-import java.util.List;
-import java.util.Map;
-
-import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-
 public class KubernetesCluster {
-    private final List<KubernetesNode> nodes;
+    private List<KubernetesNode> nodes;
     private final String pluginId;
 
-    public KubernetesCluster(KubernetesClient client) throws ParseException {
-        pluginId = Constants.PLUGIN_ID;
-        nodes = client.nodes().list().getItems().stream().map(node -> new KubernetesNode(node)).collect(toList());
-        LOG.info("Running kubernetes nodes " + nodes.size());
-        fetchPods(client);
+    public KubernetesCluster(List<KubernetesClient> clients) throws ParseException {
+       pluginId = Constants.PLUGIN_ID;
+       
+       Map<String,KubernetesNode> nodeMap = new HashMap<>();
+       for(KubernetesClient client:clients) {
+    	   client.nodes().list().getItems().forEach(node ->  {
+    		   LOG.info("node " + node.getMetadata().getName());
+    		   nodeMap.put(node.getMetadata().getName(),new KubernetesNode(node)); 
+    		  }
+    	   );
+        }
+       
+       LOG.info("Running kubernetes nodes " + nodeMap.values().size());
+       for(KubernetesClient client:clients) {
+    	    fetchPods(client,nodeMap);
+        }
+       
+       nodes = new ArrayList<KubernetesNode>(nodeMap.values());
+       LOG.info("Running kubernetes nodes " + nodes.size());
     }
 
-    private void fetchPods(KubernetesClient dockerClient) throws ParseException {
-        final Map<String, KubernetesNode> dockerNodeMap = nodes.stream().distinct().collect(toMap(KubernetesNode::getName, node -> node));
-
+    private void fetchPods(KubernetesClient dockerClient, Map<String,KubernetesNode> dockerNodeMap) throws ParseException {
+        
         final List<Pod> pods = dockerClient.pods()
                 .withLabel(Constants.CREATED_BY_LABEL_KEY, Constants.PLUGIN_ID)
                 .list().getItems();
@@ -50,6 +63,7 @@ public class KubernetesCluster {
 
         for (Pod pod : pods) {
             final KubernetesPod kubernetesPod = new KubernetesPod(pod);
+            
             final KubernetesNode kubernetesNode = dockerNodeMap.get(kubernetesPod.getNodeName());
             if (kubernetesNode != null) {
                 kubernetesNode.add(kubernetesPod);

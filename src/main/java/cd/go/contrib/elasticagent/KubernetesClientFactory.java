@@ -44,6 +44,17 @@ public class KubernetesClientFactory {
         LOG.debug("New client is created.");
         return this.client;
     }
+    
+    public synchronized KubernetesClient createClientFor(KubernetesSettings pluginSettings) {
+    	
+        final ConfigBuilder configBuilder = new ConfigBuilder()
+                .withOauthToken(pluginSettings.getSecurityToken())
+                .withMasterUrl(pluginSettings.getClusterUrl())
+                .withCaCertData(pluginSettings.getClusterCACertData())
+                .withNamespace(pluginSettings.getNamespace());
+
+        return new DefaultKubernetesClient(configBuilder.build());
+    }
 
     private KubernetesClient createClientFor(PluginSettings pluginSettings) {
         final ConfigBuilder configBuilder = new ConfigBuilder()

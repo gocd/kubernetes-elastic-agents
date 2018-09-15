@@ -24,6 +24,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 public class KubernetesPod {
+	private final String namespace;
     private final String podName;
     private String nodeName;
     private final String image;
@@ -39,11 +40,15 @@ public class KubernetesPod {
         podIP = pod.getStatus().getPodIP();
         creationTimestamp = Util.getSimpleDateFormat().parse(pod.getMetadata().getCreationTimestamp());
         status = pod.getStatus().getPhase();
-
+        namespace = pod.getMetadata().getNamespace();
         nodeName = pod.getSpec().getNodeName();
     }
 
-    public String getPodName() {
+    public String getNamespace() {
+		return namespace;
+	}
+
+	public String getPodName() {
         return podName;
     }
 
@@ -81,6 +86,7 @@ public class KubernetesPod {
 
         KubernetesPod that = (KubernetesPod) o;
 
+        if (namespace != null ? !namespace.equals(that.namespace) : that.namespace != null) return false;
         if (podName != null ? !podName.equals(that.podName) : that.podName != null) return false;
         if (nodeName != null ? !nodeName.equals(that.nodeName) : that.nodeName != null) return false;
         if (image != null ? !image.equals(that.image) : that.image != null) return false;
@@ -94,6 +100,7 @@ public class KubernetesPod {
     @Override
     public int hashCode() {
         int result = podName != null ? podName.hashCode() : 0;
+        result = 31 * result + (namespace != null ? namespace.hashCode() : 0);
         result = 31 * result + (nodeName != null ? nodeName.hashCode() : 0);
         result = 31 * result + (image != null ? image.hashCode() : 0);
         result = 31 * result + (creationTimestamp != null ? creationTimestamp.hashCode() : 0);

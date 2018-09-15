@@ -35,6 +35,11 @@ public class GetProfileMetadataExecutor implements RequestExecutor {
     public static final Metadata POD_CONFIGURATION = new Metadata("PodConfiguration", false, false);
     public static final Metadata SPECIFIED_USING_POD_CONFIGURATION = new Metadata("SpecifiedUsingPodConfiguration", true, false);
     public static final Metadata PRIVILEGED = new Metadata("Privileged", false, false);
+    
+    public static final Metadata PROFILE_NAMESPACE = new Metadata("ProfileNamespace", false, false);
+    public static final Metadata PROFILE_SECURITY_TOKEN = new Metadata("Profile_security_token", false, true);
+    public static final Metadata PROFILE_AUTO_REGISTER_TIMEOUT = new Metadata("Profile_auto_register_timeout", false, false);
+    
     public static final List<Metadata> FIELDS = new ArrayList<>();
 
     static {
@@ -45,6 +50,11 @@ public class GetProfileMetadataExecutor implements RequestExecutor {
         FIELDS.add(POD_CONFIGURATION);
         FIELDS.add(SPECIFIED_USING_POD_CONFIGURATION);
         FIELDS.add(PRIVILEGED);
+        
+        FIELDS.add(PROFILE_NAMESPACE);
+        FIELDS.add(PROFILE_SECURITY_TOKEN);
+        FIELDS.add(PROFILE_AUTO_REGISTER_TIMEOUT);
+        
     }
 
     @Override

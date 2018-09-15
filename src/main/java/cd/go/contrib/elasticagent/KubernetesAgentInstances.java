@@ -18,6 +18,7 @@ package cd.go.contrib.elasticagent;
 
 import cd.go.contrib.elasticagent.model.JobIdentifier;
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
+import cd.go.contrib.elasticagent.utils.SettingsUtil;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -27,12 +28,16 @@ import org.joda.time.Period;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.SPECIFIED_USING_POD_CONFIGURATION;
+import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_NAMESPACE;
+import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_AUTO_REGISTER_TIMEOUT;
+import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_SECURITY_TOKEN;
 import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
 import static java.text.MessageFormat.format;
 
@@ -85,9 +90,19 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
             LOG.warn(format("[Create Agent Request] Request for creating an agent for Job Identifier [{0}] has already been scheduled. Skipping current request.", jobIdentifier));
             return null;
         }
+        
+        KubernetesSettings kubernetesSettings = new KubernetesSettings();
+    	kubernetesSettings.setNamespace(request.properties().get(PROFILE_NAMESPACE.getKey()));
+    	kubernetesSettings.setSecurityToken(request.properties().get(PROFILE_SECURITY_TOKEN.getKey()));
+    	final String autoRegisterTimeout = request.properties().get(PROFILE_AUTO_REGISTER_TIMEOUT.getKey());
+    	if(StringUtils.isNotBlank(autoRegisterTimeout)) {
+    		kubernetesSettings.setAutoRegisterTimeout(Integer.valueOf(autoRegisterTimeout));
+    	}
+    	
+    	kubernetesSettings = SettingsUtil.mergeSettings(kubernetesSettings, settings);
 
-        KubernetesClient client = factory.client(settings);
-        KubernetesInstance instance = kubernetesInstanceFactory.create(request, settings, client, pluginRequest, isUsingPodYaml(request));
+        KubernetesClient client = factory.createClientFor(kubernetesSettings);
+        KubernetesInstance instance = kubernetesInstanceFactory.create(request, kubernetesSettings, client, pluginRequest, isUsingPodYaml(request));
         register(instance);
 
         return instance;
@@ -111,7 +126,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     public void terminate(String agentId, PluginSettings settings) {
         KubernetesInstance instance = instances.get(agentId);
         if (instance != null) {
-            KubernetesClient client = factory.client(settings);
+        	KubernetesClient client = factory.createClientFor(instance.getSettings());
             instance.terminate(client);
         } else {
             LOG.warn(format("Requested to terminate an instance that does not exist {0}.", agentId));
@@ -127,8 +142,8 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         }
 
         LOG.warn(format("Terminating instances that did not register {0}.", toTerminate.instances.keySet()));
-        for (String podName : toTerminate.instances.keySet()) {
-            terminate(podName, settings);
+        for (String agentId : toTerminate.instances.keySet()) {
+            terminate(agentId, settings);
         }
     }
 
@@ -141,7 +156,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
                 continue;
             }
 
-            if (clock.now().isAfter(instance.createdAt().plus(settings.getAutoRegisterPeriod()))) {
+            if (clock.now().isAfter(instance.createdAt().plus(instance.getSettings().getAutoRegisterPeriod()))) {
                 oldAgents.add(agent);
             }
         }
@@ -150,21 +165,31 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
 
     @Override
     public void refreshAll(PluginRequest pluginRequest) {
-        LOG.debug("[Refresh Instances] Syncing k8s elastic agent pod information.");
-        KubernetesClient client = factory.client(pluginRequest.getPluginSettings());
-        PodList list = client.pods().list();
-
-        instances.clear();
-        for (Pod pod : list.getItems()) {
-            Map<String, String> podLabels = pod.getMetadata().getLabels();
-            if (podLabels != null) {
-                if (StringUtils.equals(Constants.KUBERNETES_POD_KIND_LABEL_VALUE, podLabels.get(Constants.KUBERNETES_POD_KIND_LABEL_KEY))) {
-                    register(kubernetesInstanceFactory.fromKubernetesPod(pod));
-                }
-            }
-        }
-
-        LOG.info(String.format("[refresh-pod-state] Pod information successfully synced. All(Running/Pending) pod count is %d.", instances.size()));
+    	
+    	Map<String,KubernetesClient> clientMap = new HashMap<>();
+    	instances.values().forEach( instance -> {
+	        LOG.debug("[refresh-pod-state] Syncing k8s elastic agent pod information.");
+	        KubernetesClient client = factory.createClientFor(instance.getSettings());
+	        
+	        if (!clientMap.containsKey(client.getNamespace())) {
+		        clientMap.put(client.getNamespace(), client);
+		        
+		        LOG.debug("[refresh-pod-state] for Namespace ."+ client.getNamespace());
+			    PodList list = client.pods().list();
+			    LOG.debug("[refresh-pod-state] for Pods size ."+list.getItems().size());
+			        
+		    	for (Pod pod : list.getItems()) {
+			        Map<String, String> podLabels = pod.getMetadata().getLabels();
+			           if (podLabels != null) {
+			             if (StringUtils.equals(Constants.KUBERNETES_POD_KIND_LABEL_VALUE, podLabels.get(Constants.KUBERNETES_POD_KIND_LABEL_KEY))) {
+			                 register(kubernetesInstanceFactory.fromKubernetesPod(pod,instance.getSettings()));
+	                     }
+			           }
+			        }
+		         }
+    	});
+    	
+    	LOG.debug(String.format("[refresh-pod-state] Pod information successfully synced. All(Running/Pending) pod count is %d.", instances.size()));
     }
 
     @Override
@@ -177,26 +202,26 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     }
 
     private KubernetesAgentInstances unregisteredAfterTimeout(PluginSettings settings, Agents knownAgents) throws Exception {
-        Period period = settings.getAutoRegisterPeriod();
         KubernetesAgentInstances unregisteredInstances = new KubernetesAgentInstances();
-        KubernetesClient client = factory.client(settings);
+        KubernetesClient client;
 
-        for (String instanceName : instances.keySet()) {
-            if (knownAgents.containsAgentWithId(instanceName)) {
+        for (KubernetesInstance instance : instances.values()) {
+            if (knownAgents.containsAgentWithId(instance.name())) {
                 continue;
             }
-
-            Pod pod = getPod(client, instanceName);
+            client = factory.createClientFor(instance.getSettings());
+            
+            Pod pod = getPod(client, instance.name());
             if (pod == null) {
-                LOG.debug(String.format("[server-ping] Pod with name %s is already deleted.", instanceName));
+                LOG.debug(String.format("[server-ping] Pod with name %s is already deleted.", instance.name()));
                 continue;
             }
 
             Date createdAt = getSimpleDateFormat().parse(pod.getMetadata().getCreationTimestamp());
             DateTime dateTimeCreated = new DateTime(createdAt);
 
-            if (clock.now().isAfter(dateTimeCreated.plus(period))) {
-                unregisteredInstances.register(kubernetesInstanceFactory.fromKubernetesPod(pod));
+            if (clock.now().isAfter(dateTimeCreated.plus(instance.getSettings().getAutoRegisterPeriod()))) {
+                unregisteredInstances.register(kubernetesInstanceFactory.fromKubernetesPod(pod,instance.getSettings()));
             }
         }
         return unregisteredInstances;

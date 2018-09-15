@@ -16,6 +16,8 @@
 
 package cd.go.contrib.elasticagent.requests;
 
+import cd.go.contrib.elasticagent.AgentInstances;
+import cd.go.contrib.elasticagent.KubernetesInstance;
 import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.Request;
 import cd.go.contrib.elasticagent.executors.AgentStatusReportExecutor;
@@ -25,6 +27,8 @@ import com.google.gson.annotations.SerializedName;
 
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
 
+import java.util.Map;
+
 /**
  * Represents the {@link Request#REQUEST_SHOULD_ASSIGN_WORK} message.
  */
@@ -32,6 +36,10 @@ public class AgentStatusReportRequest {
     @Expose
     @SerializedName("elastic_agent_id")
     private String elasticAgentId;
+    
+    @Expose
+    @SerializedName("properties")
+    private Map<String, String> properties;
 
     @Expose
     @SerializedName("job_identifier")
@@ -40,13 +48,16 @@ public class AgentStatusReportRequest {
     public AgentStatusReportRequest() {
     }
 
-    public AgentStatusReportRequest(String elasticAgentId, JobIdentifier jobIdentifier) {
+    public AgentStatusReportRequest(String elasticAgentId, Map<String, String> properties,JobIdentifier jobIdentifier) {
         this.elasticAgentId = elasticAgentId;
+        this.properties = properties;
         this.jobIdentifier = jobIdentifier;
     }
 
     public static AgentStatusReportRequest fromJSON(String json) {
-        return GSON.fromJson(json, AgentStatusReportRequest.class);
+    	AgentStatusReportRequest request = GSON.fromJson(json, AgentStatusReportRequest.class);
+    	System.out.println("AgentStatusReportRequest"+json);
+        return request;
     }
 
     public String getElasticAgentId() {
@@ -56,8 +67,13 @@ public class AgentStatusReportRequest {
     public JobIdentifier getJobIdentifier() {
         return jobIdentifier;
     }
+    
 
-    public AgentStatusReportExecutor executor(PluginRequest pluginRequest) {
-        return new AgentStatusReportExecutor(this, pluginRequest);
+    public Map<String, String> properties() {
+		return properties;
+	}
+
+	public AgentStatusReportExecutor executor(AgentInstances<KubernetesInstance> agentInstances,PluginRequest pluginRequest) {
+        return new AgentStatusReportExecutor(agentInstances,this, pluginRequest);
     }
 }

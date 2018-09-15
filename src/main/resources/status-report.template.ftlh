@@ -272,6 +272,7 @@
 					<table>
 						<thead>
 						<tr>
+						    <th>Namespace</th>
 							<th>Pod Name</th>
 							<th>Job Information</th>
 							<th>Image</th>
@@ -284,6 +285,7 @@
                             <#if node.pods?size != 0>
                                 <#list node.pods as pod>
                                 <tr>
+                                    <td>${pod.namespace!}</td>
 									<td>
 										<a href="/go/admin/status_reports/${pluginId}/${pod.podName!}"> ${pod.podName!} </a>
 									</td>

@@ -63,6 +63,8 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     public void setUp() throws Exception {
         initMocks(this);
         when(factory.client(any())).thenReturn(mockedClient);
+        when(factory.createClientFor(any(KubernetesSettings.class))).thenReturn(mockedClient);
+        
         when(mockedClient.pods()).thenReturn(mockedOperation);
         
         final PodList podList = mock(PodList.class);

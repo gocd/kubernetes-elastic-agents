@@ -16,15 +16,25 @@
 
 package cd.go.contrib.elasticagent.executors;
 
+import cd.go.contrib.elasticagent.KubernetesClientFactory;
 import cd.go.contrib.elasticagent.KubernetesInstanceFactory;
+import cd.go.contrib.elasticagent.KubernetesSettings;
+import cd.go.contrib.elasticagent.PluginRequest;
+import cd.go.contrib.elasticagent.PluginSettings;
 import cd.go.contrib.elasticagent.RequestExecutor;
 import cd.go.contrib.elasticagent.model.Metadata;
 import cd.go.contrib.elasticagent.requests.ProfileValidateRequest;
+import cd.go.contrib.elasticagent.utils.SettingsUtil;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
+
+import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.client.KubernetesClient;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -37,9 +47,13 @@ import static java.text.MessageFormat.format;
 
 public class ProfileValidateRequestExecutor implements RequestExecutor {
     private final ProfileValidateRequest request;
+    private PluginRequest pluginRequest;
+    private final KubernetesClientFactory factory;
 
-    public ProfileValidateRequestExecutor(ProfileValidateRequest request) {
+    public ProfileValidateRequestExecutor(ProfileValidateRequest request,PluginRequest pluginRequest,KubernetesClientFactory factory) { 
         this.request = request;
+        this.pluginRequest = pluginRequest;
+        this.factory = factory;
     }
 
     @Override
@@ -47,6 +61,8 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
         LOG.debug("Validating elastic profile.");
         ArrayList<Map<String, String>> result = new ArrayList<>();
         List<String> knownFields = new ArrayList<>();
+        
+        validateNamespaceExistence(new HashMap<>(request.getProperties()), result);
 
         for (Metadata field : GetProfileMetadataExecutor.FIELDS) {
             knownFields.add(field.getKey());
@@ -101,6 +117,41 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
             mapper.readValue(KubernetesInstanceFactory.getTemplatizedPodYamlString(podYaml), Pod.class);
         } catch (IOException e) {
             addError(result, key, "Invalid Pod Yaml.");
+        }
+    }
+    
+    private void validateNamespaceExistence(HashMap<String, String> properties, ArrayList<Map<String, String>> result) {
+        final String namespace = properties.get(PROFILE_NAMESPACE.getKey());
+        LOG.info("validateNamespaceExistence"+namespace);
+        if(StringUtils.isNotBlank(namespace)) {
+	        try {
+	        	PluginSettings pluginSettings = pluginRequest.getPluginSettings();
+	        	
+	        	KubernetesSettings kubernetesSettings = new KubernetesSettings();
+	         	kubernetesSettings.setNamespace(properties.get(PROFILE_NAMESPACE.getKey()));
+	         	kubernetesSettings.setSecurityToken(properties.get(PROFILE_SECURITY_TOKEN.getKey()));
+	         	final String autoRegisterTimeout = properties.get(PROFILE_AUTO_REGISTER_TIMEOUT.getKey());
+	         	if(StringUtils.isNotBlank(autoRegisterTimeout)) {
+	         		kubernetesSettings.setAutoRegisterTimeout(Integer.valueOf(autoRegisterTimeout));
+	         	}
+	         	
+	         	kubernetesSettings = SettingsUtil.mergeSettings(kubernetesSettings, pluginSettings);
+	            final KubernetesClient client = factory.createClientFor(kubernetesSettings);
+	            final List<Namespace> namespaceList = client.namespaces().list().getItems();
+	
+	            if (namespaceList.stream().anyMatch(n -> n.getMetadata().getName().equals(namespace))) {
+	                return;
+	            }
+	
+	            addError(result,PROFILE_NAMESPACE.getKey(), format("Namespace `{0}` does not exist in you cluster. Run \"kubectl create namespace {1}\" to create a namespace.", namespace, namespace));
+	        } catch (Exception e) {
+	            String message = "Failed validation of plugin settings. The reasons could be - " +
+	                    "Cluster Url is configured incorrectly or " +
+	                    "the service account token might not have enough permissions to list namespaces or " +
+	                    "incorrect CA certificate.";
+	            LOG.error(message, e);
+	            addError(result,PROFILE_NAMESPACE.getKey(), format(message + "Please check the plugin log for more details."));
+	        }
         }
     }
 

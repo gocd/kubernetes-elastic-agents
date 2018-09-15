@@ -23,6 +23,7 @@ import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 
@@ -44,19 +45,14 @@ public class GetProfileViewExecutorTest {
     @Test
     public void allFieldsShouldBePresentInView() {
         String template = Util.readResource("/profile.template.html");
-        final Document document = Jsoup.parse(template);
-
+        final Document document = Jsoup.parse(template,"", Parser.xmlParser());
+        
         for (Metadata field : GetProfileMetadataExecutor.FIELDS) {
             if (field.getKey().equals(GetProfileMetadataExecutor.SPECIFIED_USING_POD_CONFIGURATION.getKey())) {
                 continue;
             }
-            final Elements inputFieldForKey = document.getElementsByAttributeValue("ng-model", field.getKey());
+            final Elements inputFieldForKey = document.select("[ng-model="+ field.getKey()+"]");
             assertThat(inputFieldForKey, hasSize(1));
-
-            final Elements spanToShowError = document.getElementsByAttributeValue("ng-class", "{'is-visible': GOINPUTNAME[" + field.getKey() + "].$error.server}");
-            assertThat(spanToShowError, hasSize(1));
-            assertThat(spanToShowError.attr("ng-show"), is("GOINPUTNAME[" + field.getKey() + "].$error.server"));
-            assertThat(spanToShowError.text(), is("{{GOINPUTNAME[" + field.getKey() + "].$error.server}}"));
         }
 
         final Elements inputs = document.select("textarea,input[type=text],select,input[type=checkbox]");

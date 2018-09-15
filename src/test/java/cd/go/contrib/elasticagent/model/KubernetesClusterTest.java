@@ -26,10 +26,15 @@ import org.junit.Test;
 
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class KubernetesClusterTest {
     @Test
     public void shouldCreateKubernetesClusterObject() throws Exception {
         final KubernetesClient kubernetesClient = mock(KubernetesClient.class);
+        ArrayList<KubernetesClient> clients = new ArrayList<KubernetesClient>(
+        	    Arrays.asList(kubernetesClient));
 
         NodeOperationsImpl nodes = mock(NodeOperationsImpl.class);
         PodOperationsImpl pods = mock(PodOperationsImpl.class);
@@ -41,7 +46,7 @@ public class KubernetesClusterTest {
         when(pods.list()).thenReturn(new PodList());
         when(kubernetesClient.pods()).thenReturn(pods);
 
-        final KubernetesCluster cluster = new KubernetesCluster(kubernetesClient);
+        final KubernetesCluster cluster = new KubernetesCluster(clients);
 
         verify(kubernetesClient, times(1)).nodes();
         verify(kubernetesClient, times(1)).pods();

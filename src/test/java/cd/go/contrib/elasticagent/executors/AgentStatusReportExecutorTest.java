@@ -16,7 +16,10 @@
 
 package cd.go.contrib.elasticagent.executors;
 
+import cd.go.contrib.elasticagent.AgentInstances;
 import cd.go.contrib.elasticagent.KubernetesClientFactory;
+import cd.go.contrib.elasticagent.KubernetesInstance;
+import cd.go.contrib.elasticagent.KubernetesSettings;
 import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.PluginSettings;
 import cd.go.contrib.elasticagent.builders.PluginStatusReportViewBuilder;
@@ -52,6 +55,12 @@ public class AgentStatusReportExecutorTest {
 
     private AgentStatusReportExecutor executor;
     private String elasticAgentId = "elastic-agent-id";
+    
+    @Mock
+    private AgentInstances<KubernetesInstance> agentInstances;
+    
+    @Mock
+    private KubernetesInstance kubernetesInstance;
 
     @Mock
     private AgentStatusReportRequest statusReportRequest;
@@ -64,6 +73,9 @@ public class AgentStatusReportExecutorTest {
 
     @Mock
     private KubernetesClient client;
+    
+    @Mock
+    private KubernetesSettings kubernetesSettings;
 
     @Mock
     private PluginStatusReportViewBuilder builder;
@@ -94,8 +106,11 @@ public class AgentStatusReportExecutorTest {
         initMocks(this);
         Pod pod = createDefaultPod();
         pod.getMetadata().setName(elasticAgentId);
-        executor = new AgentStatusReportExecutor(statusReportRequest, pluginRequest, kubernetesClientFactory, builder);
+        executor = new AgentStatusReportExecutor(agentInstances,statusReportRequest, pluginRequest, kubernetesClientFactory, builder);
 
+        when(agentInstances.find(elasticAgentId)).thenReturn(kubernetesInstance);
+        when(kubernetesInstance.getSettings()).thenReturn(kubernetesSettings);
+        
         when(client.pods()).thenReturn(mockedOperation);
         when(mockedOperation.list()).thenReturn(podList);
         when(podList.getItems()).thenReturn(Arrays.asList(pod));
@@ -114,10 +129,7 @@ public class AgentStatusReportExecutorTest {
         when(statusReportRequest.getJobIdentifier()).thenReturn(null);
         when(statusReportRequest.getElasticAgentId()).thenReturn(elasticAgentId);
 
-        PluginSettings pluginSettings = new PluginSettings();
-
-        when(pluginRequest.getPluginSettings()).thenReturn(pluginSettings);
-        when(kubernetesClientFactory.client(pluginSettings)).thenReturn(client);
+        when(kubernetesClientFactory.createClientFor(kubernetesSettings)).thenReturn(client);
 
         when(builder.getTemplate("agent-status-report.template.ftlh")).thenReturn(template);
         when(builder.build(eq(template), any(KubernetesElasticAgent.class))).thenReturn("my-view");
@@ -135,10 +147,7 @@ public class AgentStatusReportExecutorTest {
         when(statusReportRequest.getJobIdentifier()).thenReturn(null);
         when(statusReportRequest.getElasticAgentId()).thenReturn(elasticAgentId);
 
-        PluginSettings pluginSettings = new PluginSettings();
-
-        when(pluginRequest.getPluginSettings()).thenReturn(pluginSettings);
-        when(kubernetesClientFactory.client(pluginSettings)).thenReturn(client);
+        when(kubernetesClientFactory.createClientFor(kubernetesSettings)).thenReturn(client);
 
         when(builder.getTemplate("error.template.ftlh")).thenReturn(template);
         when(builder.build(eq(template), any(StatusReportGenerationError.class))).thenReturn("my-error-view");
@@ -157,11 +166,8 @@ public class AgentStatusReportExecutorTest {
         when(statusReportRequest.getJobIdentifier()).thenReturn(jobIdentifier);
         when(statusReportRequest.getElasticAgentId()).thenReturn(null);
 
-        PluginSettings pluginSettings = new PluginSettings();
-
-        when(pluginRequest.getPluginSettings()).thenReturn(pluginSettings);
-        when(kubernetesClientFactory.client(pluginSettings)).thenReturn(client);
-
+        when(kubernetesClientFactory.createClientFor(kubernetesSettings)).thenReturn(client);
+        
         when(builder.getTemplate("error.template.ftlh")).thenReturn(template);
         when(builder.build(eq(template), any(StatusReportGenerationError.class))).thenReturn("my-error-view");
 
