@@ -70,14 +70,14 @@ public class StatusReportExecutor {
             for (Agent agent : allAgents.agents()) {
                 if (agentInstances.find(agent.elasticAgentId()) != null) {
                 	instance = agentInstances.find(agent.elasticAgentId()) ;
-                	client = factory.createClientFor(instance.getSettings());
+                	client = factory.createClientForElasticProfile(instance.getSettings());
                 	LOG.info("[status-report] client."+client.getNamespace());
                 	clientMap.put(client.getNamespace(), client);
                 }
             }
             
             // Use the default Plugin Level Client as well to get all Nodes
-            client = factory.client(pluginRequest.getPluginSettings());
+            client = factory.createClientForPluginSetting(pluginRequest.getPluginSettings());
             List<KubernetesClient> clientList = new ArrayList<>(Arrays.asList(client));
             
             if( clientMap.size()>0) {

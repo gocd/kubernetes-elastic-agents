@@ -24,6 +24,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -60,6 +63,9 @@ public class StatusReportExecutorTest {
     
     @Mock
     private Agent agent;
+    
+    @Mock
+    private KubernetesInstance kubernetesInstance;
 
     @Before
     public void setUp() throws Exception {
@@ -76,7 +82,7 @@ public class StatusReportExecutorTest {
     }
 
     @Test
-    public void shouldBuildStatusReportView() throws Exception {
+    public void shouldBuildStatusReportViewWithNoAgents() throws Exception {
         NodeOperationsImpl nodes = mock(NodeOperationsImpl.class);
         PodOperationsImpl pods = mock(PodOperationsImpl.class);
 
@@ -86,7 +92,37 @@ public class StatusReportExecutorTest {
         when(pods.withLabel(Constants.CREATED_BY_LABEL_KEY, Constants.PLUGIN_ID)).thenReturn(pods);
         when(pods.list()).thenReturn(new PodList());
         when(kubernetesClient.pods()).thenReturn(pods);
-        when(kubernetesClientFactory.client(pluginSettings)).thenReturn(kubernetesClient);
+        when(kubernetesClientFactory.createClientForPluginSetting(pluginSettings)).thenReturn(kubernetesClient);
+
+        final PluginStatusReportViewBuilder builder = mock(PluginStatusReportViewBuilder.class);
+        final Template template = mock(Template.class);
+
+        when(builder.getTemplate("status-report.template.ftlh")).thenReturn(template);
+        when(builder.build(eq(template), any(KubernetesCluster.class))).thenReturn("status-report");
+
+        final GoPluginApiResponse response = new StatusReportExecutor(agentInstances,pluginRequest, kubernetesClientFactory, builder).execute();
+
+        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseBody(), is("{\"view\":\"status-report\"}"));
+    }
+    
+    @Test
+    public void shouldBuildStatusReportViewWithAgents() throws Exception {
+        NodeOperationsImpl nodes = mock(NodeOperationsImpl.class);
+        PodOperationsImpl pods = mock(PodOperationsImpl.class);
+
+        when(nodes.list()).thenReturn(new NodeList());
+        when(kubernetesClient.nodes()).thenReturn(nodes);
+
+        when(pods.withLabel(Constants.CREATED_BY_LABEL_KEY, Constants.PLUGIN_ID)).thenReturn(pods);
+        when(pods.list()).thenReturn(new PodList());
+        when(kubernetesClient.pods()).thenReturn(pods);
+        when(kubernetesClientFactory.createClientForPluginSetting(pluginSettings)).thenReturn(kubernetesClient);
+        List<Agent> agentList = new ArrayList<Agent>();
+        agentList.add(agent);
+        when(agents.agents()).thenReturn(agentList);
+        when(agentInstances.find(agent.elasticAgentId())).thenReturn(kubernetesInstance);
+        when(kubernetesClientFactory.createClientForElasticProfile(any())).thenReturn(kubernetesClient);
 
         final PluginStatusReportViewBuilder builder = mock(PluginStatusReportViewBuilder.class);
         final Template template = mock(Template.class);

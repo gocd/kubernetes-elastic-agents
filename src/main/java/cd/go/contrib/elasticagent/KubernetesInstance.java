@@ -29,9 +29,9 @@ public class KubernetesInstance {
     private final Map<String, String> properties;
     private final Long jobId;
     private final PodState state;
-    private final KubernetesSettings settings;
+    private final ElasticProfileSettings settings;
 
-    public KubernetesInstance(DateTime createdAt, KubernetesSettings settings,String environment, String name, Map<String, String> properties, Long jobId, PodState state) {
+    public KubernetesInstance(DateTime createdAt, ElasticProfileSettings settings,String environment, String name, Map<String, String> properties, Long jobId, PodState state) {
         this.createdAt = createdAt.withZone(DateTimeZone.UTC);
         this.environment = environment;
         this.name = name;
@@ -69,7 +69,7 @@ public class KubernetesInstance {
         return this.state.equals(PodState.Pending);
     }
     
-    public KubernetesSettings getSettings() {
+    public ElasticProfileSettings getSettings() {
 		return settings;
 	}
 }

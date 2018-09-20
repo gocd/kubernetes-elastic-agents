@@ -18,7 +18,7 @@ package cd.go.contrib.elasticagent.executors;
 
 import cd.go.contrib.elasticagent.KubernetesClientFactory;
 import cd.go.contrib.elasticagent.KubernetesInstanceFactory;
-import cd.go.contrib.elasticagent.KubernetesSettings;
+import cd.go.contrib.elasticagent.ElasticProfileSettings;
 import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.PluginSettings;
 import cd.go.contrib.elasticagent.RequestExecutor;
@@ -127,16 +127,16 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
 	        try {
 	        	PluginSettings pluginSettings = pluginRequest.getPluginSettings();
 	        	
-	        	KubernetesSettings kubernetesSettings = new KubernetesSettings();
-	         	kubernetesSettings.setNamespace(properties.get(PROFILE_NAMESPACE.getKey()));
-	         	kubernetesSettings.setSecurityToken(properties.get(PROFILE_SECURITY_TOKEN.getKey()));
+	        	ElasticProfileSettings elasticProfileSettings = new ElasticProfileSettings();
+	         	elasticProfileSettings.setNamespace(properties.get(PROFILE_NAMESPACE.getKey()));
+	         	elasticProfileSettings.setSecurityToken(properties.get(PROFILE_SECURITY_TOKEN.getKey()));
 	         	final String autoRegisterTimeout = properties.get(PROFILE_AUTO_REGISTER_TIMEOUT.getKey());
 	         	if(StringUtils.isNotBlank(autoRegisterTimeout)) {
-	         		kubernetesSettings.setAutoRegisterTimeout(Integer.valueOf(autoRegisterTimeout));
+	         		elasticProfileSettings.setAutoRegisterTimeout(Integer.valueOf(autoRegisterTimeout));
 	         	}
 	         	
-	         	kubernetesSettings = SettingsUtil.mergeSettings(kubernetesSettings, pluginSettings);
-	            final KubernetesClient client = factory.createClientFor(kubernetesSettings);
+	         	elasticProfileSettings = SettingsUtil.mergeSettings(elasticProfileSettings, pluginSettings);
+	            final KubernetesClient client = factory.createClientForElasticProfile(elasticProfileSettings);
 	            final List<Namespace> namespaceList = client.namespaces().list().getItems();
 	
 	            if (namespaceList.stream().anyMatch(n -> n.getMetadata().getName().equals(namespace))) {

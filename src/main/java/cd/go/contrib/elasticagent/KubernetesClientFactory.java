@@ -32,7 +32,7 @@ public class KubernetesClientFactory {
         return KUBERNETES_CLIENT_FACTORY;
     }
 
-    public synchronized KubernetesClient client(PluginSettings pluginSettings) {
+    public synchronized KubernetesClient createClientForPluginSetting(PluginSettings pluginSettings) {
         if (pluginSettings.equals(this.pluginSettings) && this.client != null) {
             LOG.debug("Using previously created client.");
             return this.client;
@@ -40,12 +40,12 @@ public class KubernetesClientFactory {
 
         LOG.debug(format("Creating a new client because {0}.", (client == null) ? "client is null" : "plugin setting is changed"));
         this.pluginSettings = pluginSettings;
-        this.client = createClientFor(pluginSettings);
+        this.client = createClientForElasticProfile(pluginSettings);
         LOG.debug("New client is created.");
         return this.client;
     }
     
-    public synchronized KubernetesClient createClientFor(KubernetesSettings pluginSettings) {
+    public synchronized KubernetesClient createClientForElasticProfile(ElasticProfileSettings pluginSettings) {
     	
         final ConfigBuilder configBuilder = new ConfigBuilder()
                 .withOauthToken(pluginSettings.getSecurityToken())
@@ -56,7 +56,7 @@ public class KubernetesClientFactory {
         return new DefaultKubernetesClient(configBuilder.build());
     }
 
-    private KubernetesClient createClientFor(PluginSettings pluginSettings) {
+    private KubernetesClient createClientForElasticProfile(PluginSettings pluginSettings) {
         final ConfigBuilder configBuilder = new ConfigBuilder()
                 .withOauthToken(pluginSettings.getSecurityToken())
                 .withMasterUrl(pluginSettings.getClusterUrl())

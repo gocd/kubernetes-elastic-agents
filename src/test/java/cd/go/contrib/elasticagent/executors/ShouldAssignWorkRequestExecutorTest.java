@@ -62,8 +62,8 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        when(factory.client(any())).thenReturn(mockedClient);
-        when(factory.createClientFor(any(KubernetesSettings.class))).thenReturn(mockedClient);
+        when(factory.createClientForPluginSetting(any())).thenReturn(mockedClient);
+        when(factory.createClientForElasticProfile(any(ElasticProfileSettings.class))).thenReturn(mockedClient);
         
         when(mockedClient.pods()).thenReturn(mockedOperation);
         

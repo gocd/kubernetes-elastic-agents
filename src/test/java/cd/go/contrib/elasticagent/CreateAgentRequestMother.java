@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagent;
 
+import cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 
@@ -26,14 +27,33 @@ public class CreateAgentRequestMother {
     public static CreateAgentRequest defaultCreateAgentRequest() {
         String autoRegisterKey = UUID.randomUUID().toString();
         HashMap<String, String> properties = new HashMap<>();
-        properties.put("Image", "gocd/custom-gocd-agent-alpine");
-        properties.put("MaxMemory", "1024M");
-        properties.put("MaxCPU", "2");
-        properties.put("Environment", "ENV1=VALUE1\n" +
+        properties.put(GetProfileMetadataExecutor.IMAGE.getKey(), "gocd/custom-gocd-agent-alpine");
+        properties.put(GetProfileMetadataExecutor.MAX_MEMORY.getKey(), "1024M");
+        properties.put(GetProfileMetadataExecutor.MAX_CPU.getKey(), "2");
+        properties.put(GetProfileMetadataExecutor.ENVIRONMENT.getKey(), "ENV1=VALUE1\n" +
                 "ENV2=VALUE2");
-        properties.put("PodConfiguration", "");
-        properties.put("SpecifiedUsingPodConfiguration", "false");
-        properties.put("Privileged", "false");
+        properties.put(GetProfileMetadataExecutor.POD_CONFIGURATION.getKey(), "");
+        properties.put(GetProfileMetadataExecutor.SPECIFIED_USING_POD_CONFIGURATION.getKey(), "false");
+        properties.put(GetProfileMetadataExecutor.PRIVILEGED.getKey(), "false");
+
+        String environment = "QA";
+        JobIdentifier identifier = new JobIdentifier("up_42", 1L, "up_42_label", "up42_stage", "20", "up42_job", 10L);
+        return new CreateAgentRequest(autoRegisterKey, properties, environment, identifier);
+    }
+    
+    public static CreateAgentRequest kubernetesNameSpaceCreateAgentRequest() {
+        String autoRegisterKey = UUID.randomUUID().toString();
+        HashMap<String, String> properties = new HashMap<>();
+        properties.put(GetProfileMetadataExecutor.IMAGE.getKey(), "gocd/custom-gocd-agent-alpine");
+        properties.put(GetProfileMetadataExecutor.MAX_MEMORY.getKey(), "1024M");
+        properties.put(GetProfileMetadataExecutor.MAX_CPU.getKey(), "2");
+        properties.put(GetProfileMetadataExecutor.ENVIRONMENT.getKey(), "ENV1=VALUE1\n" +
+                "ENV2=VALUE2");
+        properties.put(GetProfileMetadataExecutor.POD_CONFIGURATION.getKey(), "");
+        properties.put(GetProfileMetadataExecutor.SPECIFIED_USING_POD_CONFIGURATION.getKey(), "false");
+        properties.put(GetProfileMetadataExecutor.PRIVILEGED.getKey(), "false");
+        
+        properties.put(GetProfileMetadataExecutor.PROFILE_NAMESPACE.getKey(), "test");
 
         String environment = "QA";
         JobIdentifier identifier = new JobIdentifier("up_42", 1L, "up_42_label", "up42_stage", "20", "up42_job", 10L);

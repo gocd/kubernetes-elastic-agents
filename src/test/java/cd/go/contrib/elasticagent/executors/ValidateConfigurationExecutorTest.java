@@ -68,7 +68,7 @@ public class ValidateConfigurationExecutorTest {
                 "\"secure_site_url\": \"https://example.com:8154/go\"\n" +
                 "}");
         when(pluginRequest.getSeverInfo()).thenReturn(serverInfo);
-        when(factory.client(any())).thenReturn(client);
+        when(factory.createClientForPluginSetting(any())).thenReturn(client);
         when(client.namespaces()).thenReturn(mockedOperation);
         when(mockedOperation.list()).thenReturn(namespaceList);
     }

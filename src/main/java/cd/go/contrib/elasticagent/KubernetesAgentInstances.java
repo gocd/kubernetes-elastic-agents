@@ -24,7 +24,6 @@ import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.Period;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -91,18 +90,18 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
             return null;
         }
         
-        KubernetesSettings kubernetesSettings = new KubernetesSettings();
-    	kubernetesSettings.setNamespace(request.properties().get(PROFILE_NAMESPACE.getKey()));
-    	kubernetesSettings.setSecurityToken(request.properties().get(PROFILE_SECURITY_TOKEN.getKey()));
+        ElasticProfileSettings elasticProfileSettings = new ElasticProfileSettings();
+    	elasticProfileSettings.setNamespace(request.properties().get(PROFILE_NAMESPACE.getKey()));
+    	elasticProfileSettings.setSecurityToken(request.properties().get(PROFILE_SECURITY_TOKEN.getKey()));
     	final String autoRegisterTimeout = request.properties().get(PROFILE_AUTO_REGISTER_TIMEOUT.getKey());
     	if(StringUtils.isNotBlank(autoRegisterTimeout)) {
-    		kubernetesSettings.setAutoRegisterTimeout(Integer.valueOf(autoRegisterTimeout));
+    		elasticProfileSettings.setAutoRegisterTimeout(Integer.valueOf(autoRegisterTimeout));
     	}
     	
-    	kubernetesSettings = SettingsUtil.mergeSettings(kubernetesSettings, settings);
+    	elasticProfileSettings = SettingsUtil.mergeSettings(elasticProfileSettings, settings);
 
-        KubernetesClient client = factory.createClientFor(kubernetesSettings);
-        KubernetesInstance instance = kubernetesInstanceFactory.create(request, kubernetesSettings, client, pluginRequest, isUsingPodYaml(request));
+        KubernetesClient client = factory.createClientForElasticProfile(elasticProfileSettings);
+        KubernetesInstance instance = kubernetesInstanceFactory.create(request, elasticProfileSettings, client, pluginRequest, isUsingPodYaml(request));
         register(instance);
 
         return instance;
@@ -126,7 +125,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     public void terminate(String agentId, PluginSettings settings) {
         KubernetesInstance instance = instances.get(agentId);
         if (instance != null) {
-        	KubernetesClient client = factory.createClientFor(instance.getSettings());
+        	KubernetesClient client = factory.createClientForElasticProfile(instance.getSettings());
             instance.terminate(client);
         } else {
             LOG.warn(format("Requested to terminate an instance that does not exist {0}.", agentId));
@@ -169,7 +168,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     	Map<String,KubernetesClient> clientMap = new HashMap<>();
     	instances.values().forEach( instance -> {
 	        LOG.debug("[refresh-pod-state] Syncing k8s elastic agent pod information.");
-	        KubernetesClient client = factory.createClientFor(instance.getSettings());
+	        KubernetesClient client = factory.createClientForElasticProfile(instance.getSettings());
 	        
 	        if (!clientMap.containsKey(client.getNamespace())) {
 		        clientMap.put(client.getNamespace(), client);
@@ -197,7 +196,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         return instances.get(agentId);
     }
 
-    private void register(KubernetesInstance instance) {
+    public void register(KubernetesInstance instance) {
         instances.put(instance.name(), instance);
     }
 
@@ -209,7 +208,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
             if (knownAgents.containsAgentWithId(instance.name())) {
                 continue;
             }
-            client = factory.createClientFor(instance.getSettings());
+            client = factory.createClientForElasticProfile(instance.getSettings());
             
             Pod pod = getPod(client, instance.name());
             if (pod == null) {

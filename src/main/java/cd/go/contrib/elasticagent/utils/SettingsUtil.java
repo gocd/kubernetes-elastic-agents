@@ -18,38 +18,38 @@ package cd.go.contrib.elasticagent.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
-import cd.go.contrib.elasticagent.KubernetesSettings;
+import cd.go.contrib.elasticagent.ElasticProfileSettings;
 import cd.go.contrib.elasticagent.PluginSettings;
 
 public class SettingsUtil {
 
 	 /**
-     * Copies the PluginSettings if they are not present in KubernetesSettings
+     * Copies the PluginSettings if they are not present in ElasticProfileSettings
      *
-     * @param KubernetesSettings the elastic profile level settings
+     * @param ElasticProfileSettings the elastic profile level settings
      * @param PluginSettings plugin level settings
-     * @return KubernetesSettings merged settings
+     * @return ElasticProfileSettings merged settings
      */
 	
-    public static KubernetesSettings mergeSettings(KubernetesSettings kubernetesSettings,PluginSettings pluginSettings) {
+    public static ElasticProfileSettings mergeSettings(ElasticProfileSettings elasticProfileSettings,PluginSettings pluginSettings) {
     	
-    	if (StringUtils.isBlank(kubernetesSettings.getNamespace())) {
-    		kubernetesSettings.setNamespace(pluginSettings.getNamespace());
+    	if (StringUtils.isBlank(elasticProfileSettings.getNamespace())) {
+    		elasticProfileSettings.setNamespace(pluginSettings.getNamespace());
     	}
     	
-    	if (StringUtils.isBlank(kubernetesSettings.getSecurityToken())) {
-    		kubernetesSettings.setSecurityToken(pluginSettings.getSecurityToken());
+    	if (StringUtils.isBlank(elasticProfileSettings.getSecurityToken())) {
+    		elasticProfileSettings.setSecurityToken(pluginSettings.getSecurityToken());
     	}
     	
-    	if (kubernetesSettings.getAutoRegisterTimeout()==null) {
-    		kubernetesSettings.setAutoRegisterTimeout(pluginSettings.getAutoRegisterTimeout());
+    	if (elasticProfileSettings.getAutoRegisterTimeout()==null) {
+    		elasticProfileSettings.setAutoRegisterTimeout(pluginSettings.getAutoRegisterTimeout());
     	}
     	
-    	kubernetesSettings.setClusterCACertData(pluginSettings.getCaCertData());
-    	kubernetesSettings.setClusterUrl(pluginSettings.getClusterUrl());
-    	kubernetesSettings.setGoServerUrl(pluginSettings.getGoServerUrl());
+    	elasticProfileSettings.setClusterCACertData(pluginSettings.getCaCertData());
+    	elasticProfileSettings.setClusterUrl(pluginSettings.getClusterUrl());
+    	elasticProfileSettings.setGoServerUrl(pluginSettings.getGoServerUrl());
     	
-       return kubernetesSettings;
+       return elasticProfileSettings;
     }
   
 }

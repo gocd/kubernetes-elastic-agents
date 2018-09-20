@@ -31,7 +31,7 @@ import cd.go.contrib.elasticagent.AgentInstances;
 import cd.go.contrib.elasticagent.Constants;
 import cd.go.contrib.elasticagent.KubernetesClientFactory;
 import cd.go.contrib.elasticagent.KubernetesInstance;
-import cd.go.contrib.elasticagent.KubernetesSettings;
+import cd.go.contrib.elasticagent.ElasticProfileSettings;
 import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.builders.PluginStatusReportViewBuilder;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
@@ -68,8 +68,8 @@ public class AgentStatusReportExecutor {
 
         try {
         	
-        	KubernetesSettings kubernetesSettings= agentInstances.find(elasticAgentId).getSettings();
-            KubernetesClient client = factory.createClientFor(kubernetesSettings);
+        	ElasticProfileSettings elasticProfileSettings= agentInstances.find(elasticAgentId).getSettings();
+            KubernetesClient client = factory.createClientForElasticProfile(elasticProfileSettings);
              
             Pod pod;
             if (StringUtils.isNotBlank(elasticAgentId)) {
