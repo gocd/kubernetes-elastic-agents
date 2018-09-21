@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 ThoughtWorks, Inc.
+ * Copyright 2018 ThoughtWorks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public interface Constants {
 
     // The extension point API version that this plugin understands
     String PROCESSOR_API_VERSION = "1.0";
-    String EXTENSION_API_VERSION = "3.0";
+    String EXTENSION_API_VERSION = "4.0";
     String SERVER_INFO_API_VERSION = "1.0";
 
     // the identifier of this plugin
