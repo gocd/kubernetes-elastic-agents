@@ -49,7 +49,7 @@ public class ShouldAssignWorkRequestExecutor implements RequestExecutor {
             return DefaultGoPluginApiResponse.success("true");
         }
 
-        LOG.error(format("[should-assign-work] Job with identifier {0} can not be assigned to an agent {1}.", request.jobIdentifier(), pod.name()));
+        LOG.debug(format("[should-assign-work] Job with identifier {0} can not be assigned to an agent {1}.", request.jobIdentifier(), pod.name()));
         return DefaultGoPluginApiResponse.success("false");
     }
 }
