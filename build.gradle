@@ -17,7 +17,7 @@
 apply plugin: 'java'
 apply from: 'plugin-common.gradle'
 
-project.ext.pluginVersion = '1.0.2'
+project.ext.pluginVersion = '2.0.0'
 project.ext.fullVersion = project.distVersion ? "${project.pluginVersion}-${project.distVersion}" : project.pluginVersion
 
 group = 'cd.go.contrib'
@@ -26,7 +26,7 @@ version = project.fullVersion
 project.ext.pluginDesc = [
         id         : 'cd.go.contrib.elasticagent.kubernetes',
         version    : project.version,
-        goCdVersion: '18.2.0',
+        goCdVersion: '18.10.0',
         name       : 'Kubernetes Elastic Agent Plugin',
         description: 'Kubernetes Based Elastic Agent Plugins for GoCD',
         vendorName : 'GoCD Contributors',

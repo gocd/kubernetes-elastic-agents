@@ -1,3 +1,8 @@
+## 2.0.0 - 2018-10-15
+- Added support to terminate pod once job is finished.
+
+**_NOTE:_** *_Requires GoCD version 18.10.0 or higher. Plugin will not work with the older version of GoCD._*
+
 ## 1.0.2 - 2018-09-04
 - Removed additional margin from status report pages
 
@@ -20,7 +25,7 @@
     - Pod configuration in form of YAML file
 - Support to configure plugin settings using service account token and CA cert of cluster.
 
-**_NOTE: _** *_Requires GoCD version 18.2.0 or higher. Plugin will not work with the older version of GoCD._*
+**_NOTE:_** *_Requires GoCD version 18.2.0 or higher. Plugin will not work with the older version of GoCD._*
 
  
 ## 0.0.1 - 2017-10-26
