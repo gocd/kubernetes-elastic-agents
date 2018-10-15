@@ -26,7 +26,7 @@ version = project.fullVersion
 project.ext.pluginDesc = [
         id         : 'cd.go.contrib.elasticagent.kubernetes',
         version    : project.version,
-        goCdVersion: '18.2.0',
+        goCdVersion: '18.10.0',
         name       : 'Kubernetes Elastic Agent Plugin',
         description: 'Kubernetes Based Elastic Agent Plugins for GoCD',
         vendorName : 'GoCD Contributors',
