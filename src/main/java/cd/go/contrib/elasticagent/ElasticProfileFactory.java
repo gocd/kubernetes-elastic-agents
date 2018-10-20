@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 ThoughtWorks, Inc.
+ * Copyright 2018 ThoughtWorks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,43 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagent.utils;
+package cd.go.contrib.elasticagent;
+
+import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_AUTO_REGISTER_TIMEOUT;
+import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_NAMESPACE;
+import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_SECURITY_TOKEN;
+
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import cd.go.contrib.elasticagent.ElasticProfileSettings;
-import cd.go.contrib.elasticagent.PluginSettings;
+public class ElasticProfileFactory {
 
-public class SettingsUtil {
+	private static final ElasticProfileFactory ELASTIC_PROFILE_FACTORY = new ElasticProfileFactory();
+
+	public static ElasticProfileFactory instance() {
+		return ELASTIC_PROFILE_FACTORY;
+	}
 
 	 /**
      * Copies the PluginSettings if they are not present in ElasticProfileSettings
      *
-     * @param ElasticProfileSettings the elastic profile level settings
+     * @param elasticProfileProperties Request Properties for Elastic Profile
      * @param PluginSettings plugin level settings
      * @return ElasticProfileSettings merged settings
      */
 	
-    public static ElasticProfileSettings mergeSettings(ElasticProfileSettings elasticProfileSettings,PluginSettings pluginSettings) {
+	public synchronized ElasticProfileSettings from(Map<String, String> elasticProfileProperties, PluginSettings pluginSettings) {
+
+		ElasticProfileSettings elasticProfileSettings = new ElasticProfileSettings();
+		
+		elasticProfileSettings.setNamespace(elasticProfileProperties.get(PROFILE_NAMESPACE.getKey()));
+    	elasticProfileSettings.setSecurityToken(elasticProfileProperties.get(PROFILE_SECURITY_TOKEN.getKey()));
+    	final String autoRegisterTimeout = elasticProfileProperties.get(PROFILE_AUTO_REGISTER_TIMEOUT.getKey());
+    	
+    	if(StringUtils.isNotBlank(autoRegisterTimeout)) {
+    		elasticProfileSettings.setAutoRegisterTimeout(Integer.valueOf(autoRegisterTimeout));
+    	}
     	
     	if (StringUtils.isBlank(elasticProfileSettings.getNamespace())) {
     		elasticProfileSettings.setNamespace(pluginSettings.getNamespace());
@@ -48,8 +67,8 @@ public class SettingsUtil {
     	elasticProfileSettings.setClusterCACertData(pluginSettings.getCaCertData());
     	elasticProfileSettings.setClusterUrl(pluginSettings.getClusterUrl());
     	elasticProfileSettings.setGoServerUrl(pluginSettings.getGoServerUrl());
-    	
-       return elasticProfileSettings;
-    }
-  
+
+		return elasticProfileSettings;
+
+	}
 }

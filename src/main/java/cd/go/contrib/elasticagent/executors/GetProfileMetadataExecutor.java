@@ -37,8 +37,8 @@ public class GetProfileMetadataExecutor implements RequestExecutor {
     public static final Metadata PRIVILEGED = new Metadata("Privileged", false, false);
     
     public static final Metadata PROFILE_NAMESPACE = new Metadata("ProfileNamespace", false, false);
-    public static final Metadata PROFILE_SECURITY_TOKEN = new Metadata("Profile_security_token", false, true);
-    public static final Metadata PROFILE_AUTO_REGISTER_TIMEOUT = new Metadata("Profile_auto_register_timeout", false, false);
+    public static final Metadata PROFILE_SECURITY_TOKEN = new Metadata("ProfileSecurityToken", false, true);
+    public static final Metadata PROFILE_AUTO_REGISTER_TIMEOUT = new Metadata("ProfileAutoRegisterTimeout", false, false);
     
     public static final List<Metadata> FIELDS = new ArrayList<>();
 

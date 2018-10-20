@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagent.executors;
 
+import cd.go.contrib.elasticagent.ElasticProfileFactory;
 import cd.go.contrib.elasticagent.KubernetesClientFactory;
 import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.PluginSettings;
@@ -48,6 +49,9 @@ public class ProfileValidateRequestExecutorTest {
     private KubernetesClientFactory kubernetesClientFactory;
     
     @Mock
+    private ElasticProfileFactory elasticProfileFactory;
+    
+    @Mock
     private PluginRequest pluginRequest;
     
     @Mock
@@ -69,7 +73,7 @@ public class ProfileValidateRequestExecutorTest {
         Map<String, String> properties = new HashMap<>();
         properties.put("foo", "bar");
         properties.put("SpecifiedUsingPodConfiguration", "false");
-        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties),pluginRequest,kubernetesClientFactory);
+        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties),pluginRequest,kubernetesClientFactory,elasticProfileFactory);
         String json = executor.execute().responseBody();
         JSONAssert.assertEquals("[{\"message\":\"Image must not be blank.\",\"key\":\"Image\"},{\"key\":\"foo\",\"message\":\"Is an unknown property\"}]", json, JSONCompareMode.NON_EXTENSIBLE);
     }
@@ -78,7 +82,7 @@ public class ProfileValidateRequestExecutorTest {
     public void shouldValidateMandatoryKeysForConfigProperties() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("SpecifiedUsingPodConfiguration", "false");
-        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties),pluginRequest,kubernetesClientFactory);
+        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties),pluginRequest,kubernetesClientFactory,elasticProfileFactory);
         String json = executor.execute().responseBody();
         JSONAssert.assertEquals("[{\"message\":\"Image must not be blank.\",\"key\":\"Image\"}]", json, JSONCompareMode.NON_EXTENSIBLE);
     }
@@ -87,7 +91,7 @@ public class ProfileValidateRequestExecutorTest {
     public void shouldValidateMandatoryKeysForPodConfiguration() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("SpecifiedUsingPodConfiguration", "true");
-        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties),pluginRequest,kubernetesClientFactory);
+        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties),pluginRequest,kubernetesClientFactory,elasticProfileFactory);
         String json = executor.execute().responseBody();
         JSONAssert.assertEquals("[{\"message\":\"Pod Configuration must not be blank.\",\"key\":\"PodConfiguration\"}]", json, JSONCompareMode.NON_EXTENSIBLE);
     }
@@ -97,7 +101,7 @@ public class ProfileValidateRequestExecutorTest {
         Map<String, String> properties = new HashMap<>();
         properties.put("SpecifiedUsingPodConfiguration", "true");
         properties.put("PodConfiguration", "this is my invalid fancy pod yaml!!");
-        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties),pluginRequest,kubernetesClientFactory);
+        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties),pluginRequest,kubernetesClientFactory,elasticProfileFactory);
         String json = executor.execute().responseBody();
         JSONAssert.assertEquals("[{\"message\":\"Invalid Pod Yaml.\",\"key\":\"PodConfiguration\"}]", json, JSONCompareMode.NON_EXTENSIBLE);
     }
@@ -118,7 +122,7 @@ public class ProfileValidateRequestExecutorTest {
                 "      image: gocd/fancy-agent-image:latest";
 
         properties.put("PodConfiguration", podYaml);
-        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties),pluginRequest,kubernetesClientFactory);
+        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties),pluginRequest,kubernetesClientFactory,elasticProfileFactory);
         String json = executor.execute().responseBody();
         JSONAssert.assertEquals("[]", json, JSONCompareMode.NON_EXTENSIBLE);
     }
@@ -140,7 +144,7 @@ public class ProfileValidateRequestExecutorTest {
                 "      image: {{ GOCD_AGENT_IMAGE }}:{{ LATEST_VERSION }}";
 
         properties.put("PodConfiguration", podYaml);
-        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties),pluginRequest,kubernetesClientFactory);
+        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties),pluginRequest,kubernetesClientFactory,elasticProfileFactory);
         String json = executor.execute().responseBody();
         JSONAssert.assertEquals("[]", json, JSONCompareMode.NON_EXTENSIBLE);
     }
@@ -150,7 +154,7 @@ public class ProfileValidateRequestExecutorTest {
         Map<String, String> properties = new HashMap<>();
         properties.put("SpecifiedUsingPodConfiguration", "true");
         properties.put("PodConfiguration", "foobar");
-        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties),pluginRequest,kubernetesClientFactory);
+        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties),pluginRequest,kubernetesClientFactory,elasticProfileFactory);
         String json = executor.execute().responseBody();
         JSONAssert.assertEquals("[{\"message\":\"Invalid Pod Yaml.\",\"key\":\"PodConfiguration\"}]", json, JSONCompareMode.NON_EXTENSIBLE);
     }
@@ -191,7 +195,7 @@ public class ProfileValidateRequestExecutorTest {
         when(client.namespaces()).thenReturn(mockedOperation);
         when(mockedOperation.list()).thenReturn(namespaceList);
         
-        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties),pluginRequest,kubernetesClientFactory);
+        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties),pluginRequest,kubernetesClientFactory,elasticProfileFactory);
         String json = executor.execute().responseBody();
         JSONAssert.assertEquals("[{\"key\":\"ProfileNamespace\",\"message\":\"Namespace `profileNameSpace` does not exist in you cluster. Run \\\"kubectl create namespace profileNameSpace\\\" to create a namespace.\"}]", json, JSONCompareMode.NON_EXTENSIBLE);
     }

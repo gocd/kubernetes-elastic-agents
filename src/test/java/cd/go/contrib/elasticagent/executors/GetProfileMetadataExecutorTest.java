@@ -101,14 +101,14 @@ public class GetProfileMetadataExecutorTest {
                 "    }\n" +
                 "  },\n" +
                 "  {\n" +
-                "    \"key\": \"Profile_security_token\",\n" +
+                "    \"key\": \"ProfileSecurityToken\",\n" +
                 "    \"metadata\": {\n" +
                 "      \"required\": false,\n" +
                 "      \"secure\": true\n" +
                 "    }\n" +
                 "  },\n" +
                 "  {\n" +
-                "    \"key\": \"Profile_auto_register_timeout\",\n" +
+                "    \"key\": \"ProfileAutoRegisterTimeout\",\n" +
                 "    \"metadata\": {\n" +
                 "      \"required\": false,\n" +
                 "      \"secure\": false\n" +

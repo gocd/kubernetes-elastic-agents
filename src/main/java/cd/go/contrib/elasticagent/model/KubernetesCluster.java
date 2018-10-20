@@ -31,7 +31,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 public class KubernetesCluster {
     private List<KubernetesNode> nodes;
     private final String pluginId;
-
+    
     public KubernetesCluster(List<KubernetesClient> clients) throws ParseException {
        pluginId = Constants.PLUGIN_ID;
        
@@ -44,35 +44,34 @@ public class KubernetesCluster {
     	   );
         }
        
-       LOG.info("Running kubernetes nodes " + nodeMap.values().size());
-       for(KubernetesClient client:clients) {
-    	    fetchPods(client,nodeMap);
-        }
+       Map<String,Pod> podMap = new HashMap<>();
        
-       nodes = new ArrayList<KubernetesNode>(nodeMap.values());
-       LOG.info("Running kubernetes nodes " + nodes.size());
-    }
+       for(KubernetesClient client:clients) {
+    	    // Get All the Pods
+    	    final List<Pod> pods = client.pods()
+                    .withLabel(Constants.CREATED_BY_LABEL_KEY, Constants.PLUGIN_ID)
+                    .list().getItems();
 
-    private void fetchPods(KubernetesClient dockerClient, Map<String,KubernetesNode> dockerNodeMap) throws ParseException {
-        
-        final List<Pod> pods = dockerClient.pods()
-                .withLabel(Constants.CREATED_BY_LABEL_KEY, Constants.PLUGIN_ID)
-                .list().getItems();
+            LOG.info("Running pods " + pods.size());
 
-        LOG.info("Running pods " + pods.size());
-
-        for (Pod pod : pods) {
-            final KubernetesPod kubernetesPod = new KubernetesPod(pod);
-            
-            final KubernetesNode kubernetesNode = dockerNodeMap.get(kubernetesPod.getNodeName());
-            if (kubernetesNode != null) {
-                kubernetesNode.add(kubernetesPod);
+            for (Pod pod : pods) {
+                final KubernetesPod kubernetesPod = new KubernetesPod(pod);
+                final KubernetesNode kubernetesNode = nodeMap.get(kubernetesPod.getNodeName());
+                // Only Unique Pods
+                if (kubernetesNode != null && !podMap.containsKey(pod.getMetadata().getName())) {
+                    kubernetesNode.add(kubernetesPod);
+                    podMap.put(pod.getMetadata().getName(), pod);
+                }
             }
         }
+       
+       this.nodes = new ArrayList<KubernetesNode>(nodeMap.values());
+       LOG.info("Running kubernetes nodes " + this.nodes.size());
     }
 
+
     public List<KubernetesNode> getNodes() {
-        return nodes;
+        return this.nodes;
     }
 
     public String getPluginId() {

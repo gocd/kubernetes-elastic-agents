@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.google.gson.reflect.TypeToken;
 
+import cd.go.contrib.elasticagent.ElasticProfileFactory;
 import cd.go.contrib.elasticagent.KubernetesClientFactory;
 import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.RequestExecutor;
@@ -44,7 +45,7 @@ public class ProfileValidateRequest {
     }
 
     public RequestExecutor executor(PluginRequest pluginRequest) {
-        return new ProfileValidateRequestExecutor(this,pluginRequest, KubernetesClientFactory.instance());
+        return new ProfileValidateRequestExecutor(this,pluginRequest, KubernetesClientFactory.instance(),ElasticProfileFactory.instance());
     }
     
     

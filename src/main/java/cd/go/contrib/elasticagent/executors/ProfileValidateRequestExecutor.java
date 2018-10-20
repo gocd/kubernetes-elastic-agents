@@ -18,13 +18,13 @@ package cd.go.contrib.elasticagent.executors;
 
 import cd.go.contrib.elasticagent.KubernetesClientFactory;
 import cd.go.contrib.elasticagent.KubernetesInstanceFactory;
+import cd.go.contrib.elasticagent.ElasticProfileFactory;
 import cd.go.contrib.elasticagent.ElasticProfileSettings;
 import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.PluginSettings;
 import cd.go.contrib.elasticagent.RequestExecutor;
 import cd.go.contrib.elasticagent.model.Metadata;
 import cd.go.contrib.elasticagent.requests.ProfileValidateRequest;
-import cd.go.contrib.elasticagent.utils.SettingsUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -49,11 +49,13 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
     private final ProfileValidateRequest request;
     private PluginRequest pluginRequest;
     private final KubernetesClientFactory factory;
+    private final ElasticProfileFactory elasticProfileFactory;
 
-    public ProfileValidateRequestExecutor(ProfileValidateRequest request,PluginRequest pluginRequest,KubernetesClientFactory factory) { 
+    public ProfileValidateRequestExecutor(ProfileValidateRequest request,PluginRequest pluginRequest,KubernetesClientFactory factory,ElasticProfileFactory elasticProfileFactory) { 
         this.request = request;
         this.pluginRequest = pluginRequest;
         this.factory = factory;
+        this.elasticProfileFactory = elasticProfileFactory;
     }
 
     @Override
@@ -126,16 +128,8 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
         if(StringUtils.isNotBlank(namespace)) {
 	        try {
 	        	PluginSettings pluginSettings = pluginRequest.getPluginSettings();
-	        	
-	        	ElasticProfileSettings elasticProfileSettings = new ElasticProfileSettings();
-	         	elasticProfileSettings.setNamespace(properties.get(PROFILE_NAMESPACE.getKey()));
-	         	elasticProfileSettings.setSecurityToken(properties.get(PROFILE_SECURITY_TOKEN.getKey()));
-	         	final String autoRegisterTimeout = properties.get(PROFILE_AUTO_REGISTER_TIMEOUT.getKey());
-	         	if(StringUtils.isNotBlank(autoRegisterTimeout)) {
-	         		elasticProfileSettings.setAutoRegisterTimeout(Integer.valueOf(autoRegisterTimeout));
-	         	}
+	        	ElasticProfileSettings elasticProfileSettings = elasticProfileFactory.from(properties, pluginSettings);
 	         	
-	         	elasticProfileSettings = SettingsUtil.mergeSettings(elasticProfileSettings, pluginSettings);
 	            final KubernetesClient client = factory.createClientForElasticProfile(elasticProfileSettings);
 	            final List<Namespace> namespaceList = client.namespaces().list().getItems();
 	

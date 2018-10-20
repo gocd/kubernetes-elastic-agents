@@ -40,7 +40,7 @@ public class KubernetesClientFactory {
 
         LOG.debug(format("Creating a new client because {0}.", (client == null) ? "client is null" : "plugin setting is changed"));
         this.pluginSettings = pluginSettings;
-        this.client = createClientForElasticProfile(pluginSettings);
+        this.client = createClient(pluginSettings);
         LOG.debug("New client is created.");
         return this.client;
     }
@@ -56,7 +56,7 @@ public class KubernetesClientFactory {
         return new DefaultKubernetesClient(configBuilder.build());
     }
 
-    private KubernetesClient createClientForElasticProfile(PluginSettings pluginSettings) {
+    private KubernetesClient createClient(PluginSettings pluginSettings) {
         final ConfigBuilder configBuilder = new ConfigBuilder()
                 .withOauthToken(pluginSettings.getSecurityToken())
                 .withMasterUrl(pluginSettings.getClusterUrl())

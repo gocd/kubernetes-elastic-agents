@@ -16,14 +16,10 @@
 
 package cd.go.contrib.elasticagent;
 
-import cd.go.contrib.elasticagent.model.JobIdentifier;
-import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
-import cd.go.contrib.elasticagent.utils.SettingsUtil;
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.PodList;
-import io.fabric8.kubernetes.client.KubernetesClient;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
+import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
+import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.SPECIFIED_USING_POD_CONFIGURATION;
+import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
+import static java.text.MessageFormat.format;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,13 +28,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
-import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
-import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.SPECIFIED_USING_POD_CONFIGURATION;
-import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_NAMESPACE;
-import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_AUTO_REGISTER_TIMEOUT;
-import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_SECURITY_TOKEN;
-import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
-import static java.text.MessageFormat.format;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+
+import cd.go.contrib.elasticagent.model.JobIdentifier;
+import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.PodList;
+import io.fabric8.kubernetes.client.KubernetesClient;
 
 public class KubernetesAgentInstances implements AgentInstances<KubernetesInstance> {
     private final ConcurrentHashMap<String, KubernetesInstance> instances = new ConcurrentHashMap<>();
@@ -47,6 +44,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
 
     private KubernetesClientFactory factory;
     private KubernetesInstanceFactory kubernetesInstanceFactory;
+    private ElasticProfileFactory elasticProfileFactory;
 
     public KubernetesAgentInstances() {
         this(KubernetesClientFactory.instance(), new KubernetesInstanceFactory());
@@ -59,6 +57,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     public KubernetesAgentInstances(KubernetesClientFactory factory, KubernetesInstanceFactory kubernetesInstanceFactory) {
         this.factory = factory;
         this.kubernetesInstanceFactory = kubernetesInstanceFactory;
+        this.elasticProfileFactory = ElasticProfileFactory.instance();
     }
 
     @Override
@@ -83,23 +82,14 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         }
     }
 
-    private KubernetesInstance createKubernetesInstance(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) {
+    private KubernetesInstance createKubernetesInstance(CreateAgentRequest request, PluginSettings pluginSettings, PluginRequest pluginRequest) {
         JobIdentifier jobIdentifier = request.jobIdentifier();
         if (isAgentCreatedForJob(jobIdentifier.getJobId())) {
             LOG.warn(format("[Create Agent Request] Request for creating an agent for Job Identifier [{0}] has already been scheduled. Skipping current request.", jobIdentifier));
             return null;
         }
         
-        ElasticProfileSettings elasticProfileSettings = new ElasticProfileSettings();
-    	elasticProfileSettings.setNamespace(request.properties().get(PROFILE_NAMESPACE.getKey()));
-    	elasticProfileSettings.setSecurityToken(request.properties().get(PROFILE_SECURITY_TOKEN.getKey()));
-    	final String autoRegisterTimeout = request.properties().get(PROFILE_AUTO_REGISTER_TIMEOUT.getKey());
-    	if(StringUtils.isNotBlank(autoRegisterTimeout)) {
-    		elasticProfileSettings.setAutoRegisterTimeout(Integer.valueOf(autoRegisterTimeout));
-    	}
-    	
-    	elasticProfileSettings = SettingsUtil.mergeSettings(elasticProfileSettings, settings);
-
+        ElasticProfileSettings elasticProfileSettings = elasticProfileFactory.from(request.properties(), pluginSettings);
         KubernetesClient client = factory.createClientForElasticProfile(elasticProfileSettings);
         KubernetesInstance instance = kubernetesInstanceFactory.create(request, elasticProfileSettings, client, pluginRequest, isUsingPodYaml(request));
         register(instance);

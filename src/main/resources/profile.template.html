@@ -114,31 +114,31 @@
          </div>
          
          <div class="form_item_block">
-	                <label ng-class="{'is-invalid-label': GOINPUTNAME[Profile_auto_register_timeout].$error.server}">Agent auto-register timeout (in minutes)
+	                <label ng-class="{'is-invalid-label': GOINPUTNAME[ProfileAutoRegisterTimeout].$error.server}">Agent auto-register timeout (in minutes)
 	                    <div class="tooltip-info">
 	                  <span class="tooltip-content">
 	                    Agent auto-register timeout (in minutes) , if its not specified the default plugin Agent auto-register timeout applies<br/>
 	                  </span>
 	                    </div>
 	                </label>
-	                <input ng-class="{'is-invalid-input': GOINPUTNAME[Profile_auto_register_timeout].$error.server}" type="text"
-	                       ng-model="Profile_auto_register_timeout" ng-required="false"/>
-	                <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[Profile_auto_register_timeout].$error.server}"
-	                      ng-show="GOINPUTNAME[Profile_auto_register_timeout].$error.server">{{GOINPUTNAME[Profile_auto_register_timeout].$error.server}}</span>
+	                <input ng-class="{'is-invalid-input': GOINPUTNAME[ProfileAutoRegisterTimeout].$error.server}" type="text"
+	                       ng-model="ProfileAutoRegisterTimeout" ng-required="false"/>
+	                <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[ProfileAutoRegisterTimeout].$error.server}"
+	                      ng-show="GOINPUTNAME[ProfileAutoRegisterTimeout].$error.server">{{GOINPUTNAME[ProfileAutoRegisterTimeout].$error.server}}</span>
 	     </div>
 	     
 	     <div class="form_item_block">
-	                <label ng-class="{'is-invalid-label': GOINPUTNAME[Profile_security_token].$error.server}">Security token
+	                <label ng-class="{'is-invalid-label': GOINPUTNAME[ProfileSecurityToken].$error.server}">Security token
 	                    <div class="tooltip-info">
 	                  <span class="tooltip-content">
 	                    Get the service account token by running following command <code>kubectl describe secret TOKEN_NAME</code> and copy the value of token here.
 	                  </span>
 	                    </div>
 	                </label>
-	                <textarea rows="5" ng-class="{'is-invalid-input': GOINPUTNAME[Profile_security_token].$error.server}" type="text"
-	                       ng-model="Profile_security_token" ng-required="ProfileNamespace"/>
-	                <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[Profile_security_token].$error.server}"
-	                      ng-show="GOINPUTNAME[Profile_security_token].$error.server].$error.server">{{GOINPUTNAME[Profile_security_token].$error.server}}</span>
+	                <textarea rows="5" ng-class="{'is-invalid-input': GOINPUTNAME[ProfileSecurityToken].$error.server}" type="text"
+	                       ng-model="ProfileSecurityToken" ng-required="ProfileNamespace"/>
+	                <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[ProfileSecurityToken].$error.server}"
+	                      ng-show="GOINPUTNAME[ProfileSecurityToken].$error.server].$error.server">{{GOINPUTNAME[ProfileSecurityToken].$error.server}}</span>
 	     </div>
 	     	
 	</div>     
