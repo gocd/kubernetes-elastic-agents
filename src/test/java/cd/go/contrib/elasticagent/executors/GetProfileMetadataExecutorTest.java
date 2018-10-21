@@ -113,6 +113,20 @@ public class GetProfileMetadataExecutorTest {
                 "      \"required\": false,\n" +
                 "      \"secure\": false\n" +
                 "    }\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"key\": \"ProfileKubernetesClusterUrl\",\n" +
+                "    \"metadata\": {\n" +
+                "      \"required\": false,\n" +
+                "      \"secure\": false\n" +
+                "    }\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"key\": \"ProfileKubernetesClusterCaCert\",\n" +
+                "    \"metadata\": {\n" +
+                "      \"required\": false,\n" +
+                "      \"secure\": true\n" +
+                "    }\n" +
                 "  }\n" +
                 "]";
 

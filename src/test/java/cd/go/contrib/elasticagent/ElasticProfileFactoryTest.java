@@ -17,6 +17,8 @@
 package cd.go.contrib.elasticagent;
 
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_AUTO_REGISTER_TIMEOUT;
+import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_KUBERNETES_CLUSTER_CA_CERT;
+import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_KUBERNETES_CLUSTER_URL;
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_NAMESPACE;
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_SECURITY_TOKEN;
 import static org.hamcrest.Matchers.equalTo;
@@ -73,19 +75,21 @@ public class ElasticProfileFactoryTest {
 		pluginSettingsMap.put("security_token", "foo-token");
 		pluginSettingsMap.put("kubernetes_cluster_ca_cert", "foo-ca-certs");
 		pluginSettingsMap.put("namespace", "gocd");
-
+		
 		PluginSettings pluginSettings = PluginSettings.fromJSON(new Gson().toJson(pluginSettingsMap));
 		
 		final Map<String, String> elasticProfileProperties = new HashMap<>();
 		elasticProfileProperties.put(PROFILE_NAMESPACE.getKey(), "gocdProf");
 		elasticProfileProperties.put(PROFILE_SECURITY_TOKEN.getKey(), "prof-token");
 		elasticProfileProperties.put(PROFILE_AUTO_REGISTER_TIMEOUT.getKey(), "5");
+		elasticProfileProperties.put(PROFILE_KUBERNETES_CLUSTER_URL.getKey(), "https://prof-cloud.example.com");
+		elasticProfileProperties.put(PROFILE_KUBERNETES_CLUSTER_CA_CERT.getKey(), "prof-foo-ca-certs");
 		
 		ElasticProfileSettings elasticProfileSettings = factory.from(elasticProfileProperties, pluginSettings);
 		
-		assertThat(elasticProfileSettings.getClusterUrl(), equalTo(pluginSettings.getClusterUrl()));
+		assertThat(elasticProfileSettings.getClusterUrl(), equalTo(elasticProfileProperties.get(PROFILE_KUBERNETES_CLUSTER_URL.getKey())));
 		assertThat(elasticProfileSettings.getGoServerUrl(), equalTo(pluginSettings.getGoServerUrl()));
-		assertThat(elasticProfileSettings.getClusterCACertData(), equalTo(pluginSettings.getCaCertData()));
+		assertThat(elasticProfileSettings.getClusterCACertData(), equalTo(elasticProfileProperties.get(PROFILE_KUBERNETES_CLUSTER_CA_CERT.getKey())));
 		assertThat(elasticProfileSettings.getNamespace(), equalTo(elasticProfileProperties.get(PROFILE_NAMESPACE.getKey())));
 		assertThat(elasticProfileSettings.getSecurityToken(), equalTo(elasticProfileProperties.get(PROFILE_SECURITY_TOKEN.getKey())));
 		assertThat(Integer.toString(elasticProfileSettings.getAutoRegisterPeriod().getMinutes()), equalTo(elasticProfileProperties.get(PROFILE_AUTO_REGISTER_TIMEOUT.getKey())));

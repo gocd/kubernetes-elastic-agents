@@ -98,20 +98,6 @@
     </style>
     
      <div>
-          
-    	  <div class="form_item_block">
-                <label ng-class="{'is-invalid-label': GOINPUTNAME[ProfileNamespace].$error.server}">Profile Name Space:
-                    <div class="tooltip-info">
-                  <span class="tooltip-content">
-                    The namespace for this profile, if its not specified the default plugin namespace applies<br/>
-                  </span>
-                    </div>
-                </label>
-                <input ng-class="{'is-invalid-input': GOINPUTNAME[ProfileNamespace].$error.server}" type="text"
-                       ng-model="ProfileNamespace" ng-required="false"/>
-                <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[ProfileNamespace].$error.server}"
-                      ng-show="GOINPUTNAME[ProfileNamespace].$error.server">{{GOINPUTNAME[ProfileNamespace].$error.server}}</span>
-         </div>
          
          <div class="form_item_block">
 	                <label ng-class="{'is-invalid-label': GOINPUTNAME[ProfileAutoRegisterTimeout].$error.server}">Agent auto-register timeout (in minutes)
@@ -127,19 +113,6 @@
 	                      ng-show="GOINPUTNAME[ProfileAutoRegisterTimeout].$error.server">{{GOINPUTNAME[ProfileAutoRegisterTimeout].$error.server}}</span>
 	     </div>
 	     
-	     <div class="form_item_block">
-	                <label ng-class="{'is-invalid-label': GOINPUTNAME[ProfileSecurityToken].$error.server}">Security token
-	                    <div class="tooltip-info">
-	                  <span class="tooltip-content">
-	                    Get the service account token by running following command <code>kubectl describe secret TOKEN_NAME</code> and copy the value of token here.
-	                  </span>
-	                    </div>
-	                </label>
-	                <textarea rows="5" ng-class="{'is-invalid-input': GOINPUTNAME[ProfileSecurityToken].$error.server}" type="text"
-	                       ng-model="ProfileSecurityToken" ng-required="ProfileNamespace"/>
-	                <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[ProfileSecurityToken].$error.server}"
-	                      ng-show="GOINPUTNAME[ProfileSecurityToken].$error.server].$error.server">{{GOINPUTNAME[ProfileSecurityToken].$error.server}}</span>
-	     </div>
 	     	
 	</div>     
 
@@ -168,7 +141,7 @@
                     <span class="asterix">*</span>
                 </label>
                 <input ng-class="{'is-invalid-input': GOINPUTNAME[Image].$error.server}" type="text" ng-model="Image"
-                       ng-required="!SpecifiedUsingPodConfiguration" placeholder="alpine:latest"/>
+                       ng-required="true" placeholder="alpine:latest"/>
                 <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[Image].$error.server}"
                       ng-show="GOINPUTNAME[Image].$error.server">{{GOINPUTNAME[Image].$error.server}}</span>
             </div>
@@ -185,7 +158,7 @@
                     </div>
                 </label>
                 <input ng-class="{'is-invalid-input': GOINPUTNAME[MaxMemory].$error.server}" type="text"
-                       ng-model="MaxMemory" ng-required="!SpecifiedUsingPodConfiguration"/>
+                       ng-model="MaxMemory" ng-required="false"/>
                 <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[MaxMemory].$error.server}"
                       ng-show="GOINPUTNAME[MaxMemory].$error.server">{{GOINPUTNAME[MaxMemory].$error.server}}</span>
             </div>
@@ -201,7 +174,7 @@
                     </div>
                 </label>
                 <input ng-class="{'is-invalid-input': GOINPUTNAME[MaxCPU].$error.server}" type="text" ng-model="MaxCPU"
-                       ng-required="!SpecifiedUsingPodConfiguration"/>
+                       ng-required="false"/>
                 <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[MaxCPU].$error.server}"
                       ng-show="GOINPUTNAME[MaxCPU].$error.server">{{GOINPUTNAME[MaxCPU].$error.server}}</span>
             </div>
@@ -276,5 +249,74 @@ spec:
                   ng-show="GOINPUTNAME[PodConfiguration].$error.server">{{GOINPUTNAME[PodConfiguration].$error.server}}</span>
         </div>
     </div>
+    
+    <div>
+
+		<div class="row">
+
+			<div class="columns medium-5 large-3">
+				<label
+					ng-class="{'is-invalid-label': GOINPUTNAME[ProfileNamespace].$error.server}">Profile
+					Name Space:
+					<div class="tooltip-info">
+						<span class="tooltip-content"> The namespace for this
+							profile, if its not specified the default plugin namespace
+							applies<br />
+						</span>
+					</div>
+				</label>
+				<input ng-class="{'is-invalid-input': GOINPUTNAME[ProfileNamespace].$error.server}" type="text" ng-model="ProfileNamespace" ng-required="false" /> 
+				<span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[ProfileNamespace].$error.server}"
+					ng-show="GOINPUTNAME[ProfileNamespace].$error.server">{{GOINPUTNAME[ProfileNamespace].$error.server}}</span>
+			</div>
+
+			<div class="columns medium-5 large-5 end">
+				<label
+					ng-class="{'is-invalid-label': GOINPUTNAME[ProfileKubernetesClusterUrl].$error.server}">Profile Cluster URL
+					<div class="tooltip-info">
+						<span class="tooltip-content"> The Cluster URL for this profile, if its not specified the plugin Cluster URL
+							is used<br />
+						</span>
+					</div>
+				</label> 
+				  <input ng-class="{'is-invalid-input': GOINPUTNAME[ProfileKubernetesClusterUrl].$error.server}" type="text" ng-model="ProfileKubernetesClusterUrl"
+					ng-required="false" /> 
+				 <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[ProfileKubernetesClusterUrl].$error.server}"
+					ng-show="GOINPUTNAME[ProfileKubernetesClusterUrl].$error.server">{{GOINPUTNAME[ProfileKubernetesClusterUrl].$error.server}}</span>
+			</div>
+
+		</div>
+
+
+		<div class="form_item_block">
+			<label
+				ng-class="{'is-invalid-label': GOINPUTNAME[ProfileSecurityToken].$error.server}">Security token
+				<div class="tooltip-info">
+					<span class="tooltip-content"> Get the service account token by running following command <code>kubectl describe secret
+							TOKEN_NAME</code> and copy the value of token here. If its not specified the plugin Security token is used
+					</span>
+				</div>
+			</label>
+			<textarea rows="5" ng-class="{'is-invalid-input': GOINPUTNAME[ProfileSecurityToken].$error.server}" type="text" ng-model="ProfileSecurityToken" ng-required="false" />
+			<span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[ProfileSecurityToken].$error.server}"
+				ng-show="GOINPUTNAME[ProfileSecurityToken].$error.server">{{GOINPUTNAME[ProfileSecurityToken].$error.server}}</span>
+		</div>
+		
+		<div class="form_item_block">
+			<label
+				ng-class="{'is-invalid-label': GOINPUTNAME[ProfileKubernetesClusterCaCert].$error.server}">Cluster ca certificate data
+				<div class="tooltip-info">
+					<span class="tooltip-content"> Kubernetes cluster ca certificate data. Do not provide <code> -----BEGIN * </code> and <code> -----END
+				            * </code> in your certificate data.If its not specified the plugin Cluster ca certificate data is used
+					</span>
+				</div>
+			</label>
+			<textarea rows="5" ng-class="{'is-invalid-input': GOINPUTNAME[ProfileKubernetesClusterCaCert].$error.server}" type="text" ng-model="ProfileKubernetesClusterCaCert" ng-required="false" />
+			<span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[ProfileKubernetesClusterCaCert].$error.server}"
+				ng-show="GOINPUTNAME[ProfileKubernetesClusterCaCert].$error.server">{{GOINPUTNAME[ProfileKubernetesClusterCaCert].$error.server}}</span>
+		</div>
+
+
+	</div>
 
 </div>

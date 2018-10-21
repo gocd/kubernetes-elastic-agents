@@ -39,6 +39,9 @@ public class GetProfileMetadataExecutor implements RequestExecutor {
     public static final Metadata PROFILE_NAMESPACE = new Metadata("ProfileNamespace", false, false);
     public static final Metadata PROFILE_SECURITY_TOKEN = new Metadata("ProfileSecurityToken", false, true);
     public static final Metadata PROFILE_AUTO_REGISTER_TIMEOUT = new Metadata("ProfileAutoRegisterTimeout", false, false);
+    public static final Metadata PROFILE_KUBERNETES_CLUSTER_URL = new Metadata("ProfileKubernetesClusterUrl", false, false);
+    public static final Metadata PROFILE_KUBERNETES_CLUSTER_CA_CERT = new Metadata("ProfileKubernetesClusterCaCert", false, true);
+    
     
     public static final List<Metadata> FIELDS = new ArrayList<>();
 
@@ -54,6 +57,8 @@ public class GetProfileMetadataExecutor implements RequestExecutor {
         FIELDS.add(PROFILE_NAMESPACE);
         FIELDS.add(PROFILE_SECURITY_TOKEN);
         FIELDS.add(PROFILE_AUTO_REGISTER_TIMEOUT);
+        FIELDS.add(PROFILE_KUBERNETES_CLUSTER_URL);
+        FIELDS.add(PROFILE_KUBERNETES_CLUSTER_CA_CERT);
         
     }
 
