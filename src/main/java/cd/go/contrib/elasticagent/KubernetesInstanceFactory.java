@@ -239,8 +239,8 @@ public class KubernetesInstanceFactory {
         HashMap<String, String> context = new HashMap<>();
         context.put(POD_POSTFIX, UUID.randomUUID().toString());
         context.put(CONTAINER_POSTFIX, UUID.randomUUID().toString());
-        context.put(GOCD_AGENT_IMAGE, "gocd/gocd-agent-alpine-3.5");
-        context.put(LATEST_VERSION, "v17.10.0");
+        context.put(GOCD_AGENT_IMAGE, "gocd/gocd-agent-alpine-3.6");
+        context.put(LATEST_VERSION, "v18.10.0");
         return context;
     }
 }
