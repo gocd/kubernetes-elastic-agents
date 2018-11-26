@@ -30,7 +30,7 @@ project.ext.pluginDesc = [
         name       : 'Kubernetes Elastic Agent Plugin',
         description: 'Kubernetes Based Elastic Agent Plugins for GoCD',
         vendorName : 'GoCD Contributors',
-        vendorUrl  : 'https://github.com/gocd-contrib/kubernetes-elastic-agent'
+        vendorUrl  : 'https://github.com/gocd/kubernetes-elastic-agents'
 ]
 
 // In this section you declare where to find the dependencies of your project
