@@ -17,7 +17,7 @@
 package cd.go.contrib.elasticagent;
 
 public abstract class BaseTest {
-    protected PluginSettings createSettings() {
-        return new PluginSettings("https://localhost:8154/go", null, null);
+    protected ElasticProfileSettings createSettings() {
+        return new ElasticProfileSettings("https://gocd.com/go",10,10,"https://kub.com","securityToken","cacert","namespace");
     }
 }

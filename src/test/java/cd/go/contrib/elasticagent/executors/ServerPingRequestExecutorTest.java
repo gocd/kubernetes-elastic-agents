@@ -90,7 +90,6 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         AgentInstances<KubernetesInstance> agentInstances = new KubernetesAgentInstances(factory);
 
         PluginRequest pluginRequest = mock(PluginRequest.class);
-        when(pluginRequest.getPluginSettings()).thenReturn(createSettings());
         when(pluginRequest.listAgents()).thenReturn(agents);
         verifyNoMoreInteractions(pluginRequest);
 
@@ -115,7 +114,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         AgentInstances<KubernetesInstance> agentInstances = new KubernetesAgentInstances(factory);
 
         PluginRequest pluginRequest = mock(PluginRequest.class);
-        when(pluginRequest.getPluginSettings()).thenReturn(createSettings());
+//        when(pluginRequest.getPluginSettings()).thenReturn(createSettings());
         when(pluginRequest.listAgents()).thenReturn(agents);
         verifyNoMoreInteractions(pluginRequest);
 
@@ -138,7 +137,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         HashMap<String, String> labels = new HashMap<>();
         labels.put(Constants.JOB_ID_LABEL_KEY, "1");
         objectMetadata.setLabels(labels);
-        when(pluginRequest.getPluginSettings()).thenReturn(createSettings());
+//        when(pluginRequest.getPluginSettings()).thenReturn(createSettings());
         when(pluginRequest.listAgents()).thenReturn(new Agents());
         verifyNoMoreInteractions(pluginRequest);
 
@@ -149,7 +148,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
     @Test
     public void shouldDeleteAgentFromConfigWhenCorrespondingContainerIsNotPresent() throws Exception {
         PluginRequest pluginRequest = mock(PluginRequest.class);
-        when(pluginRequest.getPluginSettings()).thenReturn(createSettings());
+//        when(pluginRequest.getPluginSettings()).thenReturn(createSettings());
         when(pluginRequest.listAgents()).thenReturn(new Agents(Arrays.asList(new Agent("foo", Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled))));
         verifyNoMoreInteractions(pluginRequest);
 

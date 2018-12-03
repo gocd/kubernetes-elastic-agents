@@ -30,6 +30,7 @@ import java.util.concurrent.Semaphore;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.Period;
 
 import cd.go.contrib.elasticagent.model.JobIdentifier;
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
@@ -44,7 +45,6 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
 
     private KubernetesClientFactory factory;
     private KubernetesInstanceFactory kubernetesInstanceFactory;
-    private ElasticProfileFactory elasticProfileFactory;
 
     public KubernetesAgentInstances() {
         this(KubernetesClientFactory.instance(), new KubernetesInstanceFactory());
@@ -57,11 +57,10 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     public KubernetesAgentInstances(KubernetesClientFactory factory, KubernetesInstanceFactory kubernetesInstanceFactory) {
         this.factory = factory;
         this.kubernetesInstanceFactory = kubernetesInstanceFactory;
-        this.elasticProfileFactory = ElasticProfileFactory.instance();
     }
 
     @Override
-    public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) {
+    public KubernetesInstance create(CreateAgentRequest request, ElasticProfileSettings settings, PluginRequest pluginRequest) {
         final Integer maxAllowedContainers = settings.getMaxPendingPods();
         synchronized (instances) {
             refreshAll(pluginRequest);
@@ -82,14 +81,13 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         }
     }
 
-    private KubernetesInstance createKubernetesInstance(CreateAgentRequest request, PluginSettings pluginSettings, PluginRequest pluginRequest) {
+    private KubernetesInstance createKubernetesInstance(CreateAgentRequest request, ElasticProfileSettings elasticProfileSettings, PluginRequest pluginRequest) {
         JobIdentifier jobIdentifier = request.jobIdentifier();
         if (isAgentCreatedForJob(jobIdentifier.getJobId())) {
             LOG.warn(format("[Create Agent Request] Request for creating an agent for Job Identifier [{0}] has already been scheduled. Skipping current request.", jobIdentifier));
             return null;
         }
         
-        ElasticProfileSettings elasticProfileSettings = elasticProfileFactory.from(request.properties(), pluginSettings);
         KubernetesClient client = factory.createClientForElasticProfile(elasticProfileSettings);
         KubernetesInstance instance = kubernetesInstanceFactory.create(request, elasticProfileSettings, client, pluginRequest, isUsingPodYaml(request));
         register(instance);
@@ -112,7 +110,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     }
 
     @Override
-    public void terminate(String agentId, PluginSettings settings) {
+    public void terminate(String agentId) {
         KubernetesInstance instance = instances.get(agentId);
         if (instance != null) {
         	KubernetesClient client = factory.createClientForElasticProfile(instance.getSettings());
@@ -124,30 +122,33 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     }
 
     @Override
-    public void terminateUnregisteredInstances(PluginSettings settings, Agents agents) throws Exception {
-        KubernetesAgentInstances toTerminate = unregisteredAfterTimeout(settings, agents);
+    public void terminateUnregisteredInstances(Agents agents) throws Exception {
+        KubernetesAgentInstances toTerminate = unregisteredAfterTimeout(agents);
         if (toTerminate.instances.isEmpty()) {
             return;
         }
 
         LOG.warn(format("Terminating instances that did not register {0}.", toTerminate.instances.keySet()));
         for (String agentId : toTerminate.instances.keySet()) {
-            terminate(agentId, settings);
+            terminate(agentId);
         }
     }
 
     @Override
-    public Agents instancesCreatedAfterTimeout(PluginSettings settings, Agents agents) {
+    public Agents instancesCreatedAfterTimeout(Agents agents) {
         ArrayList<Agent> oldAgents = new ArrayList<>();
+        KubernetesInstance instance;
+        
         for (Agent agent : agents.agents()) {
-            KubernetesInstance instance = instances.get(agent.elasticAgentId());
+            instance = instances.get(agent.elasticAgentId());
             if (instance == null) {
                 continue;
             }
-
-            if (clock.now().isAfter(instance.createdAt().plus(instance.getSettings().getAutoRegisterPeriod()))) {
+            
+            if (clock.now().isAfter(instance.createdAt().plus(new Period().withMinutes(instance.getSettings().getAutoRegisterTimeout())))) {
                 oldAgents.add(agent);
             }
+            instance = null;
         }
         return new Agents(oldAgents);
     }
@@ -187,10 +188,12 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     }
 
     public void register(KubernetesInstance instance) {
-        instances.put(instance.name(), instance);
+    	if(!instances.containsKey(instance.name())) {
+	        instances.put(instance.name(), instance);
+    	}
     }
 
-    private KubernetesAgentInstances unregisteredAfterTimeout(PluginSettings settings, Agents knownAgents) throws Exception {
+    private KubernetesAgentInstances unregisteredAfterTimeout(Agents knownAgents) throws Exception {
         KubernetesAgentInstances unregisteredInstances = new KubernetesAgentInstances();
         KubernetesClient client;
 
@@ -209,7 +212,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
             Date createdAt = getSimpleDateFormat().parse(pod.getMetadata().getCreationTimestamp());
             DateTime dateTimeCreated = new DateTime(createdAt);
 
-            if (clock.now().isAfter(dateTimeCreated.plus(instance.getSettings().getAutoRegisterPeriod()))) {
+            if (clock.now().isAfter(dateTimeCreated.plus(new Period().withMinutes(instance.getSettings().getAutoRegisterTimeout())))) {
                 unregisteredInstances.register(kubernetesInstanceFactory.fromKubernetesPod(pod,instance.getSettings()));
             }
         }
@@ -229,3 +232,4 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         return instances.contains(instance);
     }
 }
+

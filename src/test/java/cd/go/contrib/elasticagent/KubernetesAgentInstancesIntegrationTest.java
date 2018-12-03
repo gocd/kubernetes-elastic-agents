@@ -21,6 +21,8 @@ import com.google.gson.Gson;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.internal.PodOperationsImpl;
+
+import org.joda.time.Period;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -49,7 +51,7 @@ public class KubernetesAgentInstancesIntegrationTest {
     private PluginRequest mockedPluginRequest;
 
     private KubernetesAgentInstances kubernetesAgentInstances;
-    private PluginSettings settings;
+    private ElasticProfileSettings settings;
     private CreateAgentRequest createAgentRequest;
 
     @Mock
@@ -73,7 +75,7 @@ public class KubernetesAgentInstancesIntegrationTest {
         when(mockKubernetesClient.pods()).thenReturn(pods);
 
         createAgentRequest = CreateAgentRequestMother.defaultCreateAgentRequest();
-        settings = PluginSettingsMother.defaultPluginSettings();
+        settings = new ElasticProfileSettings("https://gocd.com/go",10,10,"https://kub.com","securityToken","cacert","namespace");
     }
 
     @Test

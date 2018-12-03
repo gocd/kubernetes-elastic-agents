@@ -51,39 +51,45 @@ public class ElasticProfileFactory {
 			PluginSettings pluginSettings) {
 
 		ElasticProfileSettings elasticProfileSettings = new ElasticProfileSettings();
-
+		// Merge Timeout
 		Integer autoRegisterTimeout = StringUtils
 				.isBlank(elasticProfileProperties.get(PROFILE_AUTO_REGISTER_TIMEOUT.getKey()))
 						? pluginSettings.getAutoRegisterTimeout()
 						: Integer.valueOf(elasticProfileProperties.get(PROFILE_AUTO_REGISTER_TIMEOUT.getKey()));
 		elasticProfileSettings.setAutoRegisterTimeout(autoRegisterTimeout);
 
+		// Merge Namespace
 		String nameSpace = StringUtils.isBlank(elasticProfileProperties.get(PROFILE_NAMESPACE.getKey()))
 				? pluginSettings.getNamespace()
 				: elasticProfileProperties.get(PROFILE_NAMESPACE.getKey());
 		elasticProfileSettings.setNamespace(nameSpace);
 
+		// Merge Security Token
 		String securityToken = StringUtils.isBlank(elasticProfileProperties.get(PROFILE_SECURITY_TOKEN.getKey()))
 				? pluginSettings.getSecurityToken()
 				: elasticProfileProperties.get(PROFILE_SECURITY_TOKEN.getKey());
 		elasticProfileSettings.setSecurityToken(securityToken);
 
+		// Merge ClusterUrl
 		String clusterUrl = StringUtils.isBlank(elasticProfileProperties.get(PROFILE_KUBERNETES_CLUSTER_URL.getKey()))
 				? pluginSettings.getClusterUrl()
 				: elasticProfileProperties.get(PROFILE_KUBERNETES_CLUSTER_URL.getKey());
 		elasticProfileSettings.setClusterUrl(clusterUrl);
 
+		// Merge Ca Cert
 		String clusterCaCert = StringUtils
 				.isBlank(elasticProfileProperties.get(PROFILE_KUBERNETES_CLUSTER_CA_CERT.getKey()))
 						? pluginSettings.getCaCertData()
 						: elasticProfileProperties.get(PROFILE_KUBERNETES_CLUSTER_CA_CERT.getKey());
 		elasticProfileSettings.setClusterCACertData(clusterCaCert);
 
-		LOG.debug(format("[Merged Setting Namespace:{0}", nameSpace));
-		LOG.debug(format("[Merged Setting ClusterUrl:{0}", clusterUrl));
-		LOG.debug(format("[Merged Setting autoRegisterTimeout:{0}", autoRegisterTimeout));
-
+		LOG.debug(format("[elasticProfileProperties :{0}", elasticProfileProperties));
+		LOG.debug(format("[PluginSettings :{0}", pluginSettings.toString()));
+		LOG.debug(format("[ElasticProfileSettings :{0}", elasticProfileSettings.toString()));
+		
+		// The values that are entered only in Plugin Setting
 		elasticProfileSettings.setGoServerUrl(pluginSettings.getGoServerUrl());
+		elasticProfileSettings.setMaxPendingPods(pluginSettings.getMaxPendingPods());
 
 		return elasticProfileSettings;
 

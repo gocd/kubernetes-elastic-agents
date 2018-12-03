@@ -60,7 +60,6 @@ public class ElasticProfileFactoryTest {
 		assertThat(elasticProfileSettings.getClusterCACertData(), equalTo(pluginSettings.getCaCertData()));
 		assertThat(elasticProfileSettings.getNamespace(), equalTo(pluginSettings.getNamespace()));
 		assertThat(elasticProfileSettings.getSecurityToken(), equalTo(pluginSettings.getSecurityToken()));
-		assertThat(elasticProfileSettings.getAutoRegisterPeriod(), equalTo(pluginSettings.getAutoRegisterPeriod()));
 
 	}
 
@@ -92,7 +91,6 @@ public class ElasticProfileFactoryTest {
 		assertThat(elasticProfileSettings.getClusterCACertData(), equalTo(elasticProfileProperties.get(PROFILE_KUBERNETES_CLUSTER_CA_CERT.getKey())));
 		assertThat(elasticProfileSettings.getNamespace(), equalTo(elasticProfileProperties.get(PROFILE_NAMESPACE.getKey())));
 		assertThat(elasticProfileSettings.getSecurityToken(), equalTo(elasticProfileProperties.get(PROFILE_SECURITY_TOKEN.getKey())));
-		assertThat(Integer.toString(elasticProfileSettings.getAutoRegisterPeriod().getMinutes()), equalTo(elasticProfileProperties.get(PROFILE_AUTO_REGISTER_TIMEOUT.getKey())));
 
 	}
 }

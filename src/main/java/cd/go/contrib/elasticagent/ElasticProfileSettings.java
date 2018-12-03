@@ -34,18 +34,21 @@ public class ElasticProfileSettings {
 
     private String namespace;
 
-    private Period autoRegisterPeriod;
-
     public ElasticProfileSettings() {
     }
 
-    public ElasticProfileSettings(String goServerUrl, String clusterUrl, String clusterCACertData) {
-        this.goServerUrl = goServerUrl;
-        this.clusterUrl = clusterUrl;
-        this.clusterCACertData = clusterCACertData;
-    }
+	public ElasticProfileSettings(String goServerUrl, Integer autoRegisterTimeout, Integer maxPendingPods,
+			String clusterUrl, String securityToken, String clusterCACertData, String namespace) {
+		this.goServerUrl = goServerUrl;
+		this.autoRegisterTimeout = autoRegisterTimeout;
+		this.maxPendingPods = maxPendingPods;
+		this.clusterUrl = clusterUrl;
+		this.securityToken = securityToken;
+		this.clusterCACertData = clusterCACertData;
+		this.namespace = namespace;
+	}
 
-    public String getGoServerUrl() {
+	public String getGoServerUrl() {
 		return goServerUrl;
 	}
 
@@ -101,17 +104,6 @@ public class ElasticProfileSettings {
 		this.namespace = namespace;
 	}
 
-    public Period getAutoRegisterPeriod() {
-        if (this.autoRegisterPeriod == null) {
-            this.autoRegisterPeriod = new Period().withMinutes(getAutoRegisterTimeout());
-        }
-        return this.autoRegisterPeriod;
-    }
-
-	public void setAutoRegisterPeriod(Period autoRegisterPeriod) {
-		this.autoRegisterPeriod = autoRegisterPeriod;
-	}
-
 	private <T> T getOrDefault(T t, T defaultValue) {
         if (t instanceof String && StringUtils.isBlank(String.valueOf(t))) {
             return defaultValue;
@@ -154,4 +146,14 @@ public class ElasticProfileSettings {
         result = 31 * result + (namespace != null ? namespace.hashCode() : 0);
         return result;
     }
+
+
+	@Override
+	public String toString() {
+		return "ElasticProfileSettings [goServerUrl=" + goServerUrl + ", autoRegisterTimeout=" + autoRegisterTimeout
+				+ ", maxPendingPods=" + maxPendingPods + ", clusterUrl=" + clusterUrl + ", securityToken="
+				+ securityToken + ", clusterCACertData=" + clusterCACertData + ", namespace=" + namespace +"]";
+	}
+    
+    
 }

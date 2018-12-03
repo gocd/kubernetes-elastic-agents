@@ -20,18 +20,38 @@ import cd.go.contrib.elasticagent.*;
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import org.junit.Test;
 
+import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_AUTO_REGISTER_TIMEOUT;
+import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_KUBERNETES_CLUSTER_CA_CERT;
+import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_KUBERNETES_CLUSTER_URL;
+import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_NAMESPACE;
+import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PROFILE_SECURITY_TOKEN;
 import static org.mockito.Mockito.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CreateAgentRequestExecutorTest {
     @Test
     public void shouldAskDockerContainersToCreateAnAgent() throws Exception {
-        CreateAgentRequest request = new CreateAgentRequest();
+        CreateAgentRequest request = mock(CreateAgentRequest.class);
         AgentInstances<KubernetesInstance> agentInstances = mock(KubernetesAgentInstances.class);
         PluginRequest pluginRequest = mock(PluginRequest.class);
-        PluginSettings settings = mock(PluginSettings.class);
+        
+        final Map<String, String> elasticProfileProperties = new HashMap<>();
+		elasticProfileProperties.put(PROFILE_NAMESPACE.getKey(), "namespace");
+		elasticProfileProperties.put(PROFILE_SECURITY_TOKEN.getKey(), "securityToken");
+		elasticProfileProperties.put(PROFILE_AUTO_REGISTER_TIMEOUT.getKey(), "10");
+		elasticProfileProperties.put(PROFILE_KUBERNETES_CLUSTER_URL.getKey(), "https://kub.com");
+		elasticProfileProperties.put(PROFILE_KUBERNETES_CLUSTER_CA_CERT.getKey(), "cacert");
+		
+		PluginSettings settings = PluginSettingsMother.defaultPluginSettings();
+		
+		when(request.properties()).thenReturn(elasticProfileProperties);
+        
+        ElasticProfileSettings elasticProfileSettings = new ElasticProfileSettings("https://foo.go.cd/go",10,10,"https://kub.com","securityToken","cacert","namespace");
         when(pluginRequest.getPluginSettings()).thenReturn(settings);
         new CreateAgentRequestExecutor(request, agentInstances, pluginRequest).execute();
 
-        verify(agentInstances).create(request, settings, pluginRequest);
+        verify(agentInstances).create(request, elasticProfileSettings, pluginRequest);
     }
 }

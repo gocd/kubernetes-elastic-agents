@@ -61,7 +61,7 @@ public class KubernetesAgentInstancesTest {
     CreateAgentRequest mockCreateAgentRequest;
 
     @Mock
-    PluginSettings mockPluginSettings;
+    ElasticProfileSettings mockPluginSettings;
     
     @Mock
     ElasticProfileSettings mockKubernetesSettings;
@@ -89,13 +89,11 @@ public class KubernetesAgentInstancesTest {
         
         when(mockCreateAgentRequest.properties()).thenReturn(testProperties);
         when(mockPluginSettings.getMaxPendingPods()).thenReturn(10);
-        when(factory.createClientForPluginSetting(mockPluginSettings)).thenReturn(mockKubernetesClient);
         when(factory.createClientForElasticProfile(any(ElasticProfileSettings.class))).thenReturn(mockKubernetesClient);
         JobIdentifier jobId = new JobIdentifier("test", 1L, "Test pipeline", "test name", "1", "test job", 100L);
         when(mockCreateAgentRequest.jobIdentifier()).thenReturn(jobId);
 
         when(mockKubernetesClient.pods()).thenReturn(mockedOperation);
-        when(mockPluginRequest.getPluginSettings()).thenReturn(mockPluginSettings);
         when(mockedOperation.list()).thenReturn(podList);
         when(podList.getItems()).thenReturn(Collections.emptyList());
     }

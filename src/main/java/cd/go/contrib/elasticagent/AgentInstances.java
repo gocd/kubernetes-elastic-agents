@@ -35,36 +35,32 @@ public interface AgentInstances<T> {
      * @param settings   the plugin settings object
      * @param pluginRequest the plugin request object
      */
-    T create(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) throws Exception;
+    T create(CreateAgentRequest request, ElasticProfileSettings settings, PluginRequest pluginRequest) throws Exception;
 
     /**
      * This message is sent when the plugin needs to terminate the agent instance.
      *
      * @param agentId  the elastic agent id
-     * @param settings the plugin settings object
      */
-    void terminate(String agentId, PluginSettings settings) throws Exception;
+    void terminate(String agentId) throws Exception;
 
     /**
      * This message is sent from the {@link ServerPingRequestExecutor}
-     * to terminate instances that did not register with the server after a timeout. The timeout may be configurable and
-     * set via the {@link PluginSettings} instance that is passed in.
+     * to terminate instances that did not register with the server after a timeout.
      *
-     * @param settings the plugin settings object
      * @param agents   the list of all the agents
      */
-    void terminateUnregisteredInstances(PluginSettings settings, Agents agents) throws Exception;
+    void terminateUnregisteredInstances(Agents agents) throws Exception;
 
     /**
      * This message is sent from the {@link ServerPingRequestExecutor}
      * to filter out any new agents, that have registered before the timeout period. The timeout may be configurable and
-     * set via the {@link PluginSettings} instance that is passed in.
+     * set via the {@link ElasticProfileSettings} instance that is passed in.
      *
-     * @param settings the plugin settings object
      * @param agents   the list of all the agents
-     * @return a list of agent instances which were created after {@link PluginSettings#getAutoRegisterPeriod()} ago.
+     * @return a list of agent instances which were created after {@link ElasticProfileSettings#getAutoRegisterPeriod()} ago.
      */
-    Agents instancesCreatedAfterTimeout(PluginSettings settings, Agents agents);
+    Agents instancesCreatedAfterTimeout(Agents agents);
 
     /**
      * This message is sent after plugin initialization time so that the plugin may connect to the cloud provider

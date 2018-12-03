@@ -17,6 +17,8 @@
 package cd.go.contrib.elasticagent.executors;
 
 import cd.go.contrib.elasticagent.AgentInstances;
+import cd.go.contrib.elasticagent.ElasticProfileFactory;
+import cd.go.contrib.elasticagent.ElasticProfileSettings;
 import cd.go.contrib.elasticagent.KubernetesInstance;
 import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.RequestExecutor;
@@ -31,17 +33,20 @@ public class CreateAgentRequestExecutor implements RequestExecutor {
     private final AgentInstances<KubernetesInstance> agentInstances;
     private final PluginRequest pluginRequest;
     private final CreateAgentRequest request;
+    private ElasticProfileFactory elasticProfileFactory;
 
     public CreateAgentRequestExecutor(CreateAgentRequest request, AgentInstances<KubernetesInstance> agentInstances, PluginRequest pluginRequest) {
         this.request = request;
         this.agentInstances = agentInstances;
         this.pluginRequest = pluginRequest;
+        this.elasticProfileFactory = ElasticProfileFactory.instance();
     }
 
     @Override
     public GoPluginApiResponse execute() throws Exception {
         LOG.debug(format("[Create Agent] creating elastic agent for profile {0}", request.properties()));
-        agentInstances.create(request, pluginRequest.getPluginSettings(), pluginRequest);
+        ElasticProfileSettings elasticProfileSettings = elasticProfileFactory.from(request.properties(), pluginRequest.getPluginSettings());
+        agentInstances.create(request, elasticProfileSettings, pluginRequest);
         return new DefaultGoPluginApiResponse(200);
     }
 

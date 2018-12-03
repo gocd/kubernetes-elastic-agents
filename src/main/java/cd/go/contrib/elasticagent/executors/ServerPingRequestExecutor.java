@@ -37,8 +37,6 @@ public class ServerPingRequestExecutor implements RequestExecutor {
 
     @Override
     public GoPluginApiResponse execute() throws Exception {
-        PluginSettings pluginSettings = pluginRequest.getPluginSettings();
-
         Agents allAgents = pluginRequest.listAgents();
         Agents missingAgents = new Agents();
 
@@ -49,17 +47,17 @@ public class ServerPingRequestExecutor implements RequestExecutor {
             }
         }
 
-        LOG.debug(format("[Server Ping] Missing Agents:{0}", missingAgents.agentIds()));
-        Agents agentsToDisable = agentInstances.instancesCreatedAfterTimeout(pluginSettings, allAgents);
-        LOG.debug(format("[Server Ping] Agent Created After Timeout:{0}", agentsToDisable.agentIds()));
+        LOG.info(format("[Server Ping] Missing Agents:{0}", missingAgents.agentIds()));
+        Agents agentsToDisable = agentInstances.instancesCreatedAfterTimeout(allAgents);
+        LOG.info(format("[Server Ping] Agent Created After Timeout:{0}", agentsToDisable.agentIds()));
         agentsToDisable.addAll(missingAgents);
 
         disableIdleAgents(agentsToDisable);
 
         allAgents = pluginRequest.listAgents();
-        terminateDisabledAgents(allAgents, pluginSettings);
+        terminateDisabledAgents(allAgents);
 
-        agentInstances.terminateUnregisteredInstances(pluginSettings, allAgents);
+        agentInstances.terminateUnregisteredInstances(allAgents);
 
         return DefaultGoPluginApiResponse.success("");
     }
@@ -68,11 +66,11 @@ public class ServerPingRequestExecutor implements RequestExecutor {
         pluginRequest.disableAgents(agents.findInstancesToDisable());
     }
 
-    private void terminateDisabledAgents(Agents agents, PluginSettings pluginSettings) throws Exception {
+    private void terminateDisabledAgents(Agents agents) throws Exception {
         Collection<Agent> toBeDeleted = agents.findInstancesToTerminate();
 
         for (Agent agent : toBeDeleted) {
-            agentInstances.terminate(agent.elasticAgentId(), pluginSettings);
+            agentInstances.terminate(agent.elasticAgentId());
         }
 
         pluginRequest.deleteAgents(toBeDeleted);
