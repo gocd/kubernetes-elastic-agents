@@ -61,10 +61,7 @@ public class KubernetesAgentInstancesTest {
     CreateAgentRequest mockCreateAgentRequest;
 
     @Mock
-    ElasticProfileSettings mockPluginSettings;
-    
-    @Mock
-    ElasticProfileSettings mockKubernetesSettings;
+    ElasticProfileSettings mockElasticProfileSettings;
 
     @Mock
     KubernetesClient mockKubernetesClient;
@@ -88,7 +85,7 @@ public class KubernetesAgentInstancesTest {
         testProperties = new HashMap<>();
         
         when(mockCreateAgentRequest.properties()).thenReturn(testProperties);
-        when(mockPluginSettings.getMaxPendingPods()).thenReturn(10);
+        when(mockElasticProfileSettings.getMaxPendingPods()).thenReturn(10);
         when(factory.createClientForElasticProfile(any(ElasticProfileSettings.class))).thenReturn(mockKubernetesClient);
         JobIdentifier jobId = new JobIdentifier("test", 1L, "Test pipeline", "test name", "1", "test job", 100L);
         when(mockCreateAgentRequest.jobIdentifier()).thenReturn(jobId);
@@ -100,31 +97,31 @@ public class KubernetesAgentInstancesTest {
 
     @Test
     public void shouldCreateKubernetesPodUsingPodYamlAndCacheCreatedInstance() {
-        KubernetesInstance kubernetesInstance = new KubernetesInstance(new DateTime(), mockKubernetesSettings,"test", "test-agent", new HashMap<>(), 100L, PodState.Running);
+        KubernetesInstance kubernetesInstance = new KubernetesInstance(new DateTime(), mockElasticProfileSettings,"test", "test-agent", new HashMap<>(), 100L, PodState.Running);
         when(mockKubernetesInstanceFactory.create(eq(mockCreateAgentRequest), any(ElasticProfileSettings.class), eq(mockKubernetesClient), eq(mockPluginRequest), eq(true))).
                 thenReturn(kubernetesInstance);
 
         testProperties.put("SpecifiedUsingPodConfiguration", "true");
 
         KubernetesAgentInstances agentInstances = new KubernetesAgentInstances(factory, mockKubernetesInstanceFactory);
-        KubernetesInstance instance = agentInstances.create(mockCreateAgentRequest, mockPluginSettings, mockPluginRequest);
+        KubernetesInstance instance = agentInstances.create(mockCreateAgentRequest, mockElasticProfileSettings, mockPluginRequest);
         assertTrue(agentInstances.instanceExists(instance));
     }
 
     @Test
     public void shouldCreateKubernetesPodAndCacheCreatedInstance() {
-        KubernetesInstance kubernetesInstance = new KubernetesInstance(new DateTime(),mockKubernetesSettings, "test", "test-agent", new HashMap<>(), 100L, PodState.Running);
+        KubernetesInstance kubernetesInstance = new KubernetesInstance(new DateTime(),mockElasticProfileSettings, "test", "test-agent", new HashMap<>(), 100L, PodState.Running);
         when(mockKubernetesInstanceFactory.create(eq(mockCreateAgentRequest), any(ElasticProfileSettings.class), eq(mockKubernetesClient), eq(mockPluginRequest), eq(false))).
                 thenReturn(kubernetesInstance);
         testProperties.put("SpecifiedUsingPodConfiguration", "false");
         KubernetesAgentInstances agentInstances = new KubernetesAgentInstances(factory, mockKubernetesInstanceFactory);
-        KubernetesInstance instance = agentInstances.create(mockCreateAgentRequest, mockPluginSettings, mockPluginRequest);
+        KubernetesInstance instance = agentInstances.create(mockCreateAgentRequest, mockElasticProfileSettings, mockPluginRequest);
         assertTrue(agentInstances.instanceExists(instance));
     }
 
     @Test
     public void shouldNotCreatePodWhenOutstandingRequestsExistForJobs() {
-        KubernetesInstance kubernetesInstance = new KubernetesInstance(new DateTime(), mockKubernetesSettings,"test", "test-agent", new HashMap<>(), 100L, PodState.Running);
+        KubernetesInstance kubernetesInstance = new KubernetesInstance(new DateTime(), mockElasticProfileSettings,"test", "test-agent", new HashMap<>(), 100L, PodState.Running);
         when(mockKubernetesInstanceFactory.create(eq(mockCreateAgentRequest), any(ElasticProfileSettings.class), eq(mockKubernetesClient), eq(mockPluginRequest), eq(false))).
                 thenReturn(kubernetesInstance);
         testProperties.put("SpecifiedUsingPodConfiguration", "false");
@@ -132,7 +129,7 @@ public class KubernetesAgentInstancesTest {
         KubernetesAgentInstances agentInstances = new KubernetesAgentInstances(factory, mockKubernetesInstanceFactory);
         JobIdentifier jobId = new JobIdentifier("test", 1L, "Test pipeline", "test name", "1", "test job", 100L);
         when(mockCreateAgentRequest.jobIdentifier()).thenReturn(jobId);
-        agentInstances.create(mockCreateAgentRequest, mockPluginSettings, mockPluginRequest);
+        agentInstances.create(mockCreateAgentRequest, mockElasticProfileSettings, mockPluginRequest);
         verify(mockKubernetesInstanceFactory, times(1)).create(any(), any(), any(), any(), any());
         reset(mockKubernetesInstanceFactory);
 
@@ -146,19 +143,19 @@ public class KubernetesAgentInstancesTest {
         when(objectMeta.getLabels()).thenReturn(labels);
         when(objectMeta.getName()).thenReturn("test-agent");
         when(podList.getItems()).thenReturn(Arrays.asList(pod));
-        when(mockKubernetesInstanceFactory.fromKubernetesPod(pod,mockKubernetesSettings)).thenReturn(kubernetesInstance);
+        when(mockKubernetesInstanceFactory.fromKubernetesPod(pod,mockElasticProfileSettings)).thenReturn(kubernetesInstance);
 
-        agentInstances.create(mockCreateAgentRequest, mockPluginSettings, mockPluginRequest);
+        agentInstances.create(mockCreateAgentRequest, mockElasticProfileSettings, mockPluginRequest);
         verify(mockKubernetesInstanceFactory, times(0)).create(any(), any(), any(), any(), any());
     }
 
     @Test
     public void shouldNotCreatePodsWhenOutstandingLimitOfPendingKubernetesPodsHasReached() {
         //set maximum pending pod count to 1
-        when(mockPluginSettings.getMaxPendingPods()).thenReturn(1);
+        when(mockElasticProfileSettings.getMaxPendingPods()).thenReturn(1);
 
         //pending kubernetes pod
-        KubernetesInstance kubernetesInstance = new KubernetesInstance(new DateTime(), mockKubernetesSettings,"test", "test-agent", new HashMap<>(), 100L, PodState.Pending);
+        KubernetesInstance kubernetesInstance = new KubernetesInstance(new DateTime(), mockElasticProfileSettings,"test", "test-agent", new HashMap<>(), 100L, PodState.Pending);
         when(mockKubernetesInstanceFactory.create(eq(mockCreateAgentRequest), any(ElasticProfileSettings.class), eq(mockKubernetesClient), eq(mockPluginRequest), eq(false))).
                 thenReturn(kubernetesInstance);
         testProperties.put("SpecifiedUsingPodConfiguration", "false");
@@ -167,7 +164,7 @@ public class KubernetesAgentInstancesTest {
         KubernetesAgentInstances agentInstances = new KubernetesAgentInstances(factory, mockKubernetesInstanceFactory);
         JobIdentifier jobId = new JobIdentifier("test", 1L, "Test pipeline", "test name", "1", "test job", 100L);
         when(mockCreateAgentRequest.jobIdentifier()).thenReturn(jobId);
-        agentInstances.create(mockCreateAgentRequest, mockPluginSettings, mockPluginRequest);
+        agentInstances.create(mockCreateAgentRequest, mockElasticProfileSettings, mockPluginRequest);
         verify(mockKubernetesInstanceFactory, times(1)).create(any(), any(), any(), any(), any());
         reset(mockKubernetesInstanceFactory);
 
@@ -181,27 +178,27 @@ public class KubernetesAgentInstancesTest {
         when(objectMeta.getLabels()).thenReturn(labels);
         when(objectMeta.getName()).thenReturn("test-agent");
         when(podList.getItems()).thenReturn(Arrays.asList(pod));
-        when(mockKubernetesInstanceFactory.fromKubernetesPod(pod,mockKubernetesSettings)).thenReturn(kubernetesInstance);
+        when(mockKubernetesInstanceFactory.fromKubernetesPod(pod,mockElasticProfileSettings)).thenReturn(kubernetesInstance);
 
         //second create agent request
-        agentInstances.create(mockCreateAgentRequest, mockPluginSettings, mockPluginRequest);
+        agentInstances.create(mockCreateAgentRequest, mockElasticProfileSettings, mockPluginRequest);
         verify(mockKubernetesInstanceFactory, times(0)).create(any(), any(), any(), any(), any());
     }
 
     @Test
     public void shouldSyncPodsStateFromClusterBeforeCreatingPod() {
         when(mockKubernetesInstanceFactory.create(eq(mockCreateAgentRequest), any(ElasticProfileSettings.class), eq(mockKubernetesClient), eq(mockPluginRequest), eq(false))).
-                thenReturn(new KubernetesInstance(new DateTime(), mockKubernetesSettings,"test", "test-agent", new HashMap<>(), 100L, PodState.Running));
+                thenReturn(new KubernetesInstance(new DateTime(), mockElasticProfileSettings,"test", "test-agent", new HashMap<>(), 100L, PodState.Running));
         
         when(factory.createClientForElasticProfile(any(ElasticProfileSettings.class))).thenReturn(mockKubernetesClient);
         when(mockKubernetesInstance.name()).thenReturn("test");
-        when(mockKubernetesInstance.getSettings()).thenReturn(mockKubernetesSettings);
+        when(mockKubernetesInstance.getSettings()).thenReturn(mockElasticProfileSettings);
         when(mockKubernetesClient.getNamespace()).thenReturn("test");
 
         final KubernetesAgentInstances agentInstances = new KubernetesAgentInstances(factory, mockKubernetesInstanceFactory);
         agentInstances.register(mockKubernetesInstance);
        
-        agentInstances.create(mockCreateAgentRequest, mockPluginSettings, mockPluginRequest);
+        agentInstances.create(mockCreateAgentRequest, mockElasticProfileSettings, mockPluginRequest);
 
         InOrder inOrder = inOrder(mockKubernetesInstanceFactory, mockedOperation);
         inOrder.verify(mockedOperation).list();
