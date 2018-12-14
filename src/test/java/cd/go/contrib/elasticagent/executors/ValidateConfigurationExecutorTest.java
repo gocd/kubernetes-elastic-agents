@@ -51,7 +51,7 @@ public class ValidateConfigurationExecutorTest {
     @Mock
     private KubernetesClient client;
     @Mock
-    private NonNamespaceOperation<Namespace, NamespaceList, DoneableNamespace, Resource<Namespace, DoneableNamespace>> mockedOperation;
+    private NonNamespaceOperation<Namespace, NamespaceList, DoneableNamespace, Resource<Namespace, DoneableNamespace>> mockedClient;
     @Mock
     NamespaceList namespaceList;
     private ServerInfo serverInfo;
@@ -72,19 +72,18 @@ public class ValidateConfigurationExecutorTest {
                 "}");
         when(pluginRequest.getSeverInfo()).thenReturn(serverInfo);
         when(factory.client(any())).thenReturn(client);
-        when(client.namespaces()).thenReturn(mockedOperation);
-        when(mockedOperation.withName(any())).thenReturn(mockNamespaceResource);
+        when(client.namespaces()).thenReturn(mockedClient);
     }
 
     @Test
     public void shouldValidateABadConfiguration() throws Exception {
+        when(mockedClient.withName("default")).thenReturn(mockNamespaceResource);
         when(mockNamespaceResource.get()).thenReturn(mockValidNamespace);
 
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, pluginRequest, factory).execute();
 
         assertThat(response.responseCode(), is(200));
-        System.out.println(response.responseBody());
         JSONAssert.assertEquals("[\n" +
                 "  {\n" +
                 "    \"message\": \"Cluster URL must not be blank.\",\n" +
@@ -99,6 +98,7 @@ public class ValidateConfigurationExecutorTest {
 
     @Test
     public void shouldValidateAGoodConfiguration() throws Exception {
+        when(mockedClient.withName("default")).thenReturn(mockNamespaceResource);
         when(mockNamespaceResource.get()).thenReturn(mockValidNamespace);
 
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
@@ -113,6 +113,7 @@ public class ValidateConfigurationExecutorTest {
 
     @Test
     public void shouldValidateGoServerUrl() throws Exception {
+        when(mockedClient.withName("default")).thenReturn(mockNamespaceResource);
         when(mockNamespaceResource.get()).thenReturn(mockValidNamespace);
 
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
@@ -132,6 +133,7 @@ public class ValidateConfigurationExecutorTest {
 
     @Test
     public void shouldValidateGoServerHTTPSUrlFormat() throws Exception {
+        when(mockedClient.withName("default")).thenReturn(mockNamespaceResource);
         when(mockNamespaceResource.get()).thenReturn(mockValidNamespace);
 
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
@@ -151,6 +153,7 @@ public class ValidateConfigurationExecutorTest {
 
     @Test
     public void shouldValidateGoServerUrlFormat() throws Exception {
+        when(mockedClient.withName("default")).thenReturn(mockNamespaceResource);
         when(mockNamespaceResource.get()).thenReturn(mockValidNamespace);
 
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
@@ -170,6 +173,7 @@ public class ValidateConfigurationExecutorTest {
 
     @Test
     public void shouldValidateOAuthTokenWhenAuthenticationStrategyIsSetToOauthToken() throws JSONException {
+        when(mockedClient.withName("default")).thenReturn(mockNamespaceResource);
         when(mockNamespaceResource.get()).thenReturn(mockValidNamespace);
 
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
@@ -190,6 +194,7 @@ public class ValidateConfigurationExecutorTest {
 
     @Test
     public void shouldValidateNamespaceExistence() throws JSONException {
+        when(mockedClient.withName("gocd")).thenReturn(mockNamespaceResource);
         when(mockNamespaceResource.get()).thenReturn(null);
 
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
@@ -208,13 +213,4 @@ public class ValidateConfigurationExecutorTest {
                 "]", response.responseBody(), true);
     }
 
-    private List<Namespace> getNamespaceList(String... namespaces) {
-        if (namespaces == null || namespaces.length == 0) {
-            return Collections.emptyList();
-        }
-
-        return Arrays.asList(namespaces).stream()
-                .map(namespaceName -> new NamespaceBuilder().withNewMetadata().withName("default").endMetadata().build())
-                .collect(Collectors.toList());
-    }
 }
