@@ -21,10 +21,7 @@ import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.model.ServerInfo;
 import cd.go.contrib.elasticagent.requests.ValidatePluginSettingsRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import io.fabric8.kubernetes.api.model.DoneableNamespace;
-import io.fabric8.kubernetes.api.model.Namespace;
-import io.fabric8.kubernetes.api.model.NamespaceBuilder;
-import io.fabric8.kubernetes.api.model.NamespaceList;
+import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
@@ -59,6 +56,12 @@ public class ValidateConfigurationExecutorTest {
     NamespaceList namespaceList;
     private ServerInfo serverInfo;
 
+    @Mock
+    private Resource<Namespace, DoneableNamespace> mockNamespaceResource;
+
+    @Mock
+    private Namespace mockValidNamespace;
+
     @Before
     public void setUp() {
         initMocks(this);
@@ -70,17 +73,18 @@ public class ValidateConfigurationExecutorTest {
         when(pluginRequest.getSeverInfo()).thenReturn(serverInfo);
         when(factory.client(any())).thenReturn(client);
         when(client.namespaces()).thenReturn(mockedOperation);
-        when(mockedOperation.list()).thenReturn(namespaceList);
+        when(mockedOperation.withName(any())).thenReturn(mockNamespaceResource);
     }
 
     @Test
     public void shouldValidateABadConfiguration() throws Exception {
-        when(namespaceList.getItems()).thenReturn(getNamespaceList("default"));
+        when(mockNamespaceResource.get()).thenReturn(mockValidNamespace);
 
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
         GoPluginApiResponse response = new ValidateConfigurationExecutor(settings, pluginRequest, factory).execute();
 
         assertThat(response.responseCode(), is(200));
+        System.out.println(response.responseBody());
         JSONAssert.assertEquals("[\n" +
                 "  {\n" +
                 "    \"message\": \"Cluster URL must not be blank.\",\n" +
@@ -95,7 +99,7 @@ public class ValidateConfigurationExecutorTest {
 
     @Test
     public void shouldValidateAGoodConfiguration() throws Exception {
-        when(namespaceList.getItems()).thenReturn(getNamespaceList("default"));
+        when(mockNamespaceResource.get()).thenReturn(mockValidNamespace);
 
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
         settings.put("go_server_url", "https://ci.example.com/go");
@@ -109,7 +113,7 @@ public class ValidateConfigurationExecutorTest {
 
     @Test
     public void shouldValidateGoServerUrl() throws Exception {
-        when(namespaceList.getItems()).thenReturn(getNamespaceList("default"));
+        when(mockNamespaceResource.get()).thenReturn(mockValidNamespace);
 
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
         serverInfo.setSecureSiteUrl(null);
@@ -128,7 +132,7 @@ public class ValidateConfigurationExecutorTest {
 
     @Test
     public void shouldValidateGoServerHTTPSUrlFormat() throws Exception {
-        when(namespaceList.getItems()).thenReturn(getNamespaceList("default"));
+        when(mockNamespaceResource.get()).thenReturn(mockValidNamespace);
 
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
         settings.put("go_server_url", "foo.com/go(");
@@ -147,7 +151,7 @@ public class ValidateConfigurationExecutorTest {
 
     @Test
     public void shouldValidateGoServerUrlFormat() throws Exception {
-        when(namespaceList.getItems()).thenReturn(getNamespaceList("default"));
+        when(mockNamespaceResource.get()).thenReturn(mockValidNamespace);
 
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
         settings.put("go_server_url", "https://foo.com");
@@ -166,7 +170,7 @@ public class ValidateConfigurationExecutorTest {
 
     @Test
     public void shouldValidateOAuthTokenWhenAuthenticationStrategyIsSetToOauthToken() throws JSONException {
-        when(namespaceList.getItems()).thenReturn(getNamespaceList("default"));
+        when(mockNamespaceResource.get()).thenReturn(mockValidNamespace);
 
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
         settings.put("go_server_url", "https://foo.com/go");
@@ -186,7 +190,7 @@ public class ValidateConfigurationExecutorTest {
 
     @Test
     public void shouldValidateNamespaceExistence() throws JSONException {
-        when(namespaceList.getItems()).thenReturn(getNamespaceList("default"));
+        when(mockNamespaceResource.get()).thenReturn(null);
 
         ValidatePluginSettingsRequest settings = new ValidatePluginSettingsRequest();
         settings.put("go_server_url", "https://ci.example.com/go");

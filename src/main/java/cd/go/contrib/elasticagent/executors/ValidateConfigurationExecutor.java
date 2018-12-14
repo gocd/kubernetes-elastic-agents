@@ -25,8 +25,10 @@ import cd.go.contrib.elasticagent.model.ServerInfo;
 import cd.go.contrib.elasticagent.requests.ValidatePluginSettingsRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
+import io.fabric8.kubernetes.api.model.DoneableNamespace;
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.dsl.Resource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,9 +79,9 @@ public class ValidateConfigurationExecutor implements RequestExecutor {
         final String namespace = validatePluginSettingsRequest.getPluginSettingsMap().getNamespace();
         try {
             final KubernetesClient client = factory.client(validatePluginSettingsRequest.getPluginSettingsMap());
-            final List<Namespace> namespaceList = client.namespaces().list().getItems();
 
-            if (namespaceList.stream().anyMatch(n -> n.getMetadata().getName().equals(namespace))) {
+            Namespace ns = client.namespaces().withName(namespace).get();
+            if (ns != null) {
                 return;
             }
 
@@ -87,7 +89,7 @@ public class ValidateConfigurationExecutor implements RequestExecutor {
         } catch (Exception e) {
             String message = "Failed validation of plugin settings. The reasons could be - " +
                     "Cluster Url is configured incorrectly or " +
-                    "the service account token might not have enough permissions to list namespaces or " +
+                    "the service account token might not have enough permissions to get namespaces or " +
                     "incorrect CA certificate.";
             LOG.error(message, e);
             result.add(error(NAMESPACE.key(), format(message + "Please check the plugin log for more details.")));
