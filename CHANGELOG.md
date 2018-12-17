@@ -1,3 +1,6 @@
+## 2.1.0 - 2018-12-15
+- Changes the usage of the namespace list API to namespace get in the plugin settings validation
+
 ## 2.0.0 - 2018-10-15
 - Added support to terminate pod once job is finished.
 
