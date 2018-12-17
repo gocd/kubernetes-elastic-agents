@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+plugins {
+    id 'co.riiid.gradle' version '0.4.2'
+}
 
 apply plugin: 'java'
 apply from: 'plugin-common.gradle'
@@ -118,4 +121,22 @@ task deploy(type: Copy) {
     delete '/Users/ganeshpatil/projects/gocd/server/plugins/external/*.jar.*'
     from jar
     into '/Users/ganeshpatil/projects/gocd/server/plugins/external'
+}
+
+githubRelease.dependsOn('assemble')
+
+github {
+    owner = System.getenv('GITHUB_USER') ?: 'bob'
+    repo = 'kubernetes-elastic-agents'
+    token = System.getenv('GITHUB_TOKEN') ?: 'bad-token'
+    prerelease = !"No".equalsIgnoreCase(System.getenv('PRERELEASE'))
+    tagName = "${project.version}${prerelease ? '-exp' : ''}"
+    name = "${prerelease ? 'Experimental: ' : ''}${project.version}"
+    targetCommitish = project.gitRevision
+    body = """
+      Refer to the [changelog](https://github.com/gocd/kubernetes-elastic-agents/blob/master/CHANGELOG.md#${
+        project.pluginVersion.replace(".", "")
+    }---${new Date().format('YYYY-MM-dd')}) for the changes made in this release
+    """.stripIndent().trim()
+    assets = jar.outputs.files.files
 }
