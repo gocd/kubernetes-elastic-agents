@@ -1,5 +1,9 @@
 # Intellij files
-.idea/
+.idea/libraries
+.idea/modules
+.idea/*
+!.idea/copyright
+
 
 # gradle's output dir
 build/
@@ -11,3 +15,4 @@ build/
 !gradle-wrapper.jar
 kubernetes-elastic-agent.iml
 out/
+
