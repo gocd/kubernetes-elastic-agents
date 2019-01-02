@@ -18,16 +18,20 @@ plugins {
 }
 
 apply plugin: 'java'
-apply from: 'plugin-common.gradle'
+apply from: 'plugin-helpers.gradle'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 project.ext.pluginVersion = '2.1.0'
-project.ext.fullVersion = project.distVersion ? "${project.pluginVersion}-${project.distVersion}" : project.pluginVersion
+project.ext.fullVersion = project.git.distVersion() ? "${project.pluginVersion}-${project.git.distVersion()}" : project.pluginVersion
 
 group = 'cd.go.contrib'
 version = project.fullVersion
 
 project.ext.pluginDesc = [
         id         : 'cd.go.contrib.elasticagent.kubernetes',
+        repo       : 'kubernetes-elastic-agents',
         version    : project.version,
         goCdVersion: '18.10.0',
         name       : 'Kubernetes Elastic Agent Plugin',
@@ -36,7 +40,6 @@ project.ext.pluginDesc = [
         vendorUrl  : 'https://github.com/gocd/kubernetes-elastic-agents'
 ]
 
-// In this section you declare where to find the dependencies of your project
 repositories {
     jcenter()
     mavenLocal()
@@ -68,22 +71,6 @@ dependencies {
     testCompile group: 'org.jsoup', name: 'jsoup', version: '1.10.2'
 }
 
-processResources {
-    from("src/main/resource-templates") {
-        filesMatching('plugin.xml') {
-            expand project.pluginDesc
-        }
-
-        filesMatching('plugin.properties') {
-            expand project.pluginDesc
-        }
-
-        filesMatching('version.properties') {
-            expand project.pluginDesc
-        }
-    }
-}
-
 jar {
     from(configurations.compile) {
         into "lib/"
@@ -93,50 +80,4 @@ jar {
 //    }
 }
 
-tasks.withType(Jar) { jarTask ->
-    preserveFileTimestamps = false
-    reproducibleFileOrder = true
-
-    ['MD5', 'SHA1', 'SHA-256'].each { algo ->
-        jarTask.outputs.files("${jarTask.archivePath}.${algo}")
-        jarTask.doLast {
-            ant.checksum file: jarTask.archivePath, format: 'MD5SUM', algorithm: algo
-        }
-    }
-
-
-    manifest {
-        attributes(
-                'Go-Version': project.pluginDesc.goCdVersion,
-                'Plugin-Revision': project.pluginDesc.version,
-                'Implementation-Title': project.name,
-                'Implementation-Version': project.version,
-                'Source-Compatibility': project.sourceCompatibility,
-                'Target-Compatibility': project.targetCompatibility
-        )
-    }
-}
-
-task deploy(type: Copy) {
-    delete '/Users/ganeshpatil/projects/gocd/server/plugins/external/*.jar.*'
-    from jar
-    into '/Users/ganeshpatil/projects/gocd/server/plugins/external'
-}
-
-githubRelease.dependsOn('assemble')
-
-github {
-    owner = System.getenv('GITHUB_USER') ?: 'bob'
-    repo = 'kubernetes-elastic-agents'
-    token = System.getenv('GITHUB_TOKEN') ?: 'bad-token'
-    prerelease = !"No".equalsIgnoreCase(System.getenv('PRERELEASE'))
-    tagName = "${project.version}${prerelease ? '-exp' : ''}"
-    name = "${prerelease ? 'Experimental: ' : ''}${project.version}"
-    targetCommitish = project.gitRevision
-    body = """
-      Refer to the [changelog](https://github.com/gocd/kubernetes-elastic-agents/blob/master/CHANGELOG.md#${
-        project.pluginVersion.replace(".", "")
-    }---${new Date().format('YYYY-MM-dd')}) for the changes made in this release
-    """.stripIndent().trim()
-    assets = jar.outputs.files.files
-}
+apply from: 'plugin-tasks.gradle'

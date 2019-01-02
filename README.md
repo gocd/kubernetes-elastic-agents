@@ -14,6 +14,10 @@ Documentation for installation is available [here](install.md)
 
 To build the jar, run `./gradlew clean build`
 
+## Deploy on dev machine
+
+To build the jar, run `./gradlew deploy -Pserver_path=~/gocd`
+
 ## License
 
 ```plain
