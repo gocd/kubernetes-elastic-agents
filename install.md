@@ -42,7 +42,7 @@ on Windows.
     1. Specify `id` for profile.
     2. Select `Kubernetes Elastic Agent Plugin` for **_Plugin id_**
     3. Configure Kubernetes GoCD elastic agent Pod using:
-       - Config Properties
+        - Config Properties
             1. Specify GoCD elastic agent docker image name.
             2. Specify Maximum Memory limit. Container memory will be limit to the value specified here.
             3. Specify Maximum CPU limit. Container memory will be limit to the value specified here.
@@ -54,6 +54,12 @@ on Windows.
             1. Specify GoCD elastic agent Pod Yaml configuration.
             
             ![Create elastic profile using pod configuration][4]
+
+        - Remote File
+            1. Specify the file name and type (`json` or `yaml`)
+
+            ![Create elastic profile using pod configuration][8]
+
     4. Save your profile.
     
     
@@ -98,3 +104,4 @@ $ GO_SERVER_SYSTEM_PROPERTIES="-Dplugin.cd.go.contrib.elasticagent.kubernetes.lo
 [5]: images/pipeline.png  "Pipeline"
 [6]: images/quick-edit.png  "Quick edit"
 [7]: images/configure-job.png  "Configure a job"
+[8]: images/profile_with_remote_file.png "Create elastic profile using remote file configuration"
