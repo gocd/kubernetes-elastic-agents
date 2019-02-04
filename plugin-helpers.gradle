@@ -22,7 +22,7 @@ static String gitRevision() {
 }
 
 static String distVersion() {
-    def process = "git rev-list --count HEAD".execute()
+    def process = "git rev-list HEAD | wc -l".execute()
     process.waitFor()
     return process.text.stripIndent().trim()
 }
