@@ -99,21 +99,26 @@
 
     <div class="row collapse">
         <label>Specify Elastic Agent Pod Configuration using</label>
+        <div class="form_error form-error row" ng-class="{'is-visible': GOINPUTNAME[PodSpecType].$error.server}" ng-show="GOINPUTNAME[PodSpecType].$error.server" style="padding-top: 10px">{{GOINPUTNAME[PodSpecType].$error.server}}</div>
         <div class="form_item_block row" style="padding-top: 10px">
             <div class="columns small-9 medium-10 larger-10"
-                 ng-init="SpecifiedUsingPodConfiguration = SpecifiedUsingPodConfiguration || 'false'">
-                <input type="radio" ng-model="SpecifiedUsingPodConfiguration" value="false"
-                       id="login-using-github"/>
-                <label for="login-using-github">Config Properties</label>
+                 ng-init="PodSpecType = PodSpecType || 'false'">
+                <input type="radio" ng-model="PodSpecType" value="properties"
+                       id="properties"/>
+                <label for="properties">Config Properties</label>
 
-                <input type="radio" ng-model="SpecifiedUsingPodConfiguration" value="true"
-                       id="login-using-github-enterprise"/>
-                <label for="login-using-github-enterprise">Pod Yaml</label>
+                <input type="radio" ng-model="PodSpecType" value="yaml"
+                       id="yaml"/>
+                <label for="yaml">Pod Yaml</label>
+
+                <input type="radio" ng-model="PodSpecType" value="remote"
+                       id="remote"/>
+                <label for="remote">Remote file</label>
             </div>
         </div>
     </div>
 
-    <div ng-show="SpecifiedUsingPodConfiguration == 'false'">
+    <div ng-show="PodSpecType == 'properties'">
         <div class="row">
             <div class="columns medium-6 large-5">
                 <label ng-class="{'is-invalid-label': GOINPUTNAME[Image].$error.server}">Image:
@@ -193,7 +198,7 @@
         </div>
     </div>
 
-    <div ng-show="SpecifiedUsingPodConfiguration == 'true'">
+    <div ng-show="PodSpecType == 'yaml'">
         <div class="form_item_block">
             <label ng-class="{'is-invalid-label': GOINPUTNAME[PodConfiguration].$error.server}">Specify Elastic Agent
                 <code>pod.yaml</code> here
@@ -224,6 +229,34 @@ spec:
             </textarea>
             <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[PodConfiguration].$error.server}"
                   ng-show="GOINPUTNAME[PodConfiguration].$error.server">{{GOINPUTNAME[PodConfiguration].$error.server}}</span>
+        </div>
+    </div>
+
+    <div ng-show="PodSpecType == 'remote'">
+        <div class="form_item_block">
+            <label ng-class="{'is-invalid-label': GOINPUTNAME[RemoteFileType].$error.server}">File Type: <span class="asterix">*</span></label>
+            <div class="row" style="padding-top: 10px">
+                <div class="columns small-9 medium-10 larger-10"
+                     ng-init="RemoteFileType = RemoteFileType || 'json'">
+                    <input type="radio" ng-model="RemoteFileType" value="json"
+                           id="file_type_json"/>
+                    <label for="file_type_json">Json</label>
+
+                    <input type="radio" ng-model="RemoteFileType" value="yaml"
+                           id="file_type_yaml"/>
+                    <label for="file_type_yaml">Yaml</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form_item_block">
+            <label ng-class="{'is-invalid-label': GOINPUTNAME[RemoteFile].$error.server}">File Location:
+                <span class="asterix">*</span>
+            </label>
+            <input ng-class="{'is-invalid-input': GOINPUTNAME[RemoteFile].$error.server}" type="text" ng-model="RemoteFile"
+                   ng-required="true" placeholder="https://raw.githubusercontent.com/gocd/pod_specs/basic_agent.json"/>
+            <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[RemoteFile].$error.server}"
+                  ng-show="GOINPUTNAME[RemoteFile].$error.server">{{GOINPUTNAME[RemoteFile].$error.server}}</span>
         </div>
     </div>
 

@@ -82,7 +82,28 @@ public class GetProfileMetadataExecutorTest {
                 "  {\n" +
                 "    \"key\": \"SpecifiedUsingPodConfiguration\",\n" +
                 "    \"metadata\": {\n" +
+                "      \"required\": false,\n" +
+                "      \"secure\": false\n" +
+                "    }\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"key\": \"PodSpecType\",\n" +
+                "    \"metadata\": {\n" +
                 "      \"required\": true,\n" +
+                "      \"secure\": false\n" +
+                "    }\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"key\": \"RemoteFile\",\n" +
+                "    \"metadata\": {\n" +
+                "      \"required\": false,\n" +
+                "      \"secure\": false\n" +
+                "    }\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"key\": \"RemoteFileType\",\n" +
+                "    \"metadata\": {\n" +
+                "      \"required\": false,\n" +
                 "      \"secure\": false\n" +
                 "    }\n" +
                 "  },\n" +

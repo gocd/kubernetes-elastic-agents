@@ -33,7 +33,10 @@ public class GetProfileMetadataExecutor implements RequestExecutor {
     public static final Metadata MAX_CPU = new Metadata("MaxCPU", false, false);
     public static final Metadata ENVIRONMENT = new Metadata("Environment", false, false);
     public static final Metadata POD_CONFIGURATION = new Metadata("PodConfiguration", false, false);
-    public static final Metadata SPECIFIED_USING_POD_CONFIGURATION = new Metadata("SpecifiedUsingPodConfiguration", true, false);
+    public static final Metadata SPECIFIED_USING_POD_CONFIGURATION = new Metadata("SpecifiedUsingPodConfiguration", false, false);
+    public static final Metadata POD_SPEC_TYPE = new Metadata("PodSpecType", true, false);
+    public static final Metadata REMOTE_FILE = new Metadata("RemoteFile", false, false);
+    public static final Metadata REMOTE_FILE_TYPE = new Metadata("RemoteFileType", false, false);
     public static final Metadata PRIVILEGED = new Metadata("Privileged", false, false);
     public static final List<Metadata> FIELDS = new ArrayList<>();
 
@@ -44,6 +47,9 @@ public class GetProfileMetadataExecutor implements RequestExecutor {
         FIELDS.add(ENVIRONMENT);
         FIELDS.add(POD_CONFIGURATION);
         FIELDS.add(SPECIFIED_USING_POD_CONFIGURATION);
+        FIELDS.add(POD_SPEC_TYPE);
+        FIELDS.add(REMOTE_FILE);
+        FIELDS.add(REMOTE_FILE_TYPE);
         FIELDS.add(PRIVILEGED);
     }
 

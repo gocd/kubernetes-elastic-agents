@@ -29,7 +29,7 @@ public class ProfileValidateRequestExecutorTest {
     public void shouldBarfWhenUnknownKeysArePassed() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("foo", "bar");
-        properties.put("SpecifiedUsingPodConfiguration", "false");
+        properties.put("PodSpecType", "properties");
         ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties));
         String json = executor.execute().responseBody();
         JSONAssert.assertEquals("[{\"message\":\"Image must not be blank.\",\"key\":\"Image\"},{\"key\":\"foo\",\"message\":\"Is an unknown property\"}]", json, JSONCompareMode.NON_EXTENSIBLE);
@@ -38,7 +38,7 @@ public class ProfileValidateRequestExecutorTest {
     @Test
     public void shouldValidateMandatoryKeysForConfigProperties() throws Exception {
         Map<String, String> properties = new HashMap<>();
-        properties.put("SpecifiedUsingPodConfiguration", "false");
+        properties.put("PodSpecType", "properties");
         ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties));
         String json = executor.execute().responseBody();
         JSONAssert.assertEquals("[{\"message\":\"Image must not be blank.\",\"key\":\"Image\"}]", json, JSONCompareMode.NON_EXTENSIBLE);
@@ -47,7 +47,7 @@ public class ProfileValidateRequestExecutorTest {
     @Test
     public void shouldValidateMandatoryKeysForPodConfiguration() throws Exception {
         Map<String, String> properties = new HashMap<>();
-        properties.put("SpecifiedUsingPodConfiguration", "true");
+        properties.put("PodSpecType", "yaml");
         ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties));
         String json = executor.execute().responseBody();
         JSONAssert.assertEquals("[{\"message\":\"Pod Configuration must not be blank.\",\"key\":\"PodConfiguration\"}]", json, JSONCompareMode.NON_EXTENSIBLE);
@@ -56,7 +56,7 @@ public class ProfileValidateRequestExecutorTest {
     @Test
     public void shouldValidatePodConfigurationWhenSpecifiedAsYaml() throws Exception {
         Map<String, String> properties = new HashMap<>();
-        properties.put("SpecifiedUsingPodConfiguration", "true");
+        properties.put("PodSpecType", "yaml");
         properties.put("PodConfiguration", "this is my invalid fancy pod yaml!!");
         ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties));
         String json = executor.execute().responseBody();
@@ -66,7 +66,7 @@ public class ProfileValidateRequestExecutorTest {
     @Test
     public void shouldAllowPodYamlConfiguration() throws Exception {
         Map<String, String> properties = new HashMap<>();
-        properties.put("SpecifiedUsingPodConfiguration", "true");
+        properties.put("PodSpecType", "yaml");
         String podYaml = "apiVersion: v1\n" +
                 "kind: Pod\n" +
                 "metadata:\n" +
@@ -86,9 +86,9 @@ public class ProfileValidateRequestExecutorTest {
 
 
     @Test
-    public void shouldAllowGinjaTemplatedPodYaml() throws Exception {
+    public void shouldAllowJinjaTemplatedPodYaml() throws Exception {
         Map<String, String> properties = new HashMap<>();
-        properties.put("SpecifiedUsingPodConfiguration", "true");
+        properties.put("PodSpecType", "yaml");
         String podYaml = "apiVersion: v1\n" +
                 "kind: Pod\n" +
                 "metadata:\n" +
@@ -109,7 +109,7 @@ public class ProfileValidateRequestExecutorTest {
     @Test
     public void shouldValidatePodConfiguration() throws Exception {
         Map<String, String> properties = new HashMap<>();
-        properties.put("SpecifiedUsingPodConfiguration", "true");
+        properties.put("PodSpecType", "yaml");
         properties.put("PodConfiguration", "foobar");
         ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties));
         String json = executor.execute().responseBody();

@@ -70,4 +70,16 @@ public class CreateAgentRequestMother {
         JobIdentifier identifier = new JobIdentifier("up_42", 1L, "up_42_label", "up42_stage", "20", "up42_job", 10L);
         return new CreateAgentRequest(autoRegisterKey, properties, environment, identifier);
     }
+
+    public static CreateAgentRequest createAgentRequestUsingRemoteFile() {
+        String autoRegisterKey = UUID.randomUUID().toString();
+        HashMap<String, String> properties = new HashMap<>();
+        properties.put("PodSpecType", "remote");
+        properties.put("RemoteFileType", "json");
+        properties.put("RemoteFile", "https://gist.githubusercontent.com/varshavaradarajan/e364dc33fea3b47adaf216c031a1304f/raw/ef41ee6678659247d768bd9be649bc9c403d9f70/pod.json");
+
+        String environment = "QA";
+        JobIdentifier identifier = new JobIdentifier("up_42", 1L, "up_42_label", "up42_stage", "20", "up42_job", 10L);
+        return new CreateAgentRequest(autoRegisterKey, properties, environment, identifier);
+    }
 }
