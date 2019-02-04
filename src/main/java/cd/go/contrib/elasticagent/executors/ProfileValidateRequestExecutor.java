@@ -70,15 +70,47 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
             }
         }
 
-        boolean isSpecifiedUsingPodYaml = Boolean.valueOf(new HashMap<>(request.getProperties()).get(SPECIFIED_USING_POD_CONFIGURATION.getKey()));
+        String podSpecType = request.getProperties().get(POD_SPEC_TYPE.getKey());
 
-        if (isSpecifiedUsingPodYaml) {
-            validatePodYaml(new HashMap<>(request.getProperties()), result);
-        } else {
-            validateConfigPropertiesYaml(new HashMap<>(request.getProperties()), result);
+        if (podSpecType != null) {
+            switch (podSpecType) {
+                case "properties":
+                    validateConfigPropertiesYaml(new HashMap<>(request.getProperties()), result);
+                    break;
+                case "remote":
+                    validateRemoteFileSpec(new HashMap<>(request.getProperties()), result);
+                    break;
+                case "yaml":
+                    validatePodYaml(new HashMap<>(request.getProperties()), result);
+                    break;
+                default:
+                    LinkedHashMap<String, String> validationError = new LinkedHashMap<>();
+                    validationError.put("key", "PodSpecType");
+                    validationError.put("message", "Should be one of `properties`, `remote`, `yaml`.");
+                    result.add(validationError);
+            }
+        }
+        else {
+
+            boolean isSpecifiedUsingPodYaml = Boolean.valueOf(new HashMap<>(request.getProperties()).get(SPECIFIED_USING_POD_CONFIGURATION.getKey()));
+
+            if (isSpecifiedUsingPodYaml) {
+                validatePodYaml(new HashMap<>(request.getProperties()), result);
+            } else {
+                validateConfigPropertiesYaml(new HashMap<>(request.getProperties()), result);
+            }
         }
 
         return DefaultGoPluginApiResponse.success(GSON.toJson(result));
+    }
+
+    private void validateRemoteFileSpec(HashMap<String, String> properties, ArrayList<Map<String, String>> result) {
+        if (StringUtils.isBlank(properties.get(REMOTE_FILE.getKey()))) {
+            addNotBlankError(result, REMOTE_FILE.getKey(), "RemoteFile");
+        }
+        if (StringUtils.isBlank(properties.get(REMOTE_FILE_TYPE.getKey()))) {
+            addNotBlankError(result, REMOTE_FILE_TYPE.getKey(), "RemoteFileType");
+        }
     }
 
     private void validateConfigPropertiesYaml(HashMap<String, String> properties, ArrayList<Map<String, String>> result) {

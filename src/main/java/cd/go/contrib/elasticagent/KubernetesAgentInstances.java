@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
@@ -87,7 +88,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         }
 
         KubernetesClient client = factory.client(settings);
-        KubernetesInstance instance = kubernetesInstanceFactory.create(request, settings, client, pluginRequest, isUsingPodYaml(request));
+        KubernetesInstance instance = kubernetesInstanceFactory.create(request, settings, client, pluginRequest);
         register(instance);
 
         return instance;
@@ -101,10 +102,6 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         }
 
         return false;
-    }
-
-    private boolean isUsingPodYaml(CreateAgentRequest request) {
-        return Boolean.valueOf(request.properties().get(SPECIFIED_USING_POD_CONFIGURATION.getKey()));
     }
 
     @Override

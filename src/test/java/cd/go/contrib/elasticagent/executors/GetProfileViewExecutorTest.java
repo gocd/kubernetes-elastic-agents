@@ -47,7 +47,7 @@ public class GetProfileViewExecutorTest {
         final Document document = Jsoup.parse(template);
 
         for (Metadata field : GetProfileMetadataExecutor.FIELDS) {
-            if (field.getKey().equals(GetProfileMetadataExecutor.SPECIFIED_USING_POD_CONFIGURATION.getKey())) {
+            if (field.getKey().equals(GetProfileMetadataExecutor.SPECIFIED_USING_POD_CONFIGURATION.getKey()) || field.getKey().equals(GetProfileMetadataExecutor.POD_SPEC_TYPE.getKey()) || field.getKey().equals(GetProfileMetadataExecutor.REMOTE_FILE_TYPE.getKey())) {
                 continue;
             }
             final Elements inputFieldForKey = document.getElementsByAttributeValue("ng-model", field.getKey());
@@ -60,6 +60,6 @@ public class GetProfileViewExecutorTest {
         }
 
         final Elements inputs = document.select("textarea,input[type=text],select,input[type=checkbox]");
-        assertThat(inputs, hasSize(GetProfileMetadataExecutor.FIELDS.size() - 1)); // do not include SPECIFIED_USING_POD_CONFIGURATION key
+        assertThat(inputs, hasSize(GetProfileMetadataExecutor.FIELDS.size() - 3)); // do not include SPECIFIED_USING_POD_CONFIGURATION, POD_SPEC_TYPE, REMOTE_FILE_TYPE key
     }
 }

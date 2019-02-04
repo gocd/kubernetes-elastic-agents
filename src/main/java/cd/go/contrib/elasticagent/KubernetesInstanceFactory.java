@@ -18,6 +18,7 @@ package cd.go.contrib.elasticagent;
 
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagent.utils.Size;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.mustachejava.DefaultMustacheFactory;
@@ -25,35 +26,54 @@ import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.*;
 
 import static cd.go.contrib.elasticagent.Constants.*;
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
-import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.POD_CONFIGURATION;
-import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PRIVILEGED;
+import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.*;
 import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
 import static java.lang.String.valueOf;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.text.MessageFormat.format;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class KubernetesInstanceFactory {
-    public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest, Boolean usesPodYaml) {
-        if (usesPodYaml) {
-            return createUsingPodYaml(request, settings, client, pluginRequest);
-        } else {
-            return create(request, settings, client, pluginRequest);
+    public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
+        String podSpecType = request.properties().get(POD_SPEC_TYPE.getKey());
+        if (podSpecType != null) {
+            switch (podSpecType) {
+                case "properties":
+                    return createUsingProperties(request, settings, client, pluginRequest);
+                case "remote":
+                    return createUsingRemoteFile(request, settings, client, pluginRequest);
+                case "yaml":
+                    return createUsingPodYaml(request, settings, client, pluginRequest);
+                default:
+                    throw new IllegalArgumentException(String.format("Unsupported value for `PodSpecType`: %s", podSpecType));
+            }
+        }
+        else {
+            if (Boolean.valueOf(request.properties().get(SPECIFIED_USING_POD_CONFIGURATION.getKey()))) {
+                return createUsingPodYaml(request, settings, client, pluginRequest);
+            } else {
+                return createUsingProperties(request, settings, client, pluginRequest);
+            }
         }
     }
 
-    private KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
+    private KubernetesInstance createUsingProperties(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
         String containerName = format("{0}-{1}", KUBERNETES_POD_NAME_PREFIX, UUID.randomUUID().toString());
 
         Container container = new Container();
@@ -134,7 +154,7 @@ public class KubernetesInstanceFactory {
         return fromKubernetesPod(pod);
     }
 
-    public KubernetesInstance fromKubernetesPod(Pod elasticAgentPod) {
+    KubernetesInstance fromKubernetesPod(Pod elasticAgentPod) {
         KubernetesInstance kubernetesInstance;
         try {
             ObjectMeta metadata = elasticAgentPod.getMetadata();
@@ -227,6 +247,38 @@ public class KubernetesInstanceFactory {
         return createKubernetesPod(client, elasticAgentPod);
     }
 
+    private KubernetesInstance createUsingRemoteFile(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
+        String fileToDownload = request.properties().get(REMOTE_FILE.getKey());
+        String fileType = request.properties().get(REMOTE_FILE_TYPE.getKey());
+
+        Pod elasticAgentPod = new Pod();
+        ObjectMapper mapper;
+        if ("json".equalsIgnoreCase(fileType)) {
+            mapper = new ObjectMapper(new JsonFactory());
+        }
+        else if ("yaml".equalsIgnoreCase(fileType)) {
+            mapper = new ObjectMapper(new YAMLFactory());
+        }
+        else {
+            throw new IllegalArgumentException("RemoteFileType value should be one of `json` or `yaml`.");
+        }
+
+        File podSpecFile = new File(String.format("pod_spec_%s", UUID.randomUUID().toString()));
+        try {
+            FileUtils.copyURLToFile(new URL(fileToDownload), podSpecFile);
+            String spec = FileUtils.readFileToString(podSpecFile, UTF_8);
+            elasticAgentPod = mapper.readValue(spec, Pod.class);
+            FileUtils.deleteQuietly(podSpecFile);
+
+        } catch (IOException e) {
+            //ignore error here, handle this inside validate profile!
+            LOG.error(e.getMessage());
+        }
+        setGoCDMetadata(request, settings, pluginRequest, elasticAgentPod);
+        return createKubernetesPod(client, elasticAgentPod);
+    }
+
+
     public static String getTemplatizedPodYamlString(String podYaml) {
         StringWriter writer = new StringWriter();
         MustacheFactory mf = new DefaultMustacheFactory();
@@ -235,7 +287,7 @@ public class KubernetesInstanceFactory {
         return writer.toString();
     }
 
-    public static Map<String, String> getJinJavaContext() {
+    private static Map<String, String> getJinJavaContext() {
         HashMap<String, String> context = new HashMap<>();
         context.put(POD_POSTFIX, UUID.randomUUID().toString());
         context.put(CONTAINER_POSTFIX, UUID.randomUUID().toString());
