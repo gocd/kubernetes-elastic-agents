@@ -266,9 +266,11 @@ public class KubernetesInstanceFactory {
         File podSpecFile = new File(String.format("pod_spec_%s", UUID.randomUUID().toString()));
         try {
             FileUtils.copyURLToFile(new URL(fileToDownload), podSpecFile);
+            LOG.debug(format("Finished downloading %s to %s", fileToDownload, podSpecFile));
             String spec = FileUtils.readFileToString(podSpecFile, UTF_8);
             elasticAgentPod = mapper.readValue(spec, Pod.class);
             FileUtils.deleteQuietly(podSpecFile);
+            LOG.debug(format("Deleted %s", podSpecFile));
 
         } catch (IOException e) {
             //ignore error here, handle this inside validate profile!
