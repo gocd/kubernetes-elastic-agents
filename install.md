@@ -58,7 +58,7 @@ on Windows.
         - Remote File
             1. Specify the file name and type (`json` or `yaml`)
 
-            ![Create elastic profile using pod configuration][8]
+            ![Create elastic profile using remote file configuration][8]
 
     4. Save your profile.
     
