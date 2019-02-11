@@ -102,7 +102,7 @@
         <div class="form_error form-error row" ng-class="{'is-visible': GOINPUTNAME[PodSpecType].$error.server}" ng-show="GOINPUTNAME[PodSpecType].$error.server" style="padding-top: 10px">{{GOINPUTNAME[PodSpecType].$error.server}}</div>
         <div class="form_item_block row" style="padding-top: 10px">
             <div class="columns small-9 medium-10 larger-10"
-                 ng-init="PodSpecType = PodSpecType || 'false'">
+                 ng-init="PodSpecType = PodSpecType || (SpecifiedUsingPodConfiguration == 'true' && 'properties') || 'yaml'">
                 <input type="radio" ng-model="PodSpecType" value="properties"
                        id="properties"/>
                 <label for="properties">Config Properties</label>
