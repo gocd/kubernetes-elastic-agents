@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.*;
@@ -233,11 +232,12 @@ public class KubernetesInstanceFactory {
     private KubernetesInstance createUsingPodYaml(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         String podYaml = request.properties().get(POD_CONFIGURATION.getKey());
-        String templatizedPodYaml = getTemplatizedPodYamlString(podYaml);
+        String templatizedPodYaml = getTemplatizedPodSpec(podYaml);
 
         Pod elasticAgentPod = new Pod();
         try {
             elasticAgentPod = mapper.readValue(templatizedPodYaml, Pod.class);
+            setPodNameIfNecessary(elasticAgentPod, podYaml);
         } catch (IOException e) {
             //ignore error here, handle this inside validate profile!
             LOG.error(e.getMessage());
@@ -268,7 +268,9 @@ public class KubernetesInstanceFactory {
             FileUtils.copyURLToFile(new URL(fileToDownload), podSpecFile);
             LOG.debug(format("Finished downloading %s to %s", fileToDownload, podSpecFile));
             String spec = FileUtils.readFileToString(podSpecFile, UTF_8);
-            elasticAgentPod = mapper.readValue(spec, Pod.class);
+            String templatizedPodSpec = getTemplatizedPodSpec(spec);
+            elasticAgentPod = mapper.readValue(templatizedPodSpec, Pod.class);
+            setPodNameIfNecessary(elasticAgentPod, spec);
             FileUtils.deleteQuietly(podSpecFile);
             LOG.debug(format("Deleted %s", podSpecFile));
 
@@ -280,11 +282,18 @@ public class KubernetesInstanceFactory {
         return createKubernetesPod(client, elasticAgentPod);
     }
 
+    private void setPodNameIfNecessary(Pod elasticAgentPod, String spec) {
+        if (!spec.contains(POD_POSTFIX)) {
+            String newPodName = elasticAgentPod.getMetadata().getName().concat(String.format("-%s", UUID.randomUUID().toString()));
+            elasticAgentPod.getMetadata().setName(newPodName);
+        }
+    }
 
-    public static String getTemplatizedPodYamlString(String podYaml) {
+
+    public static String getTemplatizedPodSpec(String podSpec) {
         StringWriter writer = new StringWriter();
         MustacheFactory mf = new DefaultMustacheFactory();
-        Mustache mustache = mf.compile(new StringReader(podYaml), "templatePod");
+        Mustache mustache = mf.compile(new StringReader(podSpec), "templatePod");
         mustache.execute(writer, KubernetesInstanceFactory.getJinJavaContext());
         return writer.toString();
     }
@@ -294,7 +303,7 @@ public class KubernetesInstanceFactory {
         context.put(POD_POSTFIX, UUID.randomUUID().toString());
         context.put(CONTAINER_POSTFIX, UUID.randomUUID().toString());
         context.put(GOCD_AGENT_IMAGE, "gocd/gocd-agent-alpine-3.6");
-        context.put(LATEST_VERSION, "v18.10.0");
+        context.put(LATEST_VERSION, "v19.1.0");
         return context;
     }
 }

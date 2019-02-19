@@ -130,7 +130,7 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         try {
-            mapper.readValue(KubernetesInstanceFactory.getTemplatizedPodYamlString(podYaml), Pod.class);
+            mapper.readValue(KubernetesInstanceFactory.getTemplatizedPodSpec(podYaml), Pod.class);
         } catch (IOException e) {
             addError(result, key, "Invalid Pod Yaml.");
         }

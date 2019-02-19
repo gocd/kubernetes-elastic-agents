@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PRIVILEGED;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -265,7 +266,7 @@ public class KubernetesAgentInstancesIntegrationTest {
         Pod elasticAgentPod = argumentCaptor.getValue();
 
         assertNotNull(elasticAgentPod.getMetadata());
-        assertThat(elasticAgentPod.getMetadata().getName(), is("test-pod-yaml"));
+        assertThat(elasticAgentPod.getMetadata().getName(), containsString("test-pod-yaml"));
 
         assertThat(elasticAgentPod.getMetadata().getName(), is(instance.name()));
     }
@@ -389,7 +390,7 @@ public class KubernetesAgentInstancesIntegrationTest {
         Pod elasticAgentPod = argumentCaptor.getValue();
 
         assertNotNull(elasticAgentPod.getMetadata());
-        assertThat(elasticAgentPod.getMetadata().getName(), is("test-pod-json"));
+        assertThat(elasticAgentPod.getMetadata().getName(), containsString("test-pod-json"));
 
         assertThat(elasticAgentPod.getMetadata().getName(), is(instance.name()));
     }
