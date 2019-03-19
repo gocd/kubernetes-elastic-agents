@@ -47,6 +47,30 @@ volumeMounts:
 
 ```
 
+### Pull image from private registry
+
+###### Create a Kubernetes secret
+
+```bash
+kubectl create secret docker-registry \
+	my-docker-registry \
+	--namespace gocd \
+	--docker-server=<docker_server_url> \
+	--docker-username=<username> \
+	--docker-password=<password> \
+	--docker-email=<email>
+```
+
+
+###### Configure pod yaml
+
+In the pod spec, specify the `imagePullSecrets` section:
+
+```yaml
+imagePullSecrets:
+  - name: my-docker-registry
+```
+
 # Installation
 
 Documentation for installation is available [here](install.md)
