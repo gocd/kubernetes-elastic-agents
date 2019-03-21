@@ -4,7 +4,7 @@ Kubernetes Elastic Agent Plugin provides production grade support to run GoCD El
 
 # Documentation
 
-Read about setting up a Kubernetes cluster and using the GoCD elastic agent for Kubernetes in our [documentation](https://docs.gocd.org/18.12.0/gocd_on_kubernetes/introduction.html).
+Read about setting up a Kubernetes cluster and using the GoCD elastic agent for Kubernetes in our [documentation](https://docs.gocd.org/current/gocd_on_kubernetes/introduction.html).
 
 ### Configuring SSH keys for Kubernetes Elastic Agents
 
