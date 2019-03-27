@@ -15,4 +15,4 @@ build/
 !gradle-wrapper.jar
 kubernetes-elastic-agent.iml
 out/
-
+src/main/resources-generated/

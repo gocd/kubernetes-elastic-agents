@@ -13,32 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    id 'co.riiid.gradle' version '0.4.2'
-}
+
 
 apply plugin: 'java'
-apply from: 'plugin-helpers.gradle'
+apply from: "https://raw.githubusercontent.com/gocd/gocd-plugin-gradle-task-helpers/master/helper.gradle?_=${(int) (new Date().toInstant().epochSecond / 60)}"
+
+gocdPlugin {
+  id = 'cd.go.contrib.elasticagent.kubernetes'
+  pluginVersion = '2.1.0'
+  goCdVersion = '18.10.0'
+  name = 'Kubernetes Elastic Agent Plugin'
+  description = 'Kubernetes Based Elastic Agent Plugins for GoCD'
+  vendorName = 'ThoughtWorks, Inc.'
+  vendorUrl = 'https://github.com/gocd/kubernetes-elastic-agents'
+
+  githubRepo {
+    owner = System.getenv('GITHUB_USER') ?: 'bob'
+    repo = 'kubernetes-elastic-agents'
+    token = System.getenv('GITHUB_TOKEN') ?: 'bad-token'
+  }
+
+  pluginProject = project
+
+  prerelease = !"No".equalsIgnoreCase(System.getenv('PRERELEASE'))
+  assetsToRelease = [project.tasks.jar]
+}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-project.ext.pluginVersion = '2.1.0'
-project.ext.fullVersion = project.git.distVersion() ? "${project.pluginVersion}-${project.git.distVersion()}" : project.pluginVersion
-
 group = 'cd.go.contrib'
-version = project.fullVersion
-
-project.ext.pluginDesc = [
-        id         : 'cd.go.contrib.elasticagent.kubernetes',
-        repo       : 'kubernetes-elastic-agents',
-        version    : project.version,
-        goCdVersion: '18.10.0',
-        name       : 'Kubernetes Elastic Agent Plugin',
-        description: 'Kubernetes Based Elastic Agent Plugins for GoCD',
-        vendorName : 'GoCD Contributors',
-        vendorUrl  : 'https://github.com/gocd/kubernetes-elastic-agents'
-]
+version = gocdPlugin.fullVersion(project)
 
 repositories {
     jcenter()
@@ -80,5 +85,3 @@ jar {
 //        into "/"
 //    }
 }
-
-apply from: 'plugin-tasks.gradle'
