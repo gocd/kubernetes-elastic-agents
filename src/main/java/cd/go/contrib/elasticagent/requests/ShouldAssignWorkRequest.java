@@ -39,12 +39,16 @@ public class ShouldAssignWorkRequest {
     private String environment;
 
     @Expose
-    @SerializedName("properties")
+    @SerializedName("elastic_agent_profile_properties")
     private Map<String, String> properties;
 
     @Expose
     @SerializedName("job_identifier")
     private JobIdentifier jobIdentifier;
+
+    @Expose
+    @SerializedName("cluster_profile_properties")
+    private ClusterProfileProperties clusterProfileProperties;
 
     public ShouldAssignWorkRequest() {
     }
@@ -54,6 +58,11 @@ public class ShouldAssignWorkRequest {
         this.environment = environment;
         this.properties = properties;
         this.jobIdentifier = jobIdentifier;
+    }
+
+    public ShouldAssignWorkRequest(Agent agent, String environment, Map<String, String> properties, JobIdentifier jobIdentifier, ClusterProfileProperties clusterProfileProperties) {
+        this(agent, environment, properties, jobIdentifier);
+        this.clusterProfileProperties = clusterProfileProperties;
     }
 
     public static ShouldAssignWorkRequest fromJSON(String json) {
@@ -78,5 +87,9 @@ public class ShouldAssignWorkRequest {
 
     public JobIdentifier jobIdentifier() {
         return jobIdentifier;
+    }
+
+    public ClusterProfileProperties clusterProfileProperties() {
+        return clusterProfileProperties;
     }
 }
