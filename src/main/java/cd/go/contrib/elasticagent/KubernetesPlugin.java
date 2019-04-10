@@ -88,6 +88,8 @@ public class KubernetesPlugin implements GoPlugin {
                 case REQUEST_ELASTIC_AGENT_STATUS_REPORT:
                     refreshInstances();
                     return AgentStatusReportRequest.fromJSON(request.requestBody()).executor(pluginRequest).execute();
+                case REQUEST_MIGRATE_CONFIGURATION:
+                    return MigrateConfigurationRequest.fromJSON(request.requestBody()).executor().execute();
                 default:
                     throw new UnhandledRequestTypeException(request.requestName());
             }

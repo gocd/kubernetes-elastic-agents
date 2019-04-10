@@ -29,7 +29,7 @@ public interface Constants {
 
     // The extension point API version that this plugin understands
     String PROCESSOR_API_VERSION = "1.0";
-    String EXTENSION_API_VERSION = "4.0";
+    String EXTENSION_API_VERSION = "5.0";
     String SERVER_INFO_API_VERSION = "1.0";
 
     // the identifier of this plugin

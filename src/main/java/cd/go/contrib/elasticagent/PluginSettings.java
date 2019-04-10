@@ -149,4 +149,18 @@ public class PluginSettings {
         result = 31 * result + (namespace != null ? namespace.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "PluginSettings{" +
+                "goServerUrl='" + goServerUrl + '\'' +
+                ", autoRegisterTimeout=" + autoRegisterTimeout +
+                ", maxPendingPods=" + maxPendingPods +
+                ", clusterUrl='" + clusterUrl + '\'' +
+                ", securityToken='" + securityToken + '\'' +
+                ", clusterCACertData='" + clusterCACertData + '\'' +
+                ", namespace='" + namespace + '\'' +
+                ", autoRegisterPeriod=" + autoRegisterPeriod +
+                '}';
+    }
 }
