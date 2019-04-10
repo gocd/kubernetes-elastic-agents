@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagent.requests;
 
+import cd.go.contrib.elasticagent.ClusterProfileProperties;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -33,9 +34,12 @@ public class CreateAgentRequestTest {
     public void shouldDeserializeFromJSON() throws Exception {
         String json = "{\n" +
                 "  \"auto_register_key\": \"secret-key\",\n" +
-                "  \"properties\": {\n" +
+                "  \"elastic_agent_profile_properties\": {\n" +
                 "    \"key1\": \"value1\",\n" +
                 "    \"key2\": \"value2\"\n" +
+                "  },\n" +
+                "  \"cluster_profile_properties\": {\n" +
+                "    \"go_server_url\": \"go-server-url\"\n" +
                 "  },\n" +
                 "  \"environment\": \"prod\",\n" +
                 "  \"job_identifier\": {\n" +
@@ -52,10 +56,15 @@ public class CreateAgentRequestTest {
         CreateAgentRequest request = CreateAgentRequest.fromJSON(json);
         assertThat(request.autoRegisterKey(), equalTo("secret-key"));
         assertThat(request.environment(), equalTo("prod"));
-        HashMap<String, String> expectedProperties = new HashMap<>();
-        expectedProperties.put("key1", "value1");
-        expectedProperties.put("key2", "value2");
-        assertThat(request.properties(), Matchers.<Map<String, String>>equalTo(expectedProperties));
+        HashMap<String, String> expectedElasticAgentProperties = new HashMap<>();
+        expectedElasticAgentProperties.put("key1", "value1");
+        expectedElasticAgentProperties.put("key2", "value2");
+        assertThat(request.properties(), Matchers.<Map<String, String>>equalTo(expectedElasticAgentProperties));
+
+        HashMap<String, String> clusterProfileConfigurations = new HashMap<>();
+        clusterProfileConfigurations.put("go_server_url", "go-server-url");
+        ClusterProfileProperties expectedClusterProfileProperties = ClusterProfileProperties.fromConfiguration(clusterProfileConfigurations);
+        assertThat(request.clusterProfileProperties(), is(expectedClusterProfileProperties));
 
         JobIdentifier expectedJobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", 100L);
         JobIdentifier actualJobIdentifier = request.jobIdentifier();
