@@ -65,11 +65,11 @@ public class KubernetesPlugin implements GoPlugin {
                     return new GetViewRequestExecutor().execute();
                 case PLUGIN_SETTINGS_VALIDATE_CONFIGURATION:
                     return ValidatePluginSettingsRequest.fromJSON(request.requestBody()).executor(pluginRequest).execute();
-                case REQUEST_GET_PROFILE_METADATA:
+                case REQUEST_GET_ELASTIC_AGENT_PROFILE_METADATA:
                     return new GetProfileMetadataExecutor().execute();
-                case REQUEST_GET_PROFILE_VIEW:
+                case REQUEST_GET_ELASTIC_AGENT_PROFILE_VIEW:
                     return new GetProfileViewExecutor().execute();
-                case REQUEST_VALIDATE_PROFILE:
+                case REQUEST_VALIDATE_ELASTIC_AGENT_PROFILE:
                     return ProfileValidateRequest.fromJSON(request.requestBody()).executor().execute();
                 case REQUEST_CREATE_AGENT:
                     return CreateAgentRequest.fromJSON(request.requestBody()).executor(agentInstances, pluginRequest).execute();

@@ -24,11 +24,7 @@ public enum Request {
     REQUEST_CREATE_AGENT(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".create-agent"),
     REQUEST_SERVER_PING(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".server-ping"),
     REQUEST_SHOULD_ASSIGN_WORK(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".should-assign-work"),
-    REQUEST_GET_PROFILE_METADATA(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".get-profile-metadata"),
-    REQUEST_GET_PROFILE_VIEW(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".get-profile-view"),
 
-    // settings related requests that the server makes to the plugin
-    REQUEST_VALIDATE_PROFILE(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".validate-profile"),
     PLUGIN_SETTINGS_GET_ICON(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".get-icon"),
     PLUGIN_SETTINGS_GET_CONFIGURATION(Constants.GO_PLUGIN_SETTINGS_PREFIX + ".get-configuration"),
     PLUGIN_SETTINGS_GET_VIEW(Constants.GO_PLUGIN_SETTINGS_PREFIX + ".get-view"),
