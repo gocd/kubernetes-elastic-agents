@@ -20,7 +20,6 @@ import cd.go.contrib.elasticagent.model.Metadata;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 
 public class GoServerURLMetadata extends Metadata {
@@ -45,7 +44,7 @@ public class GoServerURLMetadata extends Metadata {
             if (!StringUtils.endsWith(input, "/go")) {
                 return String.format("%s must be in format https://<GO_SERVER_URL>:<GO_SERVER_PORT>/go.", GO_SERVER_URL);
             }
-        } catch (URISyntaxException e) {
+        } catch (Exception e) {
             return String.format("%s must be a valid URL (https://example.com:8154/go).", GO_SERVER_URL);
         }
 

@@ -75,6 +75,8 @@ public class KubernetesPlugin implements GoPlugin {
                     return new GetClusterProfileMetadataExecutor().execute();
                 case REQUEST_GET_CLUSTER_PROFILE_VIEW:
                     return new GetClusterProfileViewRequestExecutor().execute();
+                case REQUEST_VALIDATE_CLUSTER_PROFILE_CONFIGURATION:
+                    return ClusterProfileValidateRequest.fromJSON(request.requestBody()).executor().execute();
                 case REQUEST_CREATE_AGENT:
                     return CreateAgentRequest.fromJSON(request.requestBody()).executor(agentInstances, pluginRequest).execute();
                 case REQUEST_SHOULD_ASSIGN_WORK:
