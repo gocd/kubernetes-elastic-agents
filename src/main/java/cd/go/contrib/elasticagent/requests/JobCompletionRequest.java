@@ -17,19 +17,14 @@
 package cd.go.contrib.elasticagent.requests;
 
 import cd.go.contrib.elasticagent.*;
-import cd.go.contrib.elasticagent.executors.CreateAgentRequestExecutor;
 import cd.go.contrib.elasticagent.executors.JobCompletionRequestExecutor;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import io.fabric8.kubernetes.api.model.EnvVar;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
 
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class JobCompletionRequest {
     @Expose
@@ -39,17 +34,26 @@ public class JobCompletionRequest {
     @SerializedName("job_identifier")
     private JobIdentifier jobIdentifier;
 
+    @Expose
+    @SerializedName("elastic_agent_profile_properties")
+    private Map<String, String> properties;
+
+    @Expose
+    @SerializedName("cluster_profile_properties")
+    private ClusterProfileProperties clusterProfileProperties;
+
     public JobCompletionRequest() {
     }
 
-    public JobCompletionRequest(String elasticAgentId, JobIdentifier jobIdentifier) {
+    public JobCompletionRequest(String elasticAgentId, JobIdentifier jobIdentifier, Map<String, String> properties, ClusterProfileProperties clusterProfileProperties) {
         this.elasticAgentId = elasticAgentId;
         this.jobIdentifier = jobIdentifier;
+        this.properties = properties;
+        this.clusterProfileProperties = clusterProfileProperties;
     }
 
     public static JobCompletionRequest fromJSON(String json) {
-        JobCompletionRequest jobCompletionRequest = GSON.fromJson(json, JobCompletionRequest.class);
-        return jobCompletionRequest;
+        return GSON.fromJson(json, JobCompletionRequest.class);
     }
 
     public String getElasticAgentId() {
@@ -64,11 +68,21 @@ public class JobCompletionRequest {
         return new JobCompletionRequestExecutor(this, agentInstances, pluginRequest);
     }
 
+    public Map<String, String> properties() {
+        return properties;
+    }
+
+    public ClusterProfileProperties clusterProfileProperties() {
+        return clusterProfileProperties;
+    }
+
     @Override
     public String toString() {
         return "JobCompletionRequest{" +
                 "elasticAgentId='" + elasticAgentId + '\'' +
                 ", jobIdentifier=" + jobIdentifier +
+                ", properties=" + properties +
+                ", clusterProfileProperties=" + clusterProfileProperties +
                 '}';
     }
 }
