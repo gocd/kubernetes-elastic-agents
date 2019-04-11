@@ -93,10 +93,10 @@ public class KubernetesPlugin implements GoPlugin {
                     refreshInstancesForCluster(clusterProfileProperties);
                     return shouldAssignWorkRequest.executor(getAgentInstancesFor(clusterProfileProperties)).execute();
                 case REQUEST_SERVER_PING:
-                    //todo: Ganesh and dhanashri will inplement this
-                    return new DefaultGoPluginApiResponse(200);
-//                    refreshInstances();
-//                    return new ServerPingRequestExecutor(agentInstances, pluginRequest).execute();
+                    ServerPingRequest serverPingRequest = ServerPingRequest.fromJSON(request.requestBody());
+                    List<ClusterProfileProperties> listOfClusterProfileProperties = serverPingRequest.allClusterProfileProperties();
+                    refreshInstancesForAllClusters(listOfClusterProfileProperties);
+                    return serverPingRequest.executor(clusterSpecificAgentInstances, pluginRequest).execute();
                 case REQUEST_JOB_COMPLETION:
                     JobCompletionRequest jobCompletionRequest = JobCompletionRequest.fromJSON(request.requestBody());
                     clusterProfileProperties = jobCompletionRequest.clusterProfileProperties();

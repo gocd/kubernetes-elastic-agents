@@ -22,6 +22,13 @@ import java.util.Objects;
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
 
 public class ClusterProfileProperties extends PluginSettings {
+    public ClusterProfileProperties() {
+    }
+
+    public ClusterProfileProperties(String goServerUrl, String clusterUrl, String clusterCACertData) {
+        super(goServerUrl, clusterUrl, clusterCACertData);
+    }
+
     public static ClusterProfileProperties fromJSON(String json) {
         return GSON.fromJson(json, ClusterProfileProperties.class);
     }

@@ -26,6 +26,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -186,7 +187,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         return instances.get(agentId);
     }
 
-    private void register(KubernetesInstance instance) {
+    public void register(KubernetesInstance instance) {
         instances.put(instance.name(), instance);
     }
 
@@ -213,6 +214,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
                 unregisteredInstances.register(kubernetesInstanceFactory.fromKubernetesPod(pod));
             }
         }
+
         return unregisteredInstances;
     }
 
@@ -227,5 +229,9 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
 
     public boolean instanceExists(KubernetesInstance instance) {
         return instances.contains(instance);
+    }
+
+    public boolean hasInstance(String elasticAgentId) {
+        return find(elasticAgentId) != null;
     }
 }

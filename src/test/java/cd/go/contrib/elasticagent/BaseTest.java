@@ -17,7 +17,7 @@
 package cd.go.contrib.elasticagent;
 
 public abstract class BaseTest {
-    protected PluginSettings createSettings() {
-        return new PluginSettings("https://localhost:8154/go", null, null);
+    protected ClusterProfileProperties createClusterProfileProperties() {
+        return new ClusterProfileProperties("https://localhost:8154/go", null, null);
     }
 }
