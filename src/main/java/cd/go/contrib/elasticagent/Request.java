@@ -20,38 +20,25 @@ package cd.go.contrib.elasticagent;
  * Enumerable that represents one of the messages that the server sends to the plugin
  */
 public enum Request {
-    // elastic agent related requests that the server makes to the plugin
     REQUEST_CREATE_AGENT(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".create-agent"),
     REQUEST_SERVER_PING(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".server-ping"),
     REQUEST_SHOULD_ASSIGN_WORK(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".should-assign-work"),
+    REQUEST_JOB_COMPLETION(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".job-completion"),
+    REQUEST_MIGRATE_CONFIGURATION(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".migrate-config"),
 
     PLUGIN_SETTINGS_GET_ICON(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".get-icon"),
-    PLUGIN_SETTINGS_GET_CONFIGURATION(Constants.GO_PLUGIN_SETTINGS_PREFIX + ".get-configuration"),
-    PLUGIN_SETTINGS_GET_VIEW(Constants.GO_PLUGIN_SETTINGS_PREFIX + ".get-view"),
-    PLUGIN_SETTINGS_VALIDATE_CONFIGURATION(Constants.GO_PLUGIN_SETTINGS_PREFIX + ".validate-configuration"),
-
-    REQUEST_STATUS_REPORT(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".status-report"),
-    REQUEST_ELASTIC_AGENT_STATUS_REPORT(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".agent-status-report"),
-    REQUEST_GET_CAPABILITIES(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".get-capabilities"),
-
-    //todo: Ganesh and dhanashri will cleanup this
-    REQUEST_GET_ELASTIC_AGENT_PROFILE_METADATA(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".get-elastic-agent-profile-metadata"),
-    REQUEST_VALIDATE_ELASTIC_AGENT_PROFILE(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".validate-elastic-agent-profile"),
-    REQUEST_GET_ELASTIC_AGENT_PROFILE_VIEW(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".get-elastic-agent-profile-view"),
-
-    REQUEST_GET_ICON(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".get-icon"),
 
     REQUEST_GET_CLUSTER_PROFILE_METADATA(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".get-cluster-profile-metadata"),
     REQUEST_VALIDATE_CLUSTER_PROFILE_CONFIGURATION(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".validate-cluster-profile"),
     REQUEST_GET_CLUSTER_PROFILE_VIEW(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".get-cluster-profile-view"),
 
-    REQUEST_CLUSTER_STATUS_REPORT(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".cluster-status-report"),
-    REQUEST_AGENT_STATUS_REPORT(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".agent-status-report"),
+    REQUEST_GET_ELASTIC_AGENT_PROFILE_METADATA(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".get-elastic-agent-profile-metadata"),
+    REQUEST_VALIDATE_ELASTIC_AGENT_PROFILE(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".validate-elastic-agent-profile"),
+    REQUEST_GET_ELASTIC_AGENT_PROFILE_VIEW(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".get-elastic-agent-profile-view"),
 
-    REQUEST_CAPABILITIES(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".get-capabilities"),
-    REQUEST_MIGRATE_CONFIGURATION(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".migrate-config"),
-
-    REQUEST_JOB_COMPLETION(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".job-completion");
+    REQUEST_GET_CAPABILITIES(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".get-capabilities"),
+    REQUEST_ELASTIC_AGENT_STATUS_REPORT(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".agent-status-report"),
+    REQUEST_CLUSTER_STATUS_REPORT(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".cluster-status-report");
 
     private final String requestName;
 
