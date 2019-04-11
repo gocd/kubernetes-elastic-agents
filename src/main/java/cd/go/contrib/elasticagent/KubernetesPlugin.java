@@ -108,8 +108,10 @@ public class KubernetesPlugin implements GoPlugin {
                     refreshInstancesForCluster(clusterProfileProperties);
                     return clusterStatusReportRequest.executor().execute();
                 case REQUEST_ELASTIC_AGENT_STATUS_REPORT:
-                    //todo: Ganesh and dhanashri will inplement this
-                    return new DefaultGoPluginApiResponse(200);
+                    AgentStatusReportRequest statusReportRequest = AgentStatusReportRequest.fromJSON(request.requestBody());
+                    clusterProfileProperties = statusReportRequest.clusterProfileProperties();
+                    refreshInstancesForCluster(clusterProfileProperties);
+                    return statusReportRequest.executor().execute();
                 case REQUEST_MIGRATE_CONFIGURATION:
                     return MigrateConfigurationRequest.fromJSON(request.requestBody()).executor().execute();
                 default:

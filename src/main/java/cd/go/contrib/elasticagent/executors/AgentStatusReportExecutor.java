@@ -18,7 +18,6 @@ package cd.go.contrib.elasticagent.executors;
 
 import cd.go.contrib.elasticagent.Constants;
 import cd.go.contrib.elasticagent.KubernetesClientFactory;
-import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.builders.PluginStatusReportViewBuilder;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
 import cd.go.contrib.elasticagent.model.reports.agent.KubernetesElasticAgent;
@@ -39,17 +38,15 @@ import static java.text.MessageFormat.format;
 
 public class AgentStatusReportExecutor {
     private final AgentStatusReportRequest request;
-    private final PluginRequest pluginRequest;
     private final KubernetesClientFactory factory;
     private final PluginStatusReportViewBuilder statusReportViewBuilder;
 
-    public AgentStatusReportExecutor(AgentStatusReportRequest request, PluginRequest pluginRequest) {
-        this(request, pluginRequest, KubernetesClientFactory.instance(), PluginStatusReportViewBuilder.instance());
+    public AgentStatusReportExecutor(AgentStatusReportRequest request) {
+        this(request, KubernetesClientFactory.instance(), PluginStatusReportViewBuilder.instance());
     }
 
-    AgentStatusReportExecutor(AgentStatusReportRequest request, PluginRequest pluginRequest, KubernetesClientFactory kubernetesClientFactory, PluginStatusReportViewBuilder builder) {
+    AgentStatusReportExecutor(AgentStatusReportRequest request, KubernetesClientFactory kubernetesClientFactory, PluginStatusReportViewBuilder builder) {
         this.request = request;
-        this.pluginRequest = pluginRequest;
         this.factory = kubernetesClientFactory;
         this.statusReportViewBuilder = builder;
     }
@@ -58,7 +55,7 @@ public class AgentStatusReportExecutor {
         String elasticAgentId = request.getElasticAgentId();
         JobIdentifier jobIdentifier = request.getJobIdentifier();
         LOG.info(format("[status-report] Generating status report for agent: {0} with job: {1}", elasticAgentId, jobIdentifier));
-        KubernetesClient client = factory.client(pluginRequest.getPluginSettings());
+        KubernetesClient client = factory.client(request.clusterProfileProperties());
 
         try {
             Pod pod;

@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagent.executors;
 
+import cd.go.contrib.elasticagent.ClusterProfileProperties;
 import cd.go.contrib.elasticagent.KubernetesClientFactory;
 import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.PluginSettings;
@@ -94,7 +95,7 @@ public class AgentStatusReportExecutorTest {
         initMocks(this);
         Pod pod = createDefaultPod();
         pod.getMetadata().setName(elasticAgentId);
-        executor = new AgentStatusReportExecutor(statusReportRequest, pluginRequest, kubernetesClientFactory, builder);
+        executor = new AgentStatusReportExecutor(statusReportRequest, kubernetesClientFactory, builder);
 
         when(client.pods()).thenReturn(mockedOperation);
         when(mockedOperation.list()).thenReturn(podList);
@@ -114,10 +115,10 @@ public class AgentStatusReportExecutorTest {
         when(statusReportRequest.getJobIdentifier()).thenReturn(null);
         when(statusReportRequest.getElasticAgentId()).thenReturn(elasticAgentId);
 
-        PluginSettings pluginSettings = new PluginSettings();
+        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
 
-        when(pluginRequest.getPluginSettings()).thenReturn(pluginSettings);
-        when(kubernetesClientFactory.client(pluginSettings)).thenReturn(client);
+        when(statusReportRequest.clusterProfileProperties()).thenReturn(clusterProfileProperties);
+        when(kubernetesClientFactory.client(clusterProfileProperties)).thenReturn(client);
 
         when(builder.getTemplate("agent-status-report.template.ftlh")).thenReturn(template);
         when(builder.build(eq(template), any(KubernetesElasticAgent.class))).thenReturn("my-view");

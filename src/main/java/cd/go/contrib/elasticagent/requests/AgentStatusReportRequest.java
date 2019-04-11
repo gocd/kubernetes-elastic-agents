@@ -16,12 +16,14 @@
 
 package cd.go.contrib.elasticagent.requests;
 
-import cd.go.contrib.elasticagent.PluginRequest;
+import cd.go.contrib.elasticagent.ClusterProfileProperties;
 import cd.go.contrib.elasticagent.Request;
 import cd.go.contrib.elasticagent.executors.AgentStatusReportExecutor;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.Objects;
 
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
 
@@ -37,12 +39,17 @@ public class AgentStatusReportRequest {
     @SerializedName("job_identifier")
     private JobIdentifier jobIdentifier;
 
+    @Expose
+    @SerializedName("cluster_profile_properties")
+    private ClusterProfileProperties clusterProfileProperties;
+
     public AgentStatusReportRequest() {
     }
 
-    public AgentStatusReportRequest(String elasticAgentId, JobIdentifier jobIdentifier) {
+    public AgentStatusReportRequest(String elasticAgentId, JobIdentifier jobIdentifier, ClusterProfileProperties clusterProfileProperties) {
         this.elasticAgentId = elasticAgentId;
         this.jobIdentifier = jobIdentifier;
+        this.clusterProfileProperties = clusterProfileProperties;
     }
 
     public static AgentStatusReportRequest fromJSON(String json) {
@@ -57,7 +64,35 @@ public class AgentStatusReportRequest {
         return jobIdentifier;
     }
 
-    public AgentStatusReportExecutor executor(PluginRequest pluginRequest) {
-        return new AgentStatusReportExecutor(this, pluginRequest);
+    public ClusterProfileProperties clusterProfileProperties() {
+        return clusterProfileProperties;
+    }
+
+    public AgentStatusReportExecutor executor() {
+        return new AgentStatusReportExecutor(this);
+    }
+
+    @Override
+    public String toString() {
+        return "AgentStatusReportRequest{" +
+                "elasticAgentId='" + elasticAgentId + '\'' +
+                ", jobIdentifier=" + jobIdentifier +
+                ", clusterProfileProperties=" + clusterProfileProperties +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AgentStatusReportRequest that = (AgentStatusReportRequest) o;
+        return Objects.equals(elasticAgentId, that.elasticAgentId) &&
+                Objects.equals(jobIdentifier, that.jobIdentifier) &&
+                Objects.equals(clusterProfileProperties, that.clusterProfileProperties);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(elasticAgentId, jobIdentifier, clusterProfileProperties);
     }
 }
