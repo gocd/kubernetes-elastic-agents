@@ -26,7 +26,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,7 +60,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) {
         final Integer maxAllowedContainers = settings.getMaxPendingPods();
         synchronized (instances) {
-            refreshAll(pluginRequest);
+            refreshAll(settings);
             doWithLockOnSemaphore(new SetupSemaphore(maxAllowedContainers, instances, semaphore));
 
             if (semaphore.tryAcquire()) {
@@ -145,26 +144,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     }
 
     @Override
-    //todo: Ganesh and dhanashri will remove this
-    public void refreshAll(PluginRequest pluginRequest) {
-        LOG.debug("[Refresh Instances] Syncing k8s elastic agent pod information.");
-        KubernetesClient client = factory.client(pluginRequest.getPluginSettings());
-        PodList list = client.pods().list();
-
-        instances.clear();
-        for (Pod pod : list.getItems()) {
-            Map<String, String> podLabels = pod.getMetadata().getLabels();
-            if (podLabels != null) {
-                if (StringUtils.equals(Constants.KUBERNETES_POD_KIND_LABEL_VALUE, podLabels.get(Constants.KUBERNETES_POD_KIND_LABEL_KEY))) {
-                    register(kubernetesInstanceFactory.fromKubernetesPod(pod));
-                }
-            }
-        }
-
-        LOG.info(String.format("[refresh-pod-state] Pod information successfully synced. All(Running/Pending) pod count is %d.", instances.size()));
-    }
-
-    public void refreshAll(ClusterProfileProperties properties) {
+    public void refreshAll(PluginSettings properties) {
         LOG.debug("[Refresh Instances] Syncing k8s elastic agent pod information.");
         KubernetesClient client = factory.client(properties);
         PodList list = client.pods().list();

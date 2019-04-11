@@ -72,9 +72,9 @@ public interface AgentInstances<T> {
      * This call should be should ideally remember if the agent instances are refreshed, and do nothing if instances
      * were previously refreshed.
      *
-     * @param pluginRequest the plugin request object
+     * @param pluginSettings the plugin settings object
      */
-    void refreshAll(PluginRequest pluginRequest) throws Exception;
+    void refreshAll(PluginSettings pluginSettings) throws Exception;
 
     /**
      * This
