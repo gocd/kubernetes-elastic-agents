@@ -136,10 +136,10 @@ public class AgentStatusReportExecutorTest {
         when(statusReportRequest.getJobIdentifier()).thenReturn(null);
         when(statusReportRequest.getElasticAgentId()).thenReturn(elasticAgentId);
 
-        PluginSettings pluginSettings = new PluginSettings();
+        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
 
-        when(pluginRequest.getPluginSettings()).thenReturn(pluginSettings);
-        when(kubernetesClientFactory.client(pluginSettings)).thenReturn(client);
+        when(statusReportRequest.clusterProfileProperties()).thenReturn(clusterProfileProperties);
+        when(kubernetesClientFactory.client(clusterProfileProperties)).thenReturn(client);
 
         when(builder.getTemplate("error.template.ftlh")).thenReturn(template);
         when(builder.build(eq(template), any(StatusReportGenerationError.class))).thenReturn("my-error-view");
@@ -158,10 +158,10 @@ public class AgentStatusReportExecutorTest {
         when(statusReportRequest.getJobIdentifier()).thenReturn(jobIdentifier);
         when(statusReportRequest.getElasticAgentId()).thenReturn(null);
 
-        PluginSettings pluginSettings = new PluginSettings();
+        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
 
-        when(pluginRequest.getPluginSettings()).thenReturn(pluginSettings);
-        when(kubernetesClientFactory.client(pluginSettings)).thenReturn(client);
+        when(statusReportRequest.clusterProfileProperties()).thenReturn(clusterProfileProperties);
+        when(kubernetesClientFactory.client(clusterProfileProperties)).thenReturn(client);
 
         when(builder.getTemplate("error.template.ftlh")).thenReturn(template);
         when(builder.build(eq(template), any(StatusReportGenerationError.class))).thenReturn("my-error-view");

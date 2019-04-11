@@ -80,7 +80,6 @@ public class KubernetesAgentInstancesTest {
         when(mockCreateAgentRequest.jobIdentifier()).thenReturn(jobId);
 
         when(mockKubernetesClient.pods()).thenReturn(mockedOperation);
-        when(mockPluginRequest.getPluginSettings()).thenReturn(mockPluginSettings);
         when(mockedOperation.list()).thenReturn(podList);
         when(podList.getItems()).thenReturn(Collections.emptyList());
     }
