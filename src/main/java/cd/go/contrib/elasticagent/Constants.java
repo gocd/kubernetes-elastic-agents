@@ -39,7 +39,6 @@ public interface Constants {
     String REQUEST_SERVER_PREFIX = "go.processor";
     String REQUEST_SERVER_DISABLE_AGENT = REQUEST_SERVER_PREFIX + ".elastic-agents.disable-agents";
     String REQUEST_SERVER_DELETE_AGENT = REQUEST_SERVER_PREFIX + ".elastic-agents.delete-agents";
-    String REQUEST_SERVER_GET_PLUGIN_SETTINGS = REQUEST_SERVER_PREFIX + ".plugin-settings.get";
     String REQUEST_SERVER_LIST_AGENTS = REQUEST_SERVER_PREFIX + ".elastic-agents.list-agents";
     String REQUEST_SERVER_INFO = REQUEST_SERVER_PREFIX + ".server-info.get";
 

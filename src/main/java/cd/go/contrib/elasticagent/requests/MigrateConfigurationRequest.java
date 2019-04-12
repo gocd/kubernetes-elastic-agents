@@ -51,8 +51,7 @@ public class MigrateConfigurationRequest {
     }
 
     public static MigrateConfigurationRequest fromJSON(String requestBody) {
-        MigrateConfigurationRequest request = GSON.fromJson(requestBody, MigrateConfigurationRequest.class);
-        return request;
+        return GSON.fromJson(requestBody, MigrateConfigurationRequest.class);
     }
 
     public String toJSON() {

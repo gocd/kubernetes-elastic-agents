@@ -32,11 +32,11 @@ public class PluginSettings {
 
     @Expose
     @SerializedName("auto_register_timeout")
-    private Integer autoRegisterTimeout;
+    private String autoRegisterTimeout;
 
     @Expose
     @SerializedName("pending_pods_count")
-    private Integer maxPendingPods;
+    private String maxPendingPods;
 
     @Expose
     @SerializedName("kubernetes_cluster_url")
@@ -80,11 +80,13 @@ public class PluginSettings {
     }
 
     Integer getAutoRegisterTimeout() {
-        return getOrDefault(autoRegisterTimeout, 10);
+        Integer autoRegisterTimeoutInt = StringUtils.isNotBlank(autoRegisterTimeout) ? Integer.valueOf(autoRegisterTimeout) : null;
+        return getOrDefault(autoRegisterTimeoutInt, 10);
     }
 
     public Integer getMaxPendingPods() {
-        return getOrDefault(this.maxPendingPods, 10);
+        Integer maximumPendingPodsInt = StringUtils.isNotBlank(this.maxPendingPods) ? Integer.valueOf(this.maxPendingPods) : null;
+        return getOrDefault(maximumPendingPodsInt, 10);
     }
 
     public String getGoServerUrl() {
@@ -132,7 +134,8 @@ public class PluginSettings {
         if (maxPendingPods != null ? !maxPendingPods.equals(that.maxPendingPods) : that.maxPendingPods != null)
             return false;
         if (clusterUrl != null ? !clusterUrl.equals(that.clusterUrl) : that.clusterUrl != null) return false;
-        if (securityToken != null ? !securityToken.equals(that.securityToken) : that.securityToken != null) return false;
+        if (securityToken != null ? !securityToken.equals(that.securityToken) : that.securityToken != null)
+            return false;
         if (clusterCACertData != null ? !clusterCACertData.equals(that.clusterCACertData) : that.clusterCACertData != null)
             return false;
         return namespace != null ? namespace.equals(that.namespace) : that.namespace == null;

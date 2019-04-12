@@ -92,4 +92,15 @@ public class ShouldAssignWorkRequest {
     public ClusterProfileProperties clusterProfileProperties() {
         return clusterProfileProperties;
     }
+
+    @Override
+    public String toString() {
+        return "ShouldAssignWorkRequest{" +
+                "agent=" + agent +
+                ", environment='" + environment + '\'' +
+                ", properties=" + properties +
+                ", jobIdentifier=" + jobIdentifier +
+                ", clusterProfileProperties=" + clusterProfileProperties +
+                '}';
+    }
 }
