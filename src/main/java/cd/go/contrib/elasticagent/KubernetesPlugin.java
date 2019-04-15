@@ -106,6 +106,8 @@ public class KubernetesPlugin implements GoPlugin {
                     clusterProfileProperties = statusReportRequest.clusterProfileProperties();
                     refreshInstancesForCluster(clusterProfileProperties);
                     return statusReportRequest.executor().execute();
+                case REQUEST_CLUSTER_PROFILE_CHANGED:
+                    return new DefaultGoPluginApiResponse(200);
                 case REQUEST_MIGRATE_CONFIGURATION:
                     return MigrateConfigurationRequest.fromJSON(request.requestBody()).executor().execute();
                 default:
