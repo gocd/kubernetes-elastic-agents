@@ -31,6 +31,10 @@ import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static cd.go.contrib.elasticagent.Constants.PLUGIN_IDENTIFIER;
 
 @Extension
@@ -38,12 +42,12 @@ public class KubernetesPlugin implements GoPlugin {
     public static final Logger LOG = Logger.getLoggerFor(KubernetesPlugin.class);
 
     private PluginRequest pluginRequest;
-    private AgentInstances<KubernetesInstance> agentInstances;
+    private Map<String, KubernetesAgentInstances> clusterSpecificAgentInstances;
 
     @Override
     public void initializeGoApplicationAccessor(GoApplicationAccessor accessor) {
         pluginRequest = new PluginRequest(accessor);
-        agentInstances = new KubernetesAgentInstances();
+        clusterSpecificAgentInstances = new HashMap<>();
     }
 
     @Load
@@ -53,41 +57,59 @@ public class KubernetesPlugin implements GoPlugin {
 
     @Override
     public GoPluginApiResponse handle(GoPluginApiRequest request) {
+        ClusterProfileProperties clusterProfileProperties;
         try {
             switch (Request.fromString(request.requestName())) {
                 case REQUEST_GET_CAPABILITIES:
                     return new GetCapabilitiesExecutor().execute();
                 case PLUGIN_SETTINGS_GET_ICON:
                     return new GetPluginSettingsIconExecutor().execute();
-                case PLUGIN_SETTINGS_GET_CONFIGURATION:
-                    return new GetPluginConfigurationExecutor().execute();
-                case PLUGIN_SETTINGS_GET_VIEW:
-                    return new GetViewRequestExecutor().execute();
-                case PLUGIN_SETTINGS_VALIDATE_CONFIGURATION:
-                    return ValidatePluginSettingsRequest.fromJSON(request.requestBody()).executor(pluginRequest).execute();
-                case REQUEST_GET_PROFILE_METADATA:
+                case REQUEST_GET_ELASTIC_AGENT_PROFILE_METADATA:
                     return new GetProfileMetadataExecutor().execute();
-                case REQUEST_GET_PROFILE_VIEW:
+                case REQUEST_GET_ELASTIC_AGENT_PROFILE_VIEW:
                     return new GetProfileViewExecutor().execute();
-                case REQUEST_VALIDATE_PROFILE:
+                case REQUEST_VALIDATE_ELASTIC_AGENT_PROFILE:
                     return ProfileValidateRequest.fromJSON(request.requestBody()).executor().execute();
+                case REQUEST_GET_CLUSTER_PROFILE_METADATA:
+                    return new GetClusterProfileMetadataExecutor().execute();
+                case REQUEST_GET_CLUSTER_PROFILE_VIEW:
+                    return new GetClusterProfileViewRequestExecutor().execute();
+                case REQUEST_VALIDATE_CLUSTER_PROFILE_CONFIGURATION:
+                    return ClusterProfileValidateRequest.fromJSON(request.requestBody()).executor().execute();
                 case REQUEST_CREATE_AGENT:
-                    return CreateAgentRequest.fromJSON(request.requestBody()).executor(agentInstances, pluginRequest).execute();
+                    CreateAgentRequest createAgentRequest = CreateAgentRequest.fromJSON(request.requestBody());
+                    clusterProfileProperties = createAgentRequest.clusterProfileProperties();
+                    refreshInstancesForCluster(clusterProfileProperties);
+                    return createAgentRequest.executor(getAgentInstancesFor(clusterProfileProperties), pluginRequest).execute();
                 case REQUEST_SHOULD_ASSIGN_WORK:
-                    refreshInstances();
-                    return ShouldAssignWorkRequest.fromJSON(request.requestBody()).executor(agentInstances).execute();
+                    ShouldAssignWorkRequest shouldAssignWorkRequest = ShouldAssignWorkRequest.fromJSON(request.requestBody());
+                    clusterProfileProperties = shouldAssignWorkRequest.clusterProfileProperties();
+                    refreshInstancesForCluster(clusterProfileProperties);
+                    return shouldAssignWorkRequest.executor(getAgentInstancesFor(clusterProfileProperties)).execute();
                 case REQUEST_SERVER_PING:
-                    refreshInstances();
-                    return new ServerPingRequestExecutor(agentInstances, pluginRequest).execute();
+                    ServerPingRequest serverPingRequest = ServerPingRequest.fromJSON(request.requestBody());
+                    List<ClusterProfileProperties> listOfClusterProfileProperties = serverPingRequest.allClusterProfileProperties();
+                    refreshInstancesForAllClusters(listOfClusterProfileProperties);
+                    return serverPingRequest.executor(clusterSpecificAgentInstances, pluginRequest).execute();
                 case REQUEST_JOB_COMPLETION:
-                    refreshInstances();
-                    return JobCompletionRequest.fromJSON(request.requestBody()).executor(agentInstances, pluginRequest).execute();
-                case REQUEST_STATUS_REPORT:
-                    refreshInstances();
-                    return new StatusReportExecutor(pluginRequest).execute();
+                    JobCompletionRequest jobCompletionRequest = JobCompletionRequest.fromJSON(request.requestBody());
+                    clusterProfileProperties = jobCompletionRequest.clusterProfileProperties();
+                    refreshInstancesForCluster(clusterProfileProperties);
+                    return jobCompletionRequest.executor(getAgentInstancesFor(clusterProfileProperties), pluginRequest).execute();
+                case REQUEST_CLUSTER_STATUS_REPORT:
+                    ClusterStatusReportRequest clusterStatusReportRequest = ClusterStatusReportRequest.fromJSON(request.requestBody());
+                    clusterProfileProperties = clusterStatusReportRequest.clusterProfileProperties();
+                    refreshInstancesForCluster(clusterProfileProperties);
+                    return clusterStatusReportRequest.executor().execute();
                 case REQUEST_ELASTIC_AGENT_STATUS_REPORT:
-                    refreshInstances();
-                    return AgentStatusReportRequest.fromJSON(request.requestBody()).executor(pluginRequest).execute();
+                    AgentStatusReportRequest statusReportRequest = AgentStatusReportRequest.fromJSON(request.requestBody());
+                    clusterProfileProperties = statusReportRequest.clusterProfileProperties();
+                    refreshInstancesForCluster(clusterProfileProperties);
+                    return statusReportRequest.executor().execute();
+                case REQUEST_CLUSTER_PROFILE_CHANGED:
+                    return new DefaultGoPluginApiResponse(200);
+                case REQUEST_MIGRATE_CONFIGURATION:
+                    return MigrateConfigurationRequest.fromJSON(request.requestBody()).executor().execute();
                 default:
                     throw new UnhandledRequestTypeException(request.requestName());
             }
@@ -97,17 +119,25 @@ public class KubernetesPlugin implements GoPlugin {
         }
     }
 
-    private void refreshInstances() {
-        try {
-            agentInstances.refreshAll(pluginRequest);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    private void refreshInstancesForAllClusters(List<ClusterProfileProperties> listOfClusterProfileProperties) throws Exception {
+        for (ClusterProfileProperties clusterProfileProperties : listOfClusterProfileProperties) {
+            refreshInstancesForCluster(clusterProfileProperties);
         }
+    }
+
+    private AgentInstances<KubernetesInstance> getAgentInstancesFor(ClusterProfileProperties clusterProfileProperties) {
+        return clusterSpecificAgentInstances.get(clusterProfileProperties.uuid());
+    }
+
+    private void refreshInstancesForCluster(ClusterProfileProperties clusterProfileProperties) throws Exception {
+        KubernetesAgentInstances kubernetesInstances = clusterSpecificAgentInstances.getOrDefault(clusterProfileProperties.uuid(), new KubernetesAgentInstances());
+        kubernetesInstances.refreshAll(clusterProfileProperties);
+
+        clusterSpecificAgentInstances.put(clusterProfileProperties.uuid(), kubernetesInstances);
     }
 
     @Override
     public GoPluginIdentifier pluginIdentifier() {
         return PLUGIN_IDENTIFIER;
     }
-
 }

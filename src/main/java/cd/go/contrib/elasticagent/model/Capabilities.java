@@ -23,15 +23,20 @@ import static cd.go.contrib.elasticagent.utils.Util.GSON;
 
 public class Capabilities {
     @Expose
-    @SerializedName("supports_status_report")
-    private boolean supportsStatusReport;
+    @SerializedName("supports_plugin_status_report")
+    private boolean supportsPluginStatusReport;
+
+    @Expose
+    @SerializedName("supports_cluster_status_report")
+    private boolean supportsClusterStatusReport;
 
     @Expose
     @SerializedName("supports_agent_status_report")
     private boolean supportsAgentStatusReport;
 
-    public Capabilities(boolean supportsStatusReport, boolean supportsAgentStatusReport) {
-        this.supportsStatusReport = supportsStatusReport;
+    public Capabilities(boolean supportsPluginStatusReport, boolean supportsClusterStatusReport, boolean supportsAgentStatusReport) {
+        this.supportsPluginStatusReport = supportsPluginStatusReport;
+        this.supportsClusterStatusReport = supportsClusterStatusReport;
         this.supportsAgentStatusReport = supportsAgentStatusReport;
     }
 

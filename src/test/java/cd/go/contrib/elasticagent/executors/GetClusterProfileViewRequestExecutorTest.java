@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 ThoughtWorks, Inc.
+ * Copyright 2019 ThoughtWorks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagent.executors;
 
-import cd.go.contrib.elasticagent.model.Field;
+import cd.go.contrib.elasticagent.model.Metadata;
 import cd.go.contrib.elasticagent.utils.Util;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -33,10 +33,10 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class GetViewRequestExecutorTest {
+public class GetClusterProfileViewRequestExecutorTest {
     @Test
     public void shouldRenderTheTemplateInJSON() throws Exception {
-        GoPluginApiResponse response = new GetViewRequestExecutor().execute();
+        GoPluginApiResponse response = new GetClusterProfileViewRequestExecutor().execute();
         assertThat(response.responseCode(), is(200));
         Map<String, String> hashSet = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
         }.getType());
@@ -48,20 +48,17 @@ public class GetViewRequestExecutorTest {
         String template = Util.readResource("/plugin-settings.template.html");
         final Document document = Jsoup.parse(template);
 
-        for (String key : GetPluginConfigurationExecutor.FIELDS.keySet()) {
-            final Field field = GetPluginConfigurationExecutor.FIELDS.get(key);
+        for (Metadata field : GetClusterProfileMetadataExecutor.FIELDS) {
+            final Elements inputFieldForKey = document.getElementsByAttributeValue("ng-model", field.getKey());
+            assertThat(inputFieldForKey, hasSize(1));
 
-            final Elements inputFieldForKey = document.getElementsByAttributeValue("ng-model", field.key());
-            assertThat(field.key(), inputFieldForKey, hasSize(1));
-
-
-            final Elements spanToShowError = document.getElementsByAttributeValue("ng-show", "GOINPUTNAME[" + field.key() + "].$error.server");
-            assertThat(field.key(), spanToShowError, hasSize(1));
-            assertThat(field.key(), spanToShowError.attr("ng-show"), is("GOINPUTNAME[" + field.key() + "].$error.server"));
-            assertThat(field.key(), spanToShowError.text(), is("{{GOINPUTNAME[" + field.key() + "].$error.server}}"));
+            final Elements spanToShowError = document.getElementsByAttributeValue("ng-show", "GOINPUTNAME[" + field.getKey() + "].$error.server");
+            assertThat(spanToShowError, hasSize(1));
+            assertThat(spanToShowError.attr("ng-show"), is("GOINPUTNAME[" + field.getKey() + "].$error.server"));
+            assertThat(spanToShowError.text(), is("{{GOINPUTNAME[" + field.getKey() + "].$error.server}}"));
         }
 
-        final Elements inputs = document.select("textarea,input[type=text],select,input[type=radio]");
-        assertThat(inputs, hasSize(GetPluginConfigurationExecutor.FIELDS.size()));
+        final Elements inputs = document.select("textarea,input[type=text],select,input[type=checkbox]");
+        assertThat(inputs, hasSize(GetProfileMetadataExecutor.FIELDS.size() - 3)); // do not include SPECIFIED_USING_POD_CONFIGURATION, POD_SPEC_TYPE, REMOTE_FILE_TYPE key
     }
 }

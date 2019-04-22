@@ -60,7 +60,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) {
         final Integer maxAllowedContainers = settings.getMaxPendingPods();
         synchronized (instances) {
-            refreshAll(pluginRequest);
+            refreshAll(settings);
             doWithLockOnSemaphore(new SetupSemaphore(maxAllowedContainers, instances, semaphore));
 
             if (semaphore.tryAcquire()) {
@@ -144,9 +144,9 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     }
 
     @Override
-    public void refreshAll(PluginRequest pluginRequest) {
-        LOG.debug("[Refresh Instances] Syncing k8s elastic agent pod information.");
-        KubernetesClient client = factory.client(pluginRequest.getPluginSettings());
+    public void refreshAll(PluginSettings properties) {
+        LOG.debug("[Refresh Instances] Syncing k8s elastic agent pod information for cluster {}.", properties);
+        KubernetesClient client = factory.client(properties);
         PodList list = client.pods().list();
 
         instances.clear();
@@ -167,7 +167,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         return instances.get(agentId);
     }
 
-    private void register(KubernetesInstance instance) {
+    public void register(KubernetesInstance instance) {
         instances.put(instance.name(), instance);
     }
 
@@ -194,6 +194,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
                 unregisteredInstances.register(kubernetesInstanceFactory.fromKubernetesPod(pod));
             }
         }
+
         return unregisteredInstances;
     }
 
@@ -208,5 +209,9 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
 
     public boolean instanceExists(KubernetesInstance instance) {
         return instances.contains(instance);
+    }
+
+    public boolean hasInstance(String elasticAgentId) {
+        return find(elasticAgentId) != null;
     }
 }

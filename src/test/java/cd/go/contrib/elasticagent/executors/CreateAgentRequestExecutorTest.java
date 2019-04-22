@@ -16,7 +16,10 @@
 
 package cd.go.contrib.elasticagent.executors;
 
-import cd.go.contrib.elasticagent.*;
+import cd.go.contrib.elasticagent.AgentInstances;
+import cd.go.contrib.elasticagent.KubernetesAgentInstances;
+import cd.go.contrib.elasticagent.KubernetesInstance;
+import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import org.junit.Test;
 
@@ -28,10 +31,9 @@ public class CreateAgentRequestExecutorTest {
         CreateAgentRequest request = new CreateAgentRequest();
         AgentInstances<KubernetesInstance> agentInstances = mock(KubernetesAgentInstances.class);
         PluginRequest pluginRequest = mock(PluginRequest.class);
-        PluginSettings settings = mock(PluginSettings.class);
-        when(pluginRequest.getPluginSettings()).thenReturn(settings);
         new CreateAgentRequestExecutor(request, agentInstances, pluginRequest).execute();
 
-        verify(agentInstances).create(request, settings, pluginRequest);
+        verifyNoMoreInteractions(pluginRequest);
+        verify(agentInstances).create(request, request.clusterProfileProperties(), pluginRequest);
     }
 }

@@ -33,7 +33,7 @@ public class PluginSettingsTest {
         final Map<String, Object> pluginSettingsMap = new HashMap<>();
         pluginSettingsMap.put("go_server_url", "https://foo.go.cd/go");
         pluginSettingsMap.put("auto_register_timeout", "13");
-        pluginSettingsMap.put("pending_pods_count", 14);
+        pluginSettingsMap.put("pending_pods_count", "14");
         pluginSettingsMap.put("kubernetes_cluster_url", "https://cloud.example.com");
         pluginSettingsMap.put("security_token", "foo-token");
         pluginSettingsMap.put("kubernetes_cluster_ca_cert", "foo-ca-certs");

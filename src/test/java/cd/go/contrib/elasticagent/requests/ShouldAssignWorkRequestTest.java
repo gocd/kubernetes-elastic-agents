@@ -17,6 +17,7 @@
 package cd.go.contrib.elasticagent.requests;
 
 import cd.go.contrib.elasticagent.Agent;
+import cd.go.contrib.elasticagent.ClusterProfileProperties;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -40,8 +41,12 @@ public class ShouldAssignWorkRequestTest {
                 "    \"build_state\": \"Idle\",\n" +
                 "    \"config_state\": \"Enabled\"\n" +
                 "  },\n" +
-                "  \"properties\": {\n" +
-                "    \"property_name\": \"property_value\"\n" +
+                "  \"elastic_agent_profile_properties\": {\n" +
+                "    \"key1\": \"value1\",\n" +
+                "    \"key2\": \"value2\"\n" +
+                "  },\n" +
+                "  \"cluster_profile_properties\": {\n" +
+                "    \"go_server_url\": \"go-server-url\"\n" +
                 "  },\n" +
                 "  \"job_identifier\": {\n" +
                 "    \"pipeline_name\": \"test-pipeline\",\n" +
@@ -57,9 +62,15 @@ public class ShouldAssignWorkRequestTest {
         ShouldAssignWorkRequest request = ShouldAssignWorkRequest.fromJSON(json);
         assertThat(request.environment(), equalTo("prod"));
         assertThat(request.agent(), equalTo(new Agent("42", Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled)));
-        HashMap<String, String> expectedProperties = new HashMap<>();
-        expectedProperties.put("property_name", "property_value");
-        assertThat(request.properties(), Matchers.<Map<String, String>>equalTo(expectedProperties));
+        HashMap<String, String> expectedElasticAgentProperties = new HashMap<>();
+        expectedElasticAgentProperties.put("key1", "value1");
+        expectedElasticAgentProperties.put("key2", "value2");
+        assertThat(request.properties(), Matchers.<Map<String, String>>equalTo(expectedElasticAgentProperties));
+
+        HashMap<String, String> clusterProfileConfigurations = new HashMap<>();
+        clusterProfileConfigurations.put("go_server_url", "go-server-url");
+        ClusterProfileProperties expectedClusterProfileProperties = ClusterProfileProperties.fromConfiguration(clusterProfileConfigurations);
+        assertThat(request.clusterProfileProperties(), is(expectedClusterProfileProperties));
 
         JobIdentifier expectedJobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", 100L);
         JobIdentifier actualJobIdentifier = request.jobIdentifier();

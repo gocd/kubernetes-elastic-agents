@@ -35,7 +35,7 @@ public class CreateAgentRequest {
     @SerializedName("auto_register_key")
     private String autoRegisterKey;
     @Expose
-    @SerializedName("properties")
+    @SerializedName("elastic_agent_profile_properties")
     private Map<String, String> properties;
     @Expose
     @SerializedName("environment")
@@ -43,6 +43,9 @@ public class CreateAgentRequest {
     @Expose
     @SerializedName("job_identifier")
     private JobIdentifier jobIdentifier;
+    @Expose
+    @SerializedName("cluster_profile_properties")
+    private ClusterProfileProperties clusterProfileProperties;
 
     public CreateAgentRequest() {
     }
@@ -56,6 +59,11 @@ public class CreateAgentRequest {
     public CreateAgentRequest(String autoRegisterKey, Map<String, String> properties, String environment, JobIdentifier identifier) {
         this(autoRegisterKey, properties, environment);
         this.jobIdentifier = identifier;
+    }
+
+    public CreateAgentRequest(String autoRegisterKey, Map<String, String> properties, String environment, JobIdentifier identifier, ClusterProfileProperties clusterProfileProperties) {
+        this(autoRegisterKey, properties, environment, identifier);
+        this.clusterProfileProperties = clusterProfileProperties;
     }
 
     public static CreateAgentRequest fromJSON(String json) {
@@ -77,6 +85,10 @@ public class CreateAgentRequest {
 
     public JobIdentifier jobIdentifier() {
         return jobIdentifier;
+    }
+
+    public ClusterProfileProperties clusterProfileProperties() {
+        return clusterProfileProperties;
     }
 
     public RequestExecutor executor(AgentInstances<KubernetesInstance> agentInstances, PluginRequest pluginRequest) {
@@ -103,6 +115,7 @@ public class CreateAgentRequest {
                 ", properties=" + properties +
                 ", environment='" + environment + '\'' +
                 ", jobIdentifier=" + jobIdentifier +
+                ", clusterProfileProperties=" + clusterProfileProperties +
                 '}';
     }
 }

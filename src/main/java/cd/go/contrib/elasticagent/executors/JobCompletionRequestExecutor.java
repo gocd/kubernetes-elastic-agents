@@ -40,7 +40,7 @@ public class JobCompletionRequestExecutor implements RequestExecutor {
 
     @Override
     public GoPluginApiResponse execute() throws Exception {
-        PluginSettings pluginSettings = pluginRequest.getPluginSettings();
+        ClusterProfileProperties clusterProfileProperties = jobCompletionRequest.clusterProfileProperties();
 
         String elasticAgentId = jobCompletionRequest.getElasticAgentId();
 
@@ -51,7 +51,7 @@ public class JobCompletionRequestExecutor implements RequestExecutor {
 
         List<Agent> agents = Arrays.asList(agent);
         pluginRequest.disableAgents(agents);
-        agentInstances.terminate(agent.elasticAgentId(), pluginSettings);
+        agentInstances.terminate(agent.elasticAgentId(), clusterProfileProperties);
         pluginRequest.deleteAgents(agents);
 
         return DefaultGoPluginApiResponse.success("");

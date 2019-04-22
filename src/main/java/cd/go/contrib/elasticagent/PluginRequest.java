@@ -45,22 +45,6 @@ public class PluginRequest {
         return ServerInfo.fromJSON(response.responseBody());
     }
 
-    public PluginSettings getPluginSettings() throws ServerRequestFailedException {
-        DefaultGoApiRequest request = new DefaultGoApiRequest(Constants.REQUEST_SERVER_GET_PLUGIN_SETTINGS, PROCESSOR_API_VERSION, PLUGIN_IDENTIFIER);
-        GoApiResponse response = accessor.submit(request);
-
-        if (response.responseCode() != 200) {
-            throw ServerRequestFailedException.getPluginSettings(response);
-        }
-
-        PluginSettings pluginSettings = PluginSettings.fromJSON(response.responseBody());
-        if (pluginSettings == null) {
-            throw new PluginSettingsNotConfiguredException();
-        }
-
-        return pluginSettings;
-    }
-
     public Agents listAgents() throws ServerRequestFailedException {
         DefaultGoApiRequest request = new DefaultGoApiRequest(Constants.REQUEST_SERVER_LIST_AGENTS, PROCESSOR_API_VERSION, PLUGIN_IDENTIFIER);
         GoApiResponse response = accessor.submit(request);

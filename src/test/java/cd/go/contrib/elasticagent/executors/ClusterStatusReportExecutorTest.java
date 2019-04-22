@@ -16,12 +16,12 @@
 
 package cd.go.contrib.elasticagent.executors;
 
+import cd.go.contrib.elasticagent.ClusterProfileProperties;
 import cd.go.contrib.elasticagent.Constants;
 import cd.go.contrib.elasticagent.KubernetesClientFactory;
-import cd.go.contrib.elasticagent.PluginRequest;
-import cd.go.contrib.elasticagent.PluginSettings;
 import cd.go.contrib.elasticagent.builders.PluginStatusReportViewBuilder;
 import cd.go.contrib.elasticagent.model.KubernetesCluster;
+import cd.go.contrib.elasticagent.requests.ClusterStatusReportRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import freemarker.template.Template;
 import io.fabric8.kubernetes.api.model.NodeList;
@@ -39,21 +39,21 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class StatusReportExecutorTest {
+public class ClusterStatusReportExecutorTest {
     private KubernetesClientFactory kubernetesClientFactory;
-    private PluginRequest pluginRequest;
-    private PluginSettings pluginSettings;
+    private ClusterStatusReportRequest request;
+    private ClusterProfileProperties clusterProfileProperties;
     private KubernetesClient kubernetesClient;
 
     @Before
     public void setUp() throws Exception {
         kubernetesClientFactory = mock(KubernetesClientFactory.class);
-        pluginRequest = mock(PluginRequest.class);
-        pluginSettings = mock(PluginSettings.class);
+        request = mock(ClusterStatusReportRequest.class);
+        clusterProfileProperties = mock(ClusterProfileProperties.class);
         kubernetesClient = mock(KubernetesClient.class);
 
-        when(pluginRequest.getPluginSettings()).thenReturn(pluginSettings);
-        when(kubernetesClientFactory.client(pluginSettings)).thenReturn(kubernetesClient);
+        when(request.clusterProfileProperties()).thenReturn(clusterProfileProperties);
+        when(kubernetesClientFactory.client(clusterProfileProperties)).thenReturn(kubernetesClient);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class StatusReportExecutorTest {
         when(builder.getTemplate("status-report.template.ftlh")).thenReturn(template);
         when(builder.build(eq(template), any(KubernetesCluster.class))).thenReturn("status-report");
 
-        final GoPluginApiResponse response = new StatusReportExecutor(pluginRequest, kubernetesClientFactory, builder).execute();
+        final GoPluginApiResponse response = new ClusterStatusReportExecutor(request, builder, kubernetesClientFactory).execute();
 
         assertThat(response.responseCode(), is(200));
         assertThat(response.responseBody(), is("{\"view\":\"status-report\"}"));

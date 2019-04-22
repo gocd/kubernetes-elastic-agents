@@ -30,6 +30,12 @@ public class GetCapabilitiesExecutorTest {
         final GoPluginApiResponse response = new GetCapabilitiesExecutor().execute();
 
         assertThat(response.responseCode(), is(200));
-        JSONAssert.assertEquals("{\"supports_status_report\":true,\"supports_agent_status_report\":true}", response.responseBody(), true);
+        String expected = "{" +
+                "  \"supports_plugin_status_report\":false," +
+                "  \"supports_cluster_status_report\":true," +
+                "  \"supports_agent_status_report\":true" +
+                "}";
+
+        JSONAssert.assertEquals(expected, response.responseBody(), true);
     }
 }
