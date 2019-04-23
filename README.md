@@ -86,7 +86,7 @@ To build the jar, run `./gradlew deploy -Pserver_path=~/gocd`
 ## License
 
 ```plain
-Copyright 2018 ThoughtWorks, Inc.
+Copyright 2019 ThoughtWorks, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
