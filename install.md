@@ -2,7 +2,7 @@
 
 ## Requirements
 
-* GoCD server version v18.2.0 or above
+* GoCD server version v19.3.0 or above
 * Kubernetes Cluster
 
 ## Installation
@@ -13,10 +13,11 @@ on Windows.
 
 ## Configuration
 
-### Configure Plugin Settings
+### Configure Cluster Profile
 
-1. Login to `GoCD server` as admin and navigate to **_Admin_** _>_ **_Plugins_**
-2. Click on **_Settings icon_** of `Kubernetes Elastic Agent Plugin` to update plugin settings configuration.
+1. Login to `GoCD server` as admin and navigate to **_Admin_** _>_ **_Elastic Profile_**
+2. Click on **_Add Cluster Profile_** button and select `Kubernetes Elastic Agent Plugin` from the plugin ID dropdown.
+    1. Specify `Cluster Profile ID` for the new cluster
     1. Optionally specify `Go Server URL`, if GoCD secure site URL is not configured.
     2. Optionally Specify `Agent auto-register Timeout`, Defaults to `10 mintues`.
     3. Optionally Specify `Maximum pending pods`, Defaults to `10 pods`.
@@ -31,17 +32,18 @@ on Windows.
         ```
     7. Optionally, Specify `Cluster ca certificate data`.
     
-    !["Kubernetes Plugin settings"][1]
+    !["Kubernetes Cluster Profile"][1]
 
-## Create an elastic profile
+## Create an Elastic Agent Profile
 
-1. Login to `GoCD server` as admin and navigate to **_Admin_** _>_ **_Elastic Agent Profiles_**
+1. Login to `GoCD server` as admin and navigate to **_Admin_** _>_ **_Elastic Profile_**
     ![Elastic Profiles][2]
 
-2. Click on **_Add_** to create new elastic agent profile
+2. Click on **_New Elastic Agent Profile_** to create new elastic agent profile for a cluster.
     1. Specify `id` for profile.
     2. Select `Kubernetes Elastic Agent Plugin` for **_Plugin id_**
-    3. Configure Kubernetes GoCD elastic agent Pod using:
+    3. Verify Cluster Profile Id of the newly defined Elastic Agent Profile.
+    4. Configure Kubernetes GoCD elastic agent Pod using:
         - Config Properties
             1. Specify GoCD elastic agent docker image name.
             2. Specify Maximum Memory limit. Container memory will be limit to the value specified here.
@@ -60,7 +62,7 @@ on Windows.
 
             ![Create elastic profile using remote file configuration][8]
 
-    4. Save your profile.
+    5. Save your profile.
     
     
 
@@ -97,7 +99,7 @@ $ GO_SERVER_SYSTEM_PROPERTIES="-Dplugin.cd.go.contrib.elasticagent.kubernetes.lo
 ```
 
 
-[1]: images/plugin-settings.png     "Kubernetes Plugin settings"
+[1]: images/cluster-profile.png     "Kubernetes Cluster Profile"
 [2]: images/profiles-page.png  "Elastic profiles"
 [3]: images/profile.png "Create elastic profile using config properties"
 [4]: images/profile-with-pod-yaml.png "Create elastic profile using pod configuration"
