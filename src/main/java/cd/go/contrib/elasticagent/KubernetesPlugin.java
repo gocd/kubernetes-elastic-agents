@@ -79,12 +79,10 @@ public class KubernetesPlugin implements GoPlugin {
                 case REQUEST_CREATE_AGENT:
                     CreateAgentRequest createAgentRequest = CreateAgentRequest.fromJSON(request.requestBody());
                     clusterProfileProperties = createAgentRequest.clusterProfileProperties();
-                    refreshInstancesForCluster(clusterProfileProperties);
                     return createAgentRequest.executor(getAgentInstancesFor(clusterProfileProperties), pluginRequest).execute();
                 case REQUEST_SHOULD_ASSIGN_WORK:
                     ShouldAssignWorkRequest shouldAssignWorkRequest = ShouldAssignWorkRequest.fromJSON(request.requestBody());
                     clusterProfileProperties = shouldAssignWorkRequest.clusterProfileProperties();
-                    refreshInstancesForCluster(clusterProfileProperties);
                     return shouldAssignWorkRequest.executor(getAgentInstancesFor(clusterProfileProperties)).execute();
                 case REQUEST_SERVER_PING:
                     ServerPingRequest serverPingRequest = ServerPingRequest.fromJSON(request.requestBody());
@@ -94,7 +92,6 @@ public class KubernetesPlugin implements GoPlugin {
                 case REQUEST_JOB_COMPLETION:
                     JobCompletionRequest jobCompletionRequest = JobCompletionRequest.fromJSON(request.requestBody());
                     clusterProfileProperties = jobCompletionRequest.clusterProfileProperties();
-                    refreshInstancesForCluster(clusterProfileProperties);
                     return jobCompletionRequest.executor(getAgentInstancesFor(clusterProfileProperties), pluginRequest).execute();
                 case REQUEST_CLUSTER_STATUS_REPORT:
                     ClusterStatusReportRequest clusterStatusReportRequest = ClusterStatusReportRequest.fromJSON(request.requestBody());
