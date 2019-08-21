@@ -54,4 +54,8 @@ public class KubernetesClientFactory {
 
         return new DefaultKubernetesClient(configBuilder.build());
     }
+
+    public void clearOutExistingClient() {
+        this.client = null;
+    }
 }

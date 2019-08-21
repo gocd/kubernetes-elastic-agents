@@ -96,6 +96,7 @@ public class KubernetesPlugin implements GoPlugin {
                 case REQUEST_CLUSTER_STATUS_REPORT:
                     ClusterStatusReportRequest clusterStatusReportRequest = ClusterStatusReportRequest.fromJSON(request.requestBody());
                     clusterProfileProperties = clusterStatusReportRequest.clusterProfileProperties();
+                    KubernetesClientFactory.instance().clearOutExistingClient();
                     refreshInstancesForCluster(clusterProfileProperties);
                     return clusterStatusReportRequest.executor().execute();
                 case REQUEST_ELASTIC_AGENT_STATUS_REPORT:
