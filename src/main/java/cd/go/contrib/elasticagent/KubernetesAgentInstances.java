@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
@@ -146,8 +147,20 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     @Override
     public void refreshAll(PluginSettings properties) {
         LOG.debug("[Refresh Instances] Syncing k8s elastic agent pod information for cluster {}.", properties);
-        KubernetesClient client = factory.client(properties);
-        PodList list = client.pods().list();
+        PodList list = null;
+        try {
+            KubernetesClient client = factory.client(properties);
+            list = client.pods().list();
+        } catch (Exception e) {
+            LOG.error("Error occurred while trying to list kubernetes pods:", e);
+
+            if (e.getCause() instanceof SocketTimeoutException) {
+                LOG.error("Error caused due to SocketTimeoutException. This generally happens due to stale kubernetes client. Clearing out existing kubernetes client and creating a new one!");
+                factory.clearOutExistingClient();
+                KubernetesClient client = factory.client(properties);
+                list = client.pods().list();
+            }
+        }
 
         instances.clear();
         for (Pod pod : list.getItems()) {
