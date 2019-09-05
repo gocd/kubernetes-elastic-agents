@@ -162,6 +162,11 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
             }
         }
 
+        if (list == null) {
+            LOG.info("Did not find any running kubernetes pods.");
+            return;
+        }
+
         instances.clear();
         for (Pod pod : list.getItems()) {
             Map<String, String> podLabels = pod.getMetadata().getLabels();
