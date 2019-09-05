@@ -126,9 +126,10 @@ public class KubernetesPlugin implements GoPlugin {
     private AgentInstances<KubernetesInstance> getAgentInstancesFor(ClusterProfileProperties clusterProfileProperties) throws Exception {
         KubernetesAgentInstances agentInstances = clusterSpecificAgentInstances.get(clusterProfileProperties.uuid());
 
-        //initalize agent instances if those are null
+        //initialize agent instances if those are null
         if (agentInstances == null) {
             refreshInstancesForCluster(clusterProfileProperties);
+            agentInstances = clusterSpecificAgentInstances.get(clusterProfileProperties.uuid());
         }
 
         return agentInstances;
