@@ -16,12 +16,16 @@
 
 package cd.go.contrib.elasticagent;
 
+import cd.go.contrib.elasticagent.model.JobIdentifier;
 import cd.go.contrib.elasticagent.model.ServerInfo;
+import com.google.gson.GsonBuilder;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.request.DefaultGoApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoApiResponse;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import static cd.go.contrib.elasticagent.Constants.*;
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
@@ -84,6 +88,25 @@ public class PluginRequest {
 
         if (response.responseCode() != 200) {
             throw ServerRequestFailedException.deleteAgents(response);
+        }
+    }
+
+    public void appendToConsoleLog(JobIdentifier jobIdentifier, String text) throws ServerRequestFailedException {
+        Map<String, String> requestMap = new HashMap<>();
+        requestMap.put("pipelineName", jobIdentifier.getPipelineName());
+        requestMap.put("pipelineCounter", String.valueOf(jobIdentifier.getPipelineCounter()));
+        requestMap.put("stageName", jobIdentifier.getStageName());
+        requestMap.put("stageCounter", jobIdentifier.getStageCounter());
+        requestMap.put("jobName", jobIdentifier.getJobName());
+        requestMap.put("text", text);
+
+        DefaultGoApiRequest request = new DefaultGoApiRequest(Constants.REQUEST_SERVER_APPEND_TO_CONSOLE_LOG, CONSOLE_LOG_API_VERSION, PLUGIN_IDENTIFIER);
+        request.setRequestBody(new GsonBuilder().create().toJson(requestMap));
+
+        GoApiResponse response = accessor.submit(request);
+
+        if (response.responseCode() != 200) {
+            LOG.error("Failed to append to console log for " + jobIdentifier.getRepresentation() + " with text: " + text);
         }
     }
 }

@@ -16,24 +16,28 @@
 
 package cd.go.contrib.elasticagent.executors;
 
-import cd.go.contrib.elasticagent.AgentInstances;
-import cd.go.contrib.elasticagent.KubernetesAgentInstances;
-import cd.go.contrib.elasticagent.KubernetesInstance;
-import cd.go.contrib.elasticagent.PluginRequest;
+import cd.go.contrib.elasticagent.*;
+import cd.go.contrib.elasticagent.model.JobIdentifier;
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import org.junit.Test;
+
+import java.util.HashMap;
 
 import static org.mockito.Mockito.*;
 
 public class CreateAgentRequestExecutorTest {
     @Test
     public void shouldAskDockerContainersToCreateAnAgent() throws Exception {
-        CreateAgentRequest request = new CreateAgentRequest();
+        final HashMap<String, String> elasticAgentProfileProperties = new HashMap<>();
+        elasticAgentProfileProperties.put("Image", "image1");
+        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties("http://go-server", "http://k8ssvc.url", "");
+        final JobIdentifier jobIdentifier = new JobIdentifier("p1", 1L, "l1", "s1", "1", "j1", 1L);
+        CreateAgentRequest request = new CreateAgentRequest("key1", elasticAgentProfileProperties, "env1", jobIdentifier, clusterProfileProperties);
         AgentInstances<KubernetesInstance> agentInstances = mock(KubernetesAgentInstances.class);
         PluginRequest pluginRequest = mock(PluginRequest.class);
         new CreateAgentRequestExecutor(request, agentInstances, pluginRequest).execute();
 
-        verifyNoMoreInteractions(pluginRequest);
-        verify(agentInstances).create(request, request.clusterProfileProperties(), pluginRequest);
+        verify(pluginRequest).appendToConsoleLog(eq(jobIdentifier), contains("Received request to create a pod for job"));
+        verify(agentInstances).create(eq(request), eq(request.clusterProfileProperties()), eq(pluginRequest), any(ConsoleLogAppender.class));
     }
 }

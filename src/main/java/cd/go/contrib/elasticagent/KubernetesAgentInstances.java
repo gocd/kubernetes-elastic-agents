@@ -58,16 +58,17 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     }
 
     @Override
-    public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) {
+    public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest, ConsoleLogAppender consoleLogAppender) {
         final Integer maxAllowedContainers = settings.getMaxPendingPods();
         synchronized (instances) {
             refreshAll(settings);
             doWithLockOnSemaphore(new SetupSemaphore(maxAllowedContainers, instances, semaphore));
 
             if (semaphore.tryAcquire()) {
-                return createKubernetesInstance(request, settings, pluginRequest);
+                return createKubernetesInstance(request, settings, pluginRequest, consoleLogAppender);
             } else {
-                LOG.warn(format("Create Agent Request] The number of pending kubernetes pods is currently at the maximum permissible limit ({0}). Total kubernetes pods ({1}). Not creating any more containers.", maxAllowedContainers, instances.size()));
+                LOG.warn(format("[Create Agent Request] The number of pending kubernetes pods is currently at the maximum permissible limit ({0}). Total kubernetes pods ({1}). Not creating any more containers.", maxAllowedContainers, instances.size()));
+                consoleLogAppender.accept(format("[Create Agent Request] The number of pending kubernetes pods is currently at the maximum permissible limit ({0}). Total kubernetes pods ({1}). Not creating any more containers.", maxAllowedContainers, instances.size()));
                 return null;
             }
         }
@@ -79,16 +80,19 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         }
     }
 
-    private KubernetesInstance createKubernetesInstance(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest) {
+    private KubernetesInstance createKubernetesInstance(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest, ConsoleLogAppender consoleLogAppender) {
         JobIdentifier jobIdentifier = request.jobIdentifier();
         if (isAgentCreatedForJob(jobIdentifier.getJobId())) {
             LOG.warn(format("[Create Agent Request] Request for creating an agent for Job Identifier [{0}] has already been scheduled. Skipping current request.", jobIdentifier));
+            consoleLogAppender.accept(format("[Create Agent Request] Request for creating an agent for Job Identifier [{0}] has already been scheduled. Skipping current request.", jobIdentifier));
             return null;
         }
 
         KubernetesClient client = factory.client(settings);
         KubernetesInstance instance = kubernetesInstanceFactory.create(request, settings, client, pluginRequest);
+        consoleLogAppender.accept(String.format("Created pod: %s for job %s", instance.name(), jobIdentifier));
         register(instance);
+        consoleLogAppender.accept(String.format("Registered agent: %s for job %s", instance.name(), jobIdentifier));
 
         return instance;
     }
