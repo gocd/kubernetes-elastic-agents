@@ -84,6 +84,26 @@ public class ProfileValidateRequestExecutorTest {
         JSONAssert.assertEquals("[]", json, JSONCompareMode.NON_EXTENSIBLE);
     }
 
+    @Test
+    public void shouldNotAllowPodYamlConfigurationWhenGenerateNameIsSpecified() throws Exception {
+        Map<String, String> properties = new HashMap<>();
+        properties.put("PodSpecType", "yaml");
+        String podYaml = "apiVersion: v1\n" +
+                "kind: Pod\n" +
+                "metadata:\n" +
+                "  generateName: pod-name\n" +
+                "  labels:\n" +
+                "    app: web\n" +
+                "spec:\n" +
+                "  containers:\n" +
+                "    - name: gocd-agent-container\n" +
+                "      image: gocd/fancy-agent-image:latest";
+
+        properties.put("PodConfiguration", podYaml);
+        ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties));
+        String json = executor.execute().responseBody();
+        JSONAssert.assertEquals("[{\"message\":\"Invalid Pod Yaml. generateName field is not supported by GoCD. Please use {{ POD_POSTFIX }} instead.\",\"key\":\"PodConfiguration\"}]", json, JSONCompareMode.NON_EXTENSIBLE);
+    }
 
     @Test
     public void shouldAllowJinjaTemplatedPodYaml() throws Exception {
