@@ -48,7 +48,13 @@ public class CreateAgentRequestExecutor implements RequestExecutor {
             pluginRequest.appendToConsoleLog(request.jobIdentifier(), message);
         };
         consoleLogAppender.accept(format("Received request to create a pod for job {0} in cluster {1} at {2}", request.jobIdentifier(), request.clusterProfileProperties().getClusterUrl(), new DateTime().toString("yyyy-MM-dd HH:mm:ss ZZ")));
-        agentInstances.create(request, request.clusterProfileProperties(), pluginRequest, consoleLogAppender);
+        try {
+            agentInstances.create(request, request.clusterProfileProperties(), pluginRequest, consoleLogAppender);
+        } catch (Exception e) {
+            consoleLogAppender.accept(format("Failed to create agent pod: %s", e.getMessage()));
+            throw e;
+        }
+
         return new DefaultGoPluginApiResponse(200);
     }
 
