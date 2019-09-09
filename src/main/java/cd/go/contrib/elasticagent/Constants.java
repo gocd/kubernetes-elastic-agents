@@ -31,6 +31,7 @@ public interface Constants {
     String PROCESSOR_API_VERSION = "1.0";
     String EXTENSION_API_VERSION = "5.0";
     String SERVER_INFO_API_VERSION = "1.0";
+    String CONSOLE_LOG_API_VERSION = "1.0";
 
     // the identifier of this plugin
     GoPluginIdentifier PLUGIN_IDENTIFIER = new GoPluginIdentifier(EXTENSION_TYPE, Collections.singletonList(EXTENSION_API_VERSION));
@@ -41,6 +42,7 @@ public interface Constants {
     String REQUEST_SERVER_DELETE_AGENT = REQUEST_SERVER_PREFIX + ".elastic-agents.delete-agents";
     String REQUEST_SERVER_LIST_AGENTS = REQUEST_SERVER_PREFIX + ".elastic-agents.list-agents";
     String REQUEST_SERVER_INFO = REQUEST_SERVER_PREFIX + ".server-info.get";
+    String REQUEST_SERVER_APPEND_TO_CONSOLE_LOG = REQUEST_SERVER_PREFIX + ".console-log.append";
 
     // internal use only
     String CREATED_BY_LABEL_KEY = "Elastic-Agent-Created-By";

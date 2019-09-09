@@ -54,6 +54,8 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     @Mock
     private KubernetesClient mockedClient;
     @Mock
+    private ConsoleLogAppender consoleLogAppender;
+    @Mock
     private PluginRequest pluginRequest;
     @Mock
     private MixedOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>> mockedOperation;
@@ -80,7 +82,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
         agentInstances = new KubernetesAgentInstances(factory);
         properties.put("foo", "bar");
         properties.put("Image", "gocdcontrib/ubuntu-docker-elastic-agent");
-        instance = agentInstances.create(new CreateAgentRequest(UUID.randomUUID().toString(), properties, environment, new JobIdentifier(100L)), createClusterProfileProperties(), pluginRequest);
+        instance = agentInstances.create(new CreateAgentRequest(UUID.randomUUID().toString(), properties, environment, new JobIdentifier(100L)), createClusterProfileProperties(), pluginRequest, consoleLogAppender);
     }
 
     @Test

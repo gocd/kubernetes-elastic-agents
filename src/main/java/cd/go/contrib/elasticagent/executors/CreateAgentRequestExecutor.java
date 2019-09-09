@@ -16,18 +16,20 @@
 
 package cd.go.contrib.elasticagent.executors;
 
-import cd.go.contrib.elasticagent.AgentInstances;
-import cd.go.contrib.elasticagent.KubernetesInstance;
-import cd.go.contrib.elasticagent.PluginRequest;
-import cd.go.contrib.elasticagent.RequestExecutor;
+import cd.go.contrib.elasticagent.*;
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
+import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static java.text.MessageFormat.format;
 
 public class CreateAgentRequestExecutor implements RequestExecutor {
+    private static final DateTimeFormatter MESSAGE_PREFIX_FORMATTER = DateTimeFormat.forPattern("'##|'HH:mm:ss.SSS '[go]'");
     private final AgentInstances<KubernetesInstance> agentInstances;
     private final PluginRequest pluginRequest;
     private final CreateAgentRequest request;
@@ -41,7 +43,18 @@ public class CreateAgentRequestExecutor implements RequestExecutor {
     @Override
     public GoPluginApiResponse execute() throws Exception {
         LOG.debug(format("[Create Agent] creating elastic agent for profile {0} in cluster {1}", request.properties(), request.clusterProfileProperties()));
-        agentInstances.create(request, request.clusterProfileProperties(), pluginRequest);
+        ConsoleLogAppender consoleLogAppender = text -> {
+            final String message = String.format("%s %s\n", LocalTime.now().toString(MESSAGE_PREFIX_FORMATTER), text);
+            pluginRequest.appendToConsoleLog(request.jobIdentifier(), message);
+        };
+        consoleLogAppender.accept(format("Received request to create a pod for job {0} in cluster {1} at {2}", request.jobIdentifier(), request.clusterProfileProperties().getClusterUrl(), new DateTime().toString("yyyy-MM-dd HH:mm:ss ZZ")));
+        try {
+            agentInstances.create(request, request.clusterProfileProperties(), pluginRequest, consoleLogAppender);
+        } catch (Exception e) {
+            consoleLogAppender.accept(format("Failed to create agent pod: %s", e.getMessage()));
+            throw e;
+        }
+
         return new DefaultGoPluginApiResponse(200);
     }
 
