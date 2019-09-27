@@ -88,6 +88,9 @@ public class AgentStatusReportExecutorTest {
     private PodResource<Pod, DoneablePod> podresource;
 
     @Mock
+    private PodResource<Pod, DoneablePod> containerResource;
+
+    @Mock
     private Template template;
 
     @Before
@@ -102,7 +105,9 @@ public class AgentStatusReportExecutorTest {
         when(podList.getItems()).thenReturn(Arrays.asList(pod));
 
         when(mockedOperation.withName(elasticAgentId)).thenReturn(podresource);
-        when(podresource.getLog()).thenReturn("agent-logs");
+        when(podresource.inContainer("test-container")).thenReturn(containerResource);
+
+        when(containerResource.getLog()).thenReturn("agent-logs");
 
         when(client.events()).thenReturn(events);
         when(events.inAnyNamespace()).thenReturn(eventspace);
@@ -176,13 +181,25 @@ public class AgentStatusReportExecutorTest {
         Pod pod = new Pod();
         pod.setMetadata(new ObjectMeta());
         PodSpec spec = new PodSpec();
-        spec.setContainers(Arrays.asList(new Container()));
+        spec.setContainers(Arrays.asList(aContainer()));
         pod.setSpec(spec);
         PodStatus status = new PodStatus();
-        status.setContainerStatuses(Arrays.asList(new ContainerStatus()));
+        status.setContainerStatuses(Arrays.asList(aContainerStatus()));
         pod.setStatus(status);
         pod.getMetadata().setAnnotations(Collections.singletonMap(JOB_IDENTIFIER_LABEL_KEY, "{}"));
         return pod;
+    }
+
+    private Container aContainer() {
+        Container container = new Container();
+        container.setName("test-container");
+        return container;
+    }
+
+    private ContainerStatus aContainerStatus() {
+        ContainerStatus containerStatus = new ContainerStatus();
+        containerStatus.setName("test-container");
+        return containerStatus;
     }
 
 }
