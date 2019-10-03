@@ -59,15 +59,17 @@
 		padding: 10px;
 	}
 
-	[data-plugin-style-id="kubernetes-plugin"] .tab-content.pod-logs {
+	[data-plugin-style-id="kubernetes-plugin"] .log-content {
 		background-color: #383838;
 		font-size:        13px;
+		border-radius:    0px 0px 5px 5px;
 		font-family:      monaco;
 		color:            white;
 		display:          block;
 		font-weight:      400;
 		padding-left:     10px;
 		max-height:       100%;
+		height:           calc(100vh - 280px);
 	}
 
 	[data-plugin-style-id="kubernetes-plugin"] .pod-configuration {
@@ -82,6 +84,13 @@
 		border:           1px solid #ddd;
 		border-radius:    3px;
 		padding:          5px;
+	}
+
+	[data-plugin-style-id="kubernetes-plugin"] .details-panel {
+        background:     #F6F6F6;
+        border-radius:  4px;
+        padding:        5px 15px 5px 15px;
+        margin-top:     10px;
 	}
 
 	[data-plugin-style-id="kubernetes-plugin"] .tab-content {
@@ -228,6 +237,60 @@
 		font-size:   13px;
 		line-height: 25px;
 	}
+
+    [data-plugin-style-id="kubernetes-plugin"] .container-log {
+        border:        none;
+        width:         100%;
+        background:    #fff;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        overflow: hidden;
+    }
+
+    [data-plugin-style-id="kubernetes-plugin"] .container-log-header {
+        background:  #d1c4e9;
+        padding:     10px;
+        font-size:   14px;
+        font-weight: 600;
+        cursor:      pointer;
+    }
+
+    [data-plugin-style-id="kubernetes-plugin"] .container-log-header .left {
+        float:   left;
+        padding: 0px;
+    }
+
+    [data-plugin-style-id="kubernetes-plugin"] .container-log-header .right {
+        float:         right;
+        padding:       5px;
+        padding-right: 10px;
+    }
+
+    [data-plugin-style-id="kubernetes-plugin"] .container-name {
+        padding:       5px 5px;
+        margin:        0px 0px 0px 25px;
+        color:         #666 !important;
+        font-weight:   600 !important;
+        overflow:      hidden;
+        text-overflow: ellipsis;
+    }
+
+    [data-plugin-style-id="kubernetes-plugin"] dl.name {
+        overflow:       hidden;
+        margin:         0;
+        font-size:      13px;
+        display:        inline-block;
+        vertical-align: top;
+        padding-left:   10px;
+    }
+
+    [data-plugin-style-id="kubernetes-plugin"] dt {
+        float:       left;
+        clear:       both;
+        padding:     5px 0px;
+        margin:      0px 0px 0px 25px;
+        font-weight: 600;
+    }
 </style>
 
 <div data-plugin-style-id="kubernetes-plugin">
@@ -286,79 +349,85 @@
 			<div class="tab-content-outer">
 				<div class="tab-content" ng-show="currenttab == 'pod-details'">
 					<h4 class="header no-margin-top">Pod Details</h4>
-					<ul class="name-value">
-						<li class="name-value_pair">
-							<label>Pod name</label>
-							<span>${ podDetails.name !}</span>
-						</li>
-						<li class="name-value_pair">
-							<label>Cluster Name</label>
-							<span>${ podDetails.clusterName !}</span>
-						</li>
-						<li class="name-value_pair">
-							<label>Node Name</label>
-							<span>${ podDetails.nodeName !}</span>
-						</li>
-						<li class="name-value_pair">
-							<label>Namespace</label>
-							<span>${ podDetails.namespace !}</span>
-						</li>
-						<li class="name-value_pair">
-							<label>Creation Timestamp</label>
-							<span>${ podDetails.createdAt !}</span>
-						</li>
-						<li class="name-value_pair">
-							<label>Start Timestamp</label>
-							<span>${ podDetails.startedAt !}</span>
-						</li>
-						<li class="name-value_pair">
-							<label>Conditions</label>
-							<span>${ podDetails.conditions !}</span>
-						</li>
-						<li class="name-value_pair">
-							<label>Status</label>
-							<span>${ podDetails.phase !}</span>
-						</li>
-						<li class="name-value_pair">
-							<label>Pod IP</label>
-							<span>${ podDetails.podIP !}</span>
-						</li>
-						<li class="name-value_pair">
-							<label>Host IP</label>
-							<span>${ podDetails.hostIP !}</span>
-						</li>
+					<div class="details-panel">
+                        <ul class="name-value">
+                            <li class="name-value_pair">
+                                <label>Pod name</label>
+                                <span>${ podDetails.name !}</span>
+                            </li>
+                            <li class="name-value_pair">
+                                <label>Cluster Name</label>
+                                <span>${ podDetails.clusterName !}</span>
+                            </li>
+                            <li class="name-value_pair">
+                                <label>Node Name</label>
+                                <span>${ podDetails.nodeName !}</span>
+                            </li>
+                            <li class="name-value_pair">
+                                <label>Namespace</label>
+                                <span>${ podDetails.namespace !}</span>
+                            </li>
+                            <li class="name-value_pair">
+                                <label>Creation Timestamp</label>
+                                <span>${ podDetails.createdAt !}</span>
+                            </li>
+                            <li class="name-value_pair">
+                                <label>Start Timestamp</label>
+                                <span>${ podDetails.startedAt !}</span>
+                            </li>
+                            <li class="name-value_pair">
+                                <label>Conditions</label>
+                                <span>${ podDetails.conditions !}</span>
+                            </li>
+                            <li class="name-value_pair">
+                                <label>Status</label>
+                                <span>${ podDetails.phase !}</span>
+                            </li>
+                            <li class="name-value_pair">
+                                <label>Pod IP</label>
+                                <span>${ podDetails.podIP !}</span>
+                            </li>
+                            <li class="name-value_pair">
+                                <label>Host IP</label>
+                                <span>${ podDetails.hostIP !}</span>
+                            </li>
+						</div>
 					</ul>
 					<h4 class="header">GoCD Agent Details</h4>
-					<ul class="name-value">
-						<li class="name-value_pair">
-							<label>Name</label>
-							<span>${ agentDetails.name !}</span>
-						</li>
-						<li class="name-value_pair">
-							<label>Image</label>
-							<span>${ agentDetails.image !}</span>
-						</li>
-						<li class="name-value_pair">
-							<label>ImagePullPolicy</label>
-							<span>${ agentDetails.imagePullPolicy !}</span>
-						</li>
-						<li class="name-value_pair">
-							<label>Ready</label>
-							<span>${ agentDetails.ready !}</span>
-						</li>
-						<li class="name-value_pair">
-							<label>Restart Count</label>
-							<span>${ agentDetails.restartCount !}</span>
-						</li>
-						<li class="name-value_pair">
-							<label>Command</label>
-							<span>${ agentDetails.command?html?replace("\n", "<br>") !}</span>
-						</li>
-						<li class="name-value_pair">
-							<label>Environment Variables</label>
-							<span>${ agentDetails.env?html?replace("\n", "<br>") !}</span>
-						</li>
-					</ul>
+					<#list containerDetails as detail>
+					    <div class="details-panel">
+                            <ul class="name-value">
+                                <li class="name-value_pair">
+                                    <label>Container Name</label>
+                                    <span>${ detail.name !}</span>
+                                </li>
+                                <li class="name-value_pair">
+                                    <label>Image</label>
+                                    <span>${ detail.image !}</span>
+                                </li>
+                                <li class="name-value_pair">
+                                    <label>ImagePullPolicy</label>
+                                    <span>${ detail.imagePullPolicy !}</span>
+                                </li>
+                                <li class="name-value_pair">
+                                    <label>Ready</label>
+                                    <span>${ detail.ready !}</span>
+                                </li>
+                                <li class="name-value_pair">
+                                    <label>Restart Count</label>
+                                    <span>${ detail.restartCount !}</span>
+                                </li>
+                                <li class="name-value_pair">
+                                    <label>Command</label>
+                                    <span>${ detail.command?html?replace("\n", "<br>") !}</span>
+                                </li>
+                                <li class="name-value_pair">
+                                    <label>Environment Variables</label>
+                                    <span>${ detail.env?html?replace("\n", "<br>") !}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </#list>
 				</div>
 				<div class="tab-content pod-events" ng-show="currenttab == 'pod-events'">
                     <#if events?size != 0>
@@ -392,8 +461,34 @@
                         <div class="warning-message">No events available for the current pod.</div>
                     </#if>
 				</div>
-				<textarea class="tab-content pod-logs" ng-show="currenttab == 'pod-logs'"
-						  readonly>${ logs?html?trim !}</textarea>
+				<div class="tab-content pod-logs" ng-show="currenttab == 'pod-logs'">
+                    <#if containerLogs?size != 0>
+                        <#list containerLogs as containerLog>
+                            <#assign containerIndex = containerLog?index>
+                            <#assign ngModel = "containerLog${containerIndex}">
+                            <div class="container-log">
+                                <div class="container-log-header row" ng-click="${ngModel} = !${ngModel}" ngModel="${ngModel}"
+                                     ng-value="false" ng-init="${ngModel} = ${(containerIndex == 0)?then('true','false')}">
+                                    <div class="left">
+                                        <dl class="name inline">
+                                            <dt>Container Name:</dt>
+                                            <dd class="container-name">${containerLog.name!}</dd>
+                                        </dl>
+                                    </div>
+                                    <div class="right">
+                                        <i class="fa fa-chevron-down" aria-hidden="true" ng-show="${ngModel}"></i>
+                                        <i class="fa fa-chevron-right" aria-hidden="true" ng-hide="${ngModel}"></i>
+                                    </div>
+                                </div>
+                                <div ng-show="${ngModel}">
+                                    <textarea class="log-content" readonly>${ containerLog.content?html?trim !}</textarea>
+                                </div>
+                            </div>
+                        </#list>
+                    <#else>
+                        <div class="warning-message">No container logs in current pod.</div>
+                    </#if>
+                </div>
 				<div class="tab-content pod-configuration"
 					 ng-show="currenttab == 'pod-configuration'">${ configuration?html?trim?replace("\n", "<br>") !}
 				</div>
