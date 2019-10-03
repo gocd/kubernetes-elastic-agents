@@ -21,6 +21,7 @@ import cd.go.contrib.elasticagent.model.JobIdentifier;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerStatus;
 import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -32,10 +33,10 @@ import java.util.List;
 public class KubernetesElasticAgent {
     private JobIdentifier jobIdentifier;
     private KubernetesPodDetails podDetails;
-    private GoCDContainerDetails agentDetails;
+    private ArrayList<GoCDContainerDetails> containerDetails;
     private String elasticAgentId;
     private ArrayList<KubernetesPodEvent> events;
-    private String logs;
+    private ArrayList<GoCDContainerLog> containerLogs;
     private String configuration;
 
     public static KubernetesElasticAgent fromPod(KubernetesClient client, Pod pod, JobIdentifier jobIdentifier) {
@@ -44,12 +45,31 @@ public class KubernetesElasticAgent {
         agent.elasticAgentId = pod.getMetadata().getName();
         agent.podDetails = KubernetesPodDetails.fromPod(pod);
         List<ContainerStatus> containerStatuses = pod.getStatus().getContainerStatuses();
-        ContainerStatus containerStatus = containerStatuses.isEmpty() ? null : containerStatuses.get(0);
-        agent.agentDetails = GoCDContainerDetails.fromContainer(pod.getSpec().getContainers().get(0), containerStatus);
+        agent.containerDetails = getContainerDetails(pod.getSpec().getContainers(), containerStatuses);
         agent.events = getAllEventsForPod(pod, client);
-        agent.logs = getPodLogs(pod, client);
+        agent.containerLogs = getContainerLogs(client, pod, containerStatuses);
         agent.configuration = getPodConfiguration(pod);
         return agent;
+    }
+
+    private static ArrayList<GoCDContainerDetails> getContainerDetails(List<Container> containers, List<ContainerStatus> containerStatuses) {
+        ArrayList<GoCDContainerDetails> details = new ArrayList<>();
+        for(ContainerStatus status: containerStatuses) {
+            details.add(GoCDContainerDetails.fromContainer(getContainerSpecByName(containers, status.getName()), status));
+        }
+        return details;
+    }
+
+    private static Container getContainerSpecByName(List<Container> containers, String name) {
+        return containers.stream().filter(container -> container.getName().equals(name)).findFirst().get();
+    }
+
+    private static ArrayList<GoCDContainerLog> getContainerLogs(KubernetesClient client, Pod pod, List<ContainerStatus> containerStatuses) {
+        ArrayList<GoCDContainerLog> logs = new ArrayList<>();
+        for(ContainerStatus containerStatus: containerStatuses) {
+            logs.add(new GoCDContainerLog(containerStatus.getName(), getPodLogs(pod, client, containerStatus.getName())));
+        }
+        return logs;
     }
 
     private static JobIdentifier getJobIdentifier(Pod pod, JobIdentifier jobIdentifier) {
@@ -68,12 +88,12 @@ public class KubernetesElasticAgent {
         return podDetails;
     }
 
-    public GoCDContainerDetails getAgentDetails() {
-        return agentDetails;
+    public ArrayList<GoCDContainerDetails> getContainerDetails() {
+        return containerDetails;
     }
 
-    public String getLogs() {
-        return logs;
+    public ArrayList<GoCDContainerLog> getContainerLogs() {
+        return containerLogs;
     }
 
     public String getConfiguration() {
@@ -108,9 +128,9 @@ public class KubernetesElasticAgent {
         return events;
     }
 
-    private static String getPodLogs(Pod pod, KubernetesClient client) {
+    private static String getPodLogs(Pod pod, KubernetesClient client, String containerName) {
         return client.pods()
-                .withName(pod.getMetadata().getName()).getLog(true);
+                .withName(pod.getMetadata().getName()).inContainer(containerName).getLog(true);
     }
 
     private static String getPodConfiguration(Pod pod) {
