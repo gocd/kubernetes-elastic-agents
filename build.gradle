@@ -20,7 +20,7 @@ apply from: "https://raw.githubusercontent.com/gocd/gocd-plugin-gradle-task-help
 
 gocdPlugin {
   id = 'cd.go.contrib.elasticagent.kubernetes'
-  pluginVersion = '3.2.0'
+  pluginVersion = '3.3.0'
   goCdVersion = '19.3.0'
   name = 'Kubernetes Elastic Agent Plugin'
   description = 'Kubernetes Based Elastic Agent Plugins for GoCD'
