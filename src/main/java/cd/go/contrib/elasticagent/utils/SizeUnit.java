@@ -55,7 +55,7 @@ public enum SizeUnit {
      * @param unit the unit of the size
      * @return the given size in the current unit.
      */
-    public long convert(long size, SizeUnit unit) {
+    public double convert(double size, SizeUnit unit) {
         return (size * unit.bits) / bits;
     }
 
@@ -65,7 +65,7 @@ public enum SizeUnit {
      * @param l the magnitude of the size in the current unit
      * @return {@code l} of the current units in bytes
      */
-    public long toBytes(long l) {
+    public double toBytes(double l) {
         return BYTES.convert(l, this);
     }
 
@@ -75,7 +75,7 @@ public enum SizeUnit {
      * @param l the magnitude of the size in the current unit
      * @return {@code l} of the current units in kilobytes
      */
-    public long toKilobytes(long l) {
+    public double toKilobytes(double l) {
         return KILOBYTES.convert(l, this);
     }
 
@@ -85,7 +85,7 @@ public enum SizeUnit {
      * @param l the magnitude of the size in the current unit
      * @return {@code l} of the current units in megabytes
      */
-    public long toMegabytes(long l) {
+    public double toMegabytes(double l) {
         return MEGABYTES.convert(l, this);
     }
 
@@ -95,7 +95,7 @@ public enum SizeUnit {
      * @param l the magnitude of the size in the current unit
      * @return {@code l} of the current units in bytes
      */
-    public long toGigabytes(long l) {
+    public double toGigabytes(double l) {
         return GIGABYTES.convert(l, this);
     }
 
@@ -105,7 +105,7 @@ public enum SizeUnit {
      * @param l the magnitude of the size in the current unit
      * @return {@code l} of the current units in terabytes
      */
-    public long toTerabytes(long l) {
+    public double toTerabytes(double l) {
         return TERABYTES.convert(l, this);
     }
 }

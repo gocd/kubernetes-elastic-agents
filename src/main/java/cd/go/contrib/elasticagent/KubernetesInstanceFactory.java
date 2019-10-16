@@ -119,8 +119,9 @@ public class KubernetesInstanceFactory {
         String maxMemory = request.properties().get("MaxMemory");
         if (StringUtils.isNotBlank(maxMemory)) {
             Size mem = Size.parse(maxMemory);
-            LOG.debug(format("[Create Agent] Setting memory resource limit on k8s pod: {0}.", new Quantity(valueOf(mem.toMegabytes()), "M")));
-            limits.put("memory", new Quantity(valueOf(mem.toBytes())));
+            LOG.debug(format("[Create Agent] Setting memory resource limit on k8s pod: {0}.", new Quantity(valueOf((long) mem.toMegabytes()), "M")));
+            long memory = (long) mem.toBytes();
+            limits.put("memory", new Quantity(valueOf(memory)));
         }
 
         String maxCPU = request.properties().get("MaxCPU");
