@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagent.model;
 
+import cd.go.contrib.elasticagent.utils.Size;
 import cd.go.contrib.elasticagent.utils.Util;
 import io.fabric8.kubernetes.api.model.Node;
 
@@ -47,13 +48,13 @@ public class KubernetesNode {
         nodeAddress = node.getStatus().getAddresses().get(0).getAddress();
 
         totalCPU = node.getStatus().getCapacity().get("cpu").getAmount();
-        String memory = node.getStatus().getCapacity().get("memory").getAmount();
-        totalMemory = Util.readableSize(Long.valueOf(memory.replace("Ki", "")));
+        Size mem = Size.parse(node.getStatus().getCapacity().get("memory").getAmount());
+        totalMemory = mem.readableSize();
         totalPods = node.getStatus().getCapacity().get("pods").getAmount();
 
         allocatableCPU = node.getStatus().getAllocatable().get("cpu").getAmount();
         String allocatableMemory = node.getStatus().getAllocatable().get("memory").getAmount();
-        this.allocatableMemory = Util.readableSize(Long.valueOf(allocatableMemory.replace("Ki", "")));
+        this.allocatableMemory = Size.parse(allocatableMemory).readableSize();
         allocatablePods = node.getStatus().getAllocatable().get("pods").getAmount();
 
         osImage = node.getStatus().getNodeInfo().getOsImage();

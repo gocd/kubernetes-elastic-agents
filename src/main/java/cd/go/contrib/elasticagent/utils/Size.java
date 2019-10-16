@@ -18,8 +18,10 @@ package cd.go.contrib.elasticagent.utils;
 
 import com.google.common.collect.ImmutableSortedMap;
 
+import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,50 +37,54 @@ public class Size implements Comparable<Size> {
             .put("bytes", SizeUnit.BYTES)
             .put("K", SizeUnit.KILOBYTES)
             .put("KB", SizeUnit.KILOBYTES)
+            .put("Ki", SizeUnit.KILOBYTES)
             .put("KiB", SizeUnit.KILOBYTES)
             .put("kilobyte", SizeUnit.KILOBYTES)
             .put("kilobytes", SizeUnit.KILOBYTES)
             .put("M", SizeUnit.MEGABYTES)
+            .put("Mi", SizeUnit.MEGABYTES)
             .put("MB", SizeUnit.MEGABYTES)
             .put("MiB", SizeUnit.MEGABYTES)
             .put("megabyte", SizeUnit.MEGABYTES)
             .put("megabytes", SizeUnit.MEGABYTES)
             .put("G", SizeUnit.GIGABYTES)
+            .put("Gi", SizeUnit.GIGABYTES)
             .put("GB", SizeUnit.GIGABYTES)
             .put("GiB", SizeUnit.GIGABYTES)
             .put("gigabyte", SizeUnit.GIGABYTES)
             .put("gigabytes", SizeUnit.GIGABYTES)
             .put("T", SizeUnit.TERABYTES)
             .put("TB", SizeUnit.TERABYTES)
+            .put("Ti", SizeUnit.TERABYTES)
             .put("TiB", SizeUnit.TERABYTES)
             .put("terabyte", SizeUnit.TERABYTES)
             .put("terabytes", SizeUnit.TERABYTES)
             .build();
-    private final long count;
+    private final double count;
     private final SizeUnit unit;
 
-    private Size(long count, SizeUnit unit) {
+    private Size(double count, SizeUnit unit) {
         this.count = count;
         this.unit = requireNonNull(unit);
     }
 
-    public static Size bytes(long count) {
+    public static Size bytes(double count) {
         return new Size(count, SizeUnit.BYTES);
     }
 
-    public static Size kilobytes(long count) {
+    public static Size kilobytes(double count) {
         return new Size(count, SizeUnit.KILOBYTES);
     }
 
-    public static Size megabytes(long count) {
+    public static Size megabytes(double count) {
         return new Size(count, SizeUnit.MEGABYTES);
     }
 
-    public static Size gigabytes(long count) {
+    public static Size gigabytes(double count) {
         return new Size(count, SizeUnit.GIGABYTES);
     }
 
-    public static Size terabytes(long count) {
+    public static Size terabytes(double count) {
         return new Size(count, SizeUnit.TERABYTES);
     }
 
@@ -86,7 +92,7 @@ public class Size implements Comparable<Size> {
         final Matcher matcher = SIZE_PATTERN.matcher(size);
         checkArgument(matcher.matches(), "Invalid size: " + size);
 
-        final long count = Long.parseLong(matcher.group(1));
+        final double count = Double.parseDouble(matcher.group(1));
         final SizeUnit unit = SUFFIXES.get(matcher.group(2));
         if (unit == null) {
             throw new IllegalArgumentException("Invalid size: " + size + ". Wrong size unit");
@@ -95,7 +101,7 @@ public class Size implements Comparable<Size> {
         return new Size(count, unit);
     }
 
-    public long getQuantity() {
+    public double getQuantity() {
         return count;
     }
 
@@ -103,41 +109,38 @@ public class Size implements Comparable<Size> {
         return unit;
     }
 
-    public long toBytes() {
+    public double toBytes() {
         return SizeUnit.BYTES.convert(count, unit);
     }
 
-    public long toKilobytes() {
+    public double toKilobytes() {
         return SizeUnit.KILOBYTES.convert(count, unit);
     }
 
-    public long toMegabytes() {
+    public double toMegabytes() {
         return SizeUnit.MEGABYTES.convert(count, unit);
     }
 
-    public long toGigabytes() {
+    public double toGigabytes() {
         return SizeUnit.GIGABYTES.convert(count, unit);
     }
 
-    public long toTerabytes() {
+    public double toTerabytes() {
         return SizeUnit.TERABYTES.convert(count, unit);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if ((obj == null) || (getClass() != obj.getClass())) {
-            return false;
-        }
-        final Size size = (Size) obj;
-        return (count == size.count) && (unit == size.unit);
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Size size = (Size) obj;
+        return Double.compare(size.count, count) == 0 &&
+                unit == size.unit;
     }
 
     @Override
     public int hashCode() {
-        return (31 * (int) (count ^ (count >>> 32))) + unit.hashCode();
+        return Objects.hash(count, unit);
     }
 
     @Override
@@ -146,15 +149,26 @@ public class Size implements Comparable<Size> {
         if (count == 1) {
             units = units.substring(0, units.length() - 1);
         }
-        return Long.toString(count) + ' ' + units;
+        return Double.toString(count) + ' ' + units;
     }
 
     @Override
     public int compareTo(Size other) {
         if (unit == other.unit) {
-            return Long.compare(count, other.count);
+            return Double.compare(count, other.count);
         }
 
-        return Long.compare(toBytes(), other.toBytes());
+        return Double.compare(toBytes(), other.toBytes());
+    }
+
+    public String readableSize() {
+        double size = this.unit.toBytes(this.count);
+
+        if (size <= 0) return "0";
+
+        final String[] units = new String[]{"B", "KB", "MB", "GB", "TB", "PB", "EB"};
+
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return new DecimalFormat("#,##0.##").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 }
