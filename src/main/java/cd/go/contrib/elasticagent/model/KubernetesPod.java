@@ -74,6 +74,10 @@ public class KubernetesPod {
         return "No Job Information Available!";
     }
 
+    public JobIdentifier getJobIdentifier() {
+        return jobIdentifier;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
