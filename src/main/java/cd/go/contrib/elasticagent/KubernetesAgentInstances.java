@@ -92,9 +92,9 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
 
         KubernetesClient client = factory.client(settings);
         KubernetesInstance instance = kubernetesInstanceFactory.create(request, settings, client, pluginRequest);
-        consoleLogAppender.accept(format("Creating pod: %s", instance.name()));
+        consoleLogAppender.accept(String.format("Creating pod: %s", instance.name()));
         register(instance);
-        consoleLogAppender.accept(format("Agent pod %s created. Waiting for it to register to the GoCD server.", instance.name()));
+        consoleLogAppender.accept(String.format("Agent pod %s created. Waiting for it to register to the GoCD server.", instance.name()));
 
         return instance;
     }

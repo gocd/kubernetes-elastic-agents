@@ -16,3 +16,7 @@ build/
 kubernetes-elastic-agent.iml
 out/
 src/main/resources-generated/
+
+# MacOS
+
+.DS_Store
