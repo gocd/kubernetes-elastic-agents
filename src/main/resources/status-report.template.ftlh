@@ -285,7 +285,7 @@
                       <#list node.pods as pod>
                         <tr>
                           <td>
-                            <a href="/go/admin/status_reports/${pluginId}/agent/${pod.podName!}?job_id=${pod.jobIdentifier.jobId!}"> ${pod.podName!} </a>
+                            <a href="/go/admin/status_reports/${pluginId}/agent/${pod.podName!}?job_id=${pod.jobIdentifier.jobId!?c}"> ${pod.podName!} </a>
                           </td>
                           <td>${pod.jobInformation!}</td>
                           <td>${pod.image!}</td>
