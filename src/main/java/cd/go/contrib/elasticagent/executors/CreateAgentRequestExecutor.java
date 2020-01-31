@@ -51,7 +51,7 @@ public class CreateAgentRequestExecutor implements RequestExecutor {
         try {
             agentInstances.create(request, request.clusterProfileProperties(), pluginRequest, consoleLogAppender);
         } catch (Exception e) {
-            consoleLogAppender.accept(format("Failed to create agent pod: %s", e.getMessage()));
+            consoleLogAppender.accept(String.format("Failed to create agent pod: %s", e.getMessage()));
             throw e;
         }
 
