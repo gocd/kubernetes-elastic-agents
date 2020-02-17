@@ -66,7 +66,7 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
     compile group: 'joda-time', name: 'joda-time', version: '2.10.5'
-    compile group: 'io.fabric8', name: 'kubernetes-client', version: '4.6.0'
+    compile group: 'io.fabric8', name: 'kubernetes-client', version: '4.8.0'
     compile group: 'com.github.spullara.mustache.java', name: 'compiler', version: '0.9.6'
     compile group: 'org.freemarker', name: 'freemarker', version: '2.3.29'
 
