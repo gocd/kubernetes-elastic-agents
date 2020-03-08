@@ -33,7 +33,8 @@ In the pod spec, specify the `volumes` section if not present and include the co
 volumes:
   - name: ssh-secrets
     secret:
-    secretName: gocd-agent-ssh
+      defaultMode: 420
+      secretName: gocd-agent-ssh
 
 ```
 
