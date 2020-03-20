@@ -68,7 +68,7 @@ dependencies {
     compile group: 'joda-time', name: 'joda-time', version: '2.10.5'
     compile group: 'io.fabric8', name: 'kubernetes-client', version: '4.6.0'
     compile group: 'com.github.spullara.mustache.java', name: 'compiler', version: '0.9.6'
-    compile group: 'org.freemarker', name: 'freemarker', version: '2.3.29'
+    compile group: 'org.freemarker', name: 'freemarker', version: '2.3.30'
 
     testCompile group: 'junit', name: 'junit', version: '4.13'
     testCompile group: 'org.hamcrest', name: 'hamcrest-library', version: '2.2'
