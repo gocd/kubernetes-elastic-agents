@@ -16,22 +16,28 @@
 
 package cd.go.contrib.elasticagent.executors;
 
+import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.RequestExecutor;
 import cd.go.contrib.elasticagent.model.Metadata;
+import cd.go.contrib.elasticagent.model.ServerInfo;
 import cd.go.contrib.elasticagent.requests.ClusterProfileValidateRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
 import java.util.*;
 
+import static cd.go.contrib.elasticagent.GoServerURLMetadata.GO_SERVER_URL;
 import static cd.go.contrib.elasticagent.executors.GetClusterProfileMetadataExecutor.FIELDS;
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class ClusterProfileValidateRequestExecutor implements RequestExecutor {
     private ClusterProfileValidateRequest request;
+    private PluginRequest pluginRequest;
 
-    public ClusterProfileValidateRequestExecutor(ClusterProfileValidateRequest clusterProfileValidateRequest) {
+    public ClusterProfileValidateRequestExecutor(ClusterProfileValidateRequest clusterProfileValidateRequest, PluginRequest pluginRequest) {
         this.request = clusterProfileValidateRequest;
+        this.pluginRequest = pluginRequest;
     }
 
     @Override
@@ -49,18 +55,34 @@ public class ClusterProfileValidateRequestExecutor implements RequestExecutor {
             }
         }
 
+        validateGoServerUrl(result);
         Set<String> set = new HashSet<>(request.getProperties().keySet());
         set.removeAll(knownFields);
 
         if (!set.isEmpty()) {
             for (String key : set) {
-                LinkedHashMap<String, String> validationError = new LinkedHashMap<>();
-                validationError.put("key", key);
-                validationError.put("message", "Is an unknown property");
+                LinkedHashMap<String, String> validationError = validationError(key, "Is an unknown property");
                 result.add(validationError);
             }
         }
 
         return DefaultGoPluginApiResponse.success(GSON.toJson(result));
+    }
+
+    private LinkedHashMap<String, String> validationError(String key, String message) {
+        LinkedHashMap<String, String> validationError = new LinkedHashMap<>();
+        validationError.put("key", key);
+        validationError.put("message", message);
+        return validationError;
+    }
+
+    private void validateGoServerUrl(ArrayList<Map<String, String>> result) {
+        if (isBlank(request.getProperties().get(GO_SERVER_URL))) {
+            ServerInfo severInfo = pluginRequest.getSeverInfo();
+            if (isBlank(severInfo.getSecureSiteUrl())) {
+                Map<String, String> error = validationError(GO_SERVER_URL, "Secure site url is not configured. Please specify Go Server Url.");
+                result.add(error);
+            }
+        }
     }
 }

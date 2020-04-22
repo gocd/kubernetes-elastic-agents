@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagent.requests;
 
+import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.RequestExecutor;
 import cd.go.contrib.elasticagent.executors.ClusterProfileValidateRequestExecutor;
 import com.google.gson.reflect.TypeToken;
@@ -43,7 +44,7 @@ public class ClusterProfileValidateRequest {
         return new ClusterProfileValidateRequest(properties);
     }
 
-    public RequestExecutor executor() {
-        return new ClusterProfileValidateRequestExecutor(this);
+    public RequestExecutor executor(PluginRequest pluginRequest) {
+        return new ClusterProfileValidateRequestExecutor(this, pluginRequest);
     }
 }
