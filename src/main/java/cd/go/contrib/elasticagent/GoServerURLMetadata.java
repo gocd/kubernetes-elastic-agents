@@ -23,7 +23,7 @@ import java.net.URI;
 
 
 public class GoServerURLMetadata extends Metadata {
-    private static String GO_SERVER_URL = "go_server_url";
+    public static String GO_SERVER_URL = "go_server_url";
 
     public GoServerURLMetadata() {
         super(GO_SERVER_URL, true, false);
@@ -31,9 +31,8 @@ public class GoServerURLMetadata extends Metadata {
 
     @Override
     public String doValidate(String input) {
-        String validationResult = super.doValidate(input);
-        if (StringUtils.isNotBlank(validationResult) || StringUtils.isBlank(input)) {
-            return validationResult;
+        if (StringUtils.isBlank(input)) {
+            return null;
         }
 
         try {

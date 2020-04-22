@@ -16,6 +16,8 @@
 
 package cd.go.contrib.elasticagent.executors;
 
+import cd.go.contrib.elasticagent.PluginRequest;
+import cd.go.contrib.elasticagent.model.ServerInfo;
 import cd.go.contrib.elasticagent.requests.ClusterProfileValidateRequest;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -23,6 +25,9 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ClusterProfileValidateRequestExecutorTest {
     @Test
@@ -32,7 +37,7 @@ public class ClusterProfileValidateRequestExecutorTest {
         properties.put("go_server_url", "https://foobar.com/go");
         properties.put("kubernetes_cluster_url", "something");
         properties.put("security_token", "something");
-        ClusterProfileValidateRequestExecutor executor = new ClusterProfileValidateRequestExecutor(new ClusterProfileValidateRequest(properties));
+        ClusterProfileValidateRequestExecutor executor = new ClusterProfileValidateRequestExecutor(new ClusterProfileValidateRequest(properties), mock(PluginRequest.class));
         String json = executor.execute().responseBody();
 
         JSONAssert.assertEquals("[{\"key\":\"foo\",\"message\":\"Is an unknown property\"}]", json, JSONCompareMode.NON_EXTENSIBLE);
@@ -41,11 +46,13 @@ public class ClusterProfileValidateRequestExecutorTest {
     @Test
     public void shouldValidateMandatoryKeys() throws Exception {
         Map<String, String> properties = new HashMap<>();
-        ClusterProfileValidateRequestExecutor executor = new ClusterProfileValidateRequestExecutor(new ClusterProfileValidateRequest(properties));
+        PluginRequest pluginRequest = mock(PluginRequest.class);
+        ClusterProfileValidateRequestExecutor executor = new ClusterProfileValidateRequestExecutor(new ClusterProfileValidateRequest(properties), pluginRequest);
+        when(pluginRequest.getSeverInfo()).thenReturn(new ServerInfo());
         String json = executor.execute().responseBody();
         String expected = "[" +
                 "  {" +
-                "    \"message\":\"go_server_url must not be blank.\"," +
+                "    \"message\":\"Secure site url is not configured. Please specify Go Server Url.\"," +
                 "    \"key\":\"go_server_url\"" +
                 "  }," +
                 "  {" +
@@ -67,9 +74,25 @@ public class ClusterProfileValidateRequestExecutorTest {
         properties.put("go_server_url", "something");
         properties.put("kubernetes_cluster_url", "something");
         properties.put("security_token", "something");
-        ClusterProfileValidateRequestExecutor executor = new ClusterProfileValidateRequestExecutor(new ClusterProfileValidateRequest(properties));
+        ClusterProfileValidateRequestExecutor executor = new ClusterProfileValidateRequestExecutor(new ClusterProfileValidateRequest(properties), mock(PluginRequest.class));
         String json = executor.execute().responseBody();
 
         JSONAssert.assertEquals("[{\"key\":\"go_server_url\",\"message\":\"go_server_url must be a valid URL (https://example.com:8154/go).\"}]", json, JSONCompareMode.NON_EXTENSIBLE);
+    }
+
+    @Test
+    public void shouldNotFailWhenSecureSiteUrlIsConfiguredAndNoGoServerUrlIsSpecified() throws Exception {
+        Map<String, String> properties = new HashMap<>();
+        properties.put("kubernetes_cluster_url", "something");
+        properties.put("security_token", "something");
+
+        PluginRequest pluginRequest = mock(PluginRequest.class);
+        ClusterProfileValidateRequestExecutor executor = new ClusterProfileValidateRequestExecutor(new ClusterProfileValidateRequest(properties), pluginRequest);
+        ServerInfo serverInfo = new ServerInfo();
+        serverInfo.setSecureSiteUrl("https://build.gocd.org/go");
+        when(pluginRequest.getSeverInfo()).thenReturn(serverInfo);
+        String json = executor.execute().responseBody();
+
+        JSONAssert.assertEquals("[]", json, JSONCompareMode.NON_EXTENSIBLE);
     }
 }
