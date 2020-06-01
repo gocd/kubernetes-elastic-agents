@@ -19,7 +19,6 @@ package cd.go.contrib.elasticagent.utils;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 public class SizeTest {
 
@@ -35,10 +34,19 @@ public class SizeTest {
         Size parse = Size.parse("24000kig");
     }
 
-
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfTheGivenSizeHasNoUint() {
         Size parse = Size.parse("24000");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionIfTheGivenSizeIsNull() {
+        Size.parse(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionIfTheGivenSizeIsBlank() {
+        Size.parse("");
     }
 
     @Test
@@ -75,7 +83,7 @@ public class SizeTest {
     public void readableSize() {
         Size size = Size.parse("1024Mi");
         Size sizeInKB = Size.parse("10256KiB");
-        assertEquals(size.readableSize(),"1 GB");
-        assertEquals(sizeInKB.readableSize(),"10.02 MB");
+        assertEquals(size.readableSize(), "1 GB");
+        assertEquals(sizeInKB.readableSize(), "10.02 MB");
     }
 }
