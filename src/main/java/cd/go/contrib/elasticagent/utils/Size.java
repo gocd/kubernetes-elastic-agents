@@ -17,6 +17,7 @@
 package cd.go.contrib.elasticagent.utils;
 
 import com.google.common.collect.ImmutableSortedMap;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.DecimalFormat;
 import java.util.Locale;
@@ -89,6 +90,9 @@ public class Size implements Comparable<Size> {
     }
 
     public static Size parse(String size) {
+        if (StringUtils.isBlank(size)) {
+            throw new IllegalArgumentException();
+        }
         final Matcher matcher = SIZE_PATTERN.matcher(size);
         checkArgument(matcher.matches(), "Invalid size: " + size);
 
