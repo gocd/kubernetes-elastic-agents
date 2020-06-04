@@ -41,7 +41,7 @@ on Windows.
     ![Elastic Profiles][2]
 
 2. Click on **_New Elastic Agent Profile_** to create new elastic agent profile for a cluster.
-    1. Specify `id` for profile.
+    1. Specify a name for the elastic agent profile.
     2. Select `Kubernetes Elastic Agent Plugin` for **_Plugin id_**
     3. Verify Cluster Profile Id of the newly defined Elastic Agent Profile.
     4. Configure Kubernetes GoCD elastic agent Pod using:
