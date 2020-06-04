@@ -15,15 +15,15 @@ on Windows.
 
 ### Configure Cluster Profile
 
-1. Login to `GoCD server` as admin and navigate to **_Admin_** _>_ **_Elastic Profile_**
-2. Click on **_Add Cluster Profile_** button and select `Kubernetes Elastic Agent Plugin` from the plugin ID dropdown.
-    1. Specify `Cluster Profile ID` for the new cluster
+1. Login to `GoCD server` as admin and navigate to **_Admin_** _>_ **_Elastic Agent Configurations_**
+2. Click on **_Add_** button and select `Kubernetes Elastic Agent Plugin` from the plugin ID dropdown.
+    1. Specify `Cluster Profile Name` for the new cluster
     1. Optionally specify `Go Server URL`, if GoCD secure site URL is not configured.
-    2. Optionally Specify `Agent auto-register Timeout`, Defaults to `10 mintues`.
-    3. Optionally Specify `Maximum pending pods`, Defaults to `10 pods`.
-    4. Specify `Kubernetes Cluster URL`.
-    5. Optionally Specify `Namespace`, Defaults to `default`.
-    6. Specify `Security token`, The token must have permission to do following operations -
+    2. Optionally Specify `Agent auto-register timeout (in minutes)`, Defaults to `10` (mintues).
+    3. Optionally Specify `Maximum pending pods`, Defaults to `10` (pods).
+    4. Specify `Cluster URL`.
+    5. Optionally Specify `Namespace`, Defaults to `default`. Note: If you have multiple GoCD servers with cluster profiles pointing to the same Kubernetes cluster, make sure that the namespace is different. Otherwise, the plugin of one GoCD server will end up terminating pods started by the plugin in the other GoCD servers.
+    6. Specify `Security token`, The token must have permission to perform the following operations -
         ```
         - nodes: list, get
         - events: list, watch
@@ -36,7 +36,8 @@ on Windows.
 
 ## Create an Elastic Agent Profile
 
-1. Login to `GoCD server` as admin and navigate to **_Admin_** _>_ **_Elastic Profile_**
+1. Login to `GoCD server` as admin and navigate to **_Admin_** _>_ **_Elastic Agent Configurations_**.
+
     ![Elastic Profiles][2]
 
 2. Click on **_New Elastic Agent Profile_** to create new elastic agent profile for a cluster.
@@ -60,7 +61,7 @@ on Windows.
         - Remote File
             1. Specify the file name and type (`json` or `yaml`)
 
-            ![Create elastic profile using remote file configuration][8]
+            ![Create elastic profile using remote file configuration][7]
 
     5. Save your profile.
     
@@ -68,21 +69,17 @@ on Windows.
 
 ### Configure job to use an elastic agent profile
 
-1. Click the gear icon on **_Pipeline_**
+1. Click the gear icon on **_Pipeline_**.
 
 ![Pipeline][5]
 
-2. Click on **_Quick Edit_** button
+2. Click on **_Stages_**.
+3. Create or edit a job.
+4. Enter the name of an elastic profile in the Job Settings tab.
 
-![Quick edit][6]
+![Configure a job][6]
 
-3. Click on **_Stages_**
-4. Create/Edit a job
-5. Enter the `unique id` of an elastic profile in Job Settings
-
-![Configure a job][7]
-
-6. Save your changes
+5. Save your changes
 
 ## Troubleshooting
 
@@ -104,6 +101,65 @@ $ GO_SERVER_SYSTEM_PROPERTIES="-Dplugin.cd.go.contrib.elasticagent.kubernetes.lo
 [3]: images/profile.png "Create elastic profile using config properties"
 [4]: images/profile-with-pod-yaml.png "Create elastic profile using pod configuration"
 [5]: images/pipeline.png  "Pipeline"
-[6]: images/quick-edit.png  "Quick edit"
-[7]: images/configure-job.png  "Configure a job"
-[8]: images/profile_with_remote_file.png "Create elastic profile using remote file configuration"
+[6]: images/configure-job.png  "Configure a job"
+[7]: images/profile_with_remote_file.png "Create elastic profile using remote file configuration"
+
+
+## Troubleshooting
+
+### Logging:
+
+You can enable more logging using the insructions below:
+
+#### If you are on GoCD version 19.6 and above:
+
+Edit the file `wrapper-properties.conf` on your GoCD server and add the following options. The location of the `wrapper-properties.conf` can be found in the [installation documentation](https://docs.gocd.org/current/installation/installing_go_server.html) of the GoCD server.
+
+ ```properties
+# We recommend that you begin with the index `100` and increment the index for each system property
+wrapper.java.additional.100=-Dplugin.cd.go.contrib.elasticagent.kubernetes.log.level=debug
+```
+
+If you're running with GoCD server 19.6 and above on docker using one of the supported GoCD server images, set the environment variable `GOCD_SERVER_JVM_OPTIONS`:
+
+ ```shell
+docker run -e "GOCD_SERVER_JVM_OPTIONS=-Dplugin.cd.go.contrib.elasticagent.kubernetes.log.level=debug" ...
+```
+
+---
+
+#### If you are on GoCD version 19.5 and lower:
+
+##### **On Linux:**
+
+Enabling debug level logging can help you troubleshoot an issue with this plugin. To enable debug level logs, edit the file `/etc/default/go-server` (for Linux) to add:
+
+```shell
+export GO_SERVER_SYSTEM_PROPERTIES="$GO_SERVER_SYSTEM_PROPERTIES -Dplugin.cd.go.contrib.elasticagent.kubernetes.log.level=debug"
+```
+
+If you're running the server via `./server.sh` script:
+
+```shell
+$ GO_SERVER_SYSTEM_PROPERTIES="-Dplugin.cd.go.contrib.elasticagent.kubernetes.log.level=debug" ./server.sh
+```
+
+The logs will be available under `/var/log/go-server`
+
+##### **On Windows:**
+
+Edit the file `config/wrapper-properties.conf` inside the GoCD Server installation directory (typically `C:\Program Files\Go Server`):
+
+```
+# config/wrapper-properties.conf
+# since the last "wrapper.java.additional" index is 15, we use the next available index.
+wrapper.java.additional.16=-Dplugin.cd.go.contrib.elasticagent.kubernetes.log.level=debug
+```
+
+The logs will be available under the `logs` folder in the GoCD server installation directory.
+
+### Multiple GoCD servers pointing to the same cluster
+
+If you have multiple GoCD servers with cluster profiles pointing to the same Kubernetes cluster, make sure that the namespace is different.
+Otherwise, the plugin of one GoCD server will end up terminating pods started by the plugin in the other GoCD servers, since those pods
+won't register with it.
