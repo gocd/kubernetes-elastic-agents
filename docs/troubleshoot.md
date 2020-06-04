@@ -4,7 +4,7 @@
 
 ### Status Report
 
-The Plugin Status report gives a quick overview of the pods. The status report lists the various virtual pods created. The report also lists the errors and warnings to quickly troubleshoot issues.
+The Plugin Status report gives a quick overview of the pods. The status report lists the various pods created. The report also lists the errors and warnings to quickly troubleshoot issues.
 
 <hr/>
 
