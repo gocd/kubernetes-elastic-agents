@@ -83,7 +83,7 @@ on Windows.
 
 ## Troubleshooting
 
-### Logging:
+### More logging
 
 You can enable more logging using the insructions below:
 
