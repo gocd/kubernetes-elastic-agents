@@ -83,30 +83,6 @@ on Windows.
 
 ## Troubleshooting
 
-Enabling debug level logging can help you troubleshoot an issue with the elastic agent plugin. To enable debug level logs, edit the `/etc/default/go-server` (for Linux) to add:
-
-```bash
-export GO_SERVER_SYSTEM_PROPERTIES="$GO_SERVER_SYSTEM_PROPERTIES -Dplugin.cd.go.contrib.elasticagent.kubernetes.log.level=debug"
-```
-
-If you're running the server via `./server.sh` script —
-
-```
-$ GO_SERVER_SYSTEM_PROPERTIES="-Dplugin.cd.go.contrib.elasticagent.kubernetes.log.level=debug" ./server.sh
-```
-
-
-[1]: images/cluster-profile.png     "Kubernetes Cluster Profile"
-[2]: images/profiles-page.png  "Elastic profiles"
-[3]: images/profile.png "Create elastic profile using config properties"
-[4]: images/profile-with-pod-yaml.png "Create elastic profile using pod configuration"
-[5]: images/pipeline.png  "Pipeline"
-[6]: images/configure-job.png  "Configure a job"
-[7]: images/profile_with_remote_file.png "Create elastic profile using remote file configuration"
-
-
-## Troubleshooting
-
 ### Logging:
 
 You can enable more logging using the insructions below:
@@ -158,8 +134,19 @@ wrapper.java.additional.16=-Dplugin.cd.go.contrib.elasticagent.kubernetes.log.le
 
 The logs will be available under the `logs` folder in the GoCD server installation directory.
 
-### Multiple GoCD servers pointing to the same cluster
+### Pods getting terminated while running jobs
 
 If you have multiple GoCD servers with cluster profiles pointing to the same Kubernetes cluster, make sure that the namespace is different.
+
 Otherwise, the plugin of one GoCD server will end up terminating pods started by the plugin in the other GoCD servers, since those pods
 won't register with it.
+
+---
+
+[1]: images/cluster-profile.png     "Kubernetes Cluster Profile"
+[2]: images/profiles-page.png  "Elastic profiles"
+[3]: images/profile.png "Create elastic profile using config properties"
+[4]: images/profile-with-pod-yaml.png "Create elastic profile using pod configuration"
+[5]: images/pipeline.png  "Pipeline"
+[6]: images/configure-job.png  "Configure a job"
+[7]: images/profile_with_remote_file.png "Create elastic profile using remote file configuration"
