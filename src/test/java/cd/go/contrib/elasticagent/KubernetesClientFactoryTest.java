@@ -19,22 +19,22 @@ package cd.go.contrib.elasticagent;
 import com.google.gson.Gson;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static cd.go.contrib.elasticagent.KubernetesClientFactory.CLIENT_RECYCLE_SYSTEM_PROPERTY_KEY;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class KubernetesClientFactoryTest {
     private PluginSettings pluginSettings;
     private KubernetesClientFactory factory;
     private Clock.TestClock clock;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         System.clearProperty(CLIENT_RECYCLE_SYSTEM_PROPERTY_KEY);
         final Map<String, Object> pluginSettingsMap = new HashMap<>();

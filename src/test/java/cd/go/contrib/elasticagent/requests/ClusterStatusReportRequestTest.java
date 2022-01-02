@@ -17,12 +17,12 @@
 package cd.go.contrib.elasticagent.requests;
 
 import com.google.gson.JsonObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class ClusterStatusReportRequestTest {
     @Test
@@ -35,6 +35,6 @@ public class ClusterStatusReportRequestTest {
         ClusterStatusReportRequest clusterStatusReportRequest = ClusterStatusReportRequest.fromJSON(jsonObject.toString());
 
         ClusterStatusReportRequest expected = new ClusterStatusReportRequest(Collections.singletonMap("go_server_url", "https://go-server/go"));
-        assertThat(clusterStatusReportRequest, is(expected));
+        assertThat(clusterStatusReportRequest).isEqualTo(expected);
     }
 }

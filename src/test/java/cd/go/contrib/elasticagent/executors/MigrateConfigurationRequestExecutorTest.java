@@ -22,17 +22,15 @@ import cd.go.contrib.elasticagent.ElasticAgentProfile;
 import cd.go.contrib.elasticagent.PluginSettings;
 import cd.go.contrib.elasticagent.requests.MigrateConfigurationRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MigrateConfigurationRequestExecutorTest {
     private PluginSettings pluginSettings;
@@ -40,7 +38,7 @@ public class MigrateConfigurationRequestExecutorTest {
     private ElasticAgentProfile elasticAgentProfile;
     private HashMap<String, String> properties;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         pluginSettings = new PluginSettings("https://127.0.0.1:8154/go", "https://my.kubernetes-cluster.com", "ca-cert");
 
@@ -68,9 +66,9 @@ public class MigrateConfigurationRequestExecutorTest {
 
         MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody());
 
-        assertThat(responseObject.getPluginSettings(), is(new PluginSettings()));
-        assertThat(responseObject.getClusterProfiles(), is(Collections.singletonList(clusterProfile)));
-        assertThat(responseObject.getElasticAgentProfiles(), is(Collections.singletonList(elasticAgentProfile)));
+        assertThat(responseObject.getPluginSettings()).isEqualTo(new PluginSettings());
+        assertThat(responseObject.getClusterProfiles()).isEqualTo(Collections.singletonList(clusterProfile));
+        assertThat(responseObject.getElasticAgentProfiles()).isEqualTo(Collections.singletonList(elasticAgentProfile));
     }
 
     @Test
@@ -82,9 +80,9 @@ public class MigrateConfigurationRequestExecutorTest {
 
         MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody());
 
-        assertThat(responseObject.getPluginSettings(), is(pluginSettings));
-        assertThat(responseObject.getClusterProfiles(), is(Collections.singletonList(clusterProfile)));
-        assertThat(responseObject.getElasticAgentProfiles(), is(Collections.singletonList(elasticAgentProfile)));
+        assertThat(responseObject.getPluginSettings()).isEqualTo(pluginSettings);
+        assertThat(responseObject.getClusterProfiles()).isEqualTo(Collections.singletonList(clusterProfile));
+        assertThat(responseObject.getElasticAgentProfiles()).isEqualTo(Collections.singletonList(elasticAgentProfile));
     }
 
     @Test
@@ -98,17 +96,17 @@ public class MigrateConfigurationRequestExecutorTest {
 
         MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody());
 
-        assertThat(responseObject.getPluginSettings(), is(pluginSettings));
+        assertThat(responseObject.getPluginSettings()).isEqualTo(pluginSettings);
         List<ClusterProfile> actual = responseObject.getClusterProfiles();
         ClusterProfile actualClusterProfile = actual.get(0);
 
-        assertThat(actualClusterProfile.getId(), is(not(String.format("no-op-cluster-for-%s", Constants.PLUGIN_ID))));
+        assertThat(actualClusterProfile.getId()).isNotEqualTo(String.format("no-op-cluster-for-%s", Constants.PLUGIN_ID));
         this.clusterProfile.setId(actualClusterProfile.getId());
 
-        assertThat(actual, is(Collections.singletonList(this.clusterProfile)));
-        assertThat(responseObject.getElasticAgentProfiles(), is(Collections.singletonList(elasticAgentProfile)));
+        assertThat(actual).isEqualTo(Collections.singletonList(this.clusterProfile));
+        assertThat(responseObject.getElasticAgentProfiles()).isEqualTo(Collections.singletonList(elasticAgentProfile));
 
-        assertThat(elasticAgentProfile.getClusterProfileId(), is(actualClusterProfile.getId()));
+        assertThat(elasticAgentProfile.getClusterProfileId()).isEqualTo(actualClusterProfile.getId());
     }
 
     @Test
@@ -123,17 +121,17 @@ public class MigrateConfigurationRequestExecutorTest {
 
         MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody());
 
-        assertThat(responseObject.getPluginSettings(), is(pluginSettings));
+        assertThat(responseObject.getPluginSettings()).isEqualTo(pluginSettings);
         List<ClusterProfile> actual = responseObject.getClusterProfiles();
         ClusterProfile actualClusterProfile = actual.get(0);
 
-        assertThat(actualClusterProfile.getId(), is(clusterProfileId));
+        assertThat(actualClusterProfile.getId()).isEqualTo(clusterProfileId);
         this.clusterProfile.setId(actualClusterProfile.getId());
 
-        assertThat(actual, is(Collections.singletonList(this.clusterProfile)));
-        assertThat(responseObject.getElasticAgentProfiles(), is(Collections.singletonList(elasticAgentProfile)));
+        assertThat(actual).isEqualTo(Collections.singletonList(this.clusterProfile));
+        assertThat(responseObject.getElasticAgentProfiles()).isEqualTo(Collections.singletonList(elasticAgentProfile));
 
-        assertThat(elasticAgentProfile.getClusterProfileId(), is(clusterProfileId));
+        assertThat(elasticAgentProfile.getClusterProfileId()).isEqualTo(clusterProfileId);
     }
 
     @Test
@@ -145,13 +143,13 @@ public class MigrateConfigurationRequestExecutorTest {
 
         MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody());
 
-        assertThat(responseObject.getPluginSettings(), is(pluginSettings));
+        assertThat(responseObject.getPluginSettings()).isEqualTo(pluginSettings);
         List<ClusterProfile> actual = responseObject.getClusterProfiles();
         ClusterProfile actualClusterProfile = actual.get(0);
         this.clusterProfile.setId(actualClusterProfile.getId());
 
-        assertThat(actual, is(Collections.singletonList(this.clusterProfile)));
-        assertThat(responseObject.getElasticAgentProfiles(), is(Collections.emptyList()));
+        assertThat(actual).isEqualTo(Collections.singletonList(this.clusterProfile));
+        assertThat(responseObject.getElasticAgentProfiles()).isEqualTo(Collections.emptyList());
     }
 
     @Test
@@ -176,16 +174,16 @@ public class MigrateConfigurationRequestExecutorTest {
 
         MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody());
 
-        assertThat(responseObject.getPluginSettings(), is(pluginSettings));
+        assertThat(responseObject.getPluginSettings()).isEqualTo(pluginSettings);
 
         this.clusterProfile.setId(responseObject.getClusterProfiles().get(0).getId());
-        assertThat(responseObject.getClusterProfiles().get(0), is(clusterProfile));
+        assertThat(responseObject.getClusterProfiles().get(0)).isEqualTo(clusterProfile);
 
         this.clusterProfile.setId(responseObject.getClusterProfiles().get(1).getId());
-        assertThat(responseObject.getClusterProfiles().get(1), is(clusterProfile));
+        assertThat(responseObject.getClusterProfiles().get(1)).isEqualTo(clusterProfile);
 
-        assertThat(responseObject.getElasticAgentProfiles().get(0).getClusterProfileId(), is(emptyCluster1.getId()));
-        assertThat(responseObject.getElasticAgentProfiles().get(1).getClusterProfileId(), is(emptyCluster2.getId()));
+        assertThat(responseObject.getElasticAgentProfiles().get(0).getClusterProfileId()).isEqualTo(emptyCluster1.getId());
+        assertThat(responseObject.getElasticAgentProfiles().get(1).getClusterProfileId()).isEqualTo(emptyCluster2.getId());
     }
 
     @Test
@@ -210,16 +208,16 @@ public class MigrateConfigurationRequestExecutorTest {
 
         MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody());
 
-        assertThat(responseObject.getPluginSettings(), is(pluginSettings));
+        assertThat(responseObject.getPluginSettings()).isEqualTo(pluginSettings);
 
         this.clusterProfile.setId(responseObject.getClusterProfiles().get(0).getId());
-        assertThat(responseObject.getClusterProfiles().get(0), is(clusterProfile));
+        assertThat(responseObject.getClusterProfiles().get(0)).isEqualTo(clusterProfile);
 
         //verify cluster is empty.. not migrated
-        assertThat(responseObject.getClusterProfiles().get(1), is(emptyCluster2));
+        assertThat(responseObject.getClusterProfiles().get(1)).isEqualTo(emptyCluster2);
 
-        assertThat(responseObject.getElasticAgentProfiles().get(0).getClusterProfileId(), is(emptyCluster1.getId()));
-        assertThat(responseObject.getElasticAgentProfiles().get(1).getClusterProfileId(), is(emptyCluster1.getId()));
+        assertThat(responseObject.getElasticAgentProfiles().get(0).getClusterProfileId()).isEqualTo(emptyCluster1.getId());
+        assertThat(responseObject.getElasticAgentProfiles().get(1).getClusterProfileId()).isEqualTo(emptyCluster1.getId());
     }
 
     @Test
@@ -244,10 +242,10 @@ public class MigrateConfigurationRequestExecutorTest {
 
         MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody());
 
-        assertThat(responseObject.getPluginSettings(), is(pluginSettings));
+        assertThat(responseObject.getPluginSettings()).isEqualTo(pluginSettings);
 
-        assertThat(responseObject.getClusterProfiles(), is(Arrays.asList(cluster1, cluster2)));
+        assertThat(responseObject.getClusterProfiles()).isEqualTo(Arrays.asList(cluster1, cluster2));
 
-        assertThat(responseObject.getElasticAgentProfiles(), is(Arrays.asList(elasticAgentProfile1, elasticAgentProfile2)));
+        assertThat(responseObject.getElasticAgentProfiles()).isEqualTo(Arrays.asList(elasticAgentProfile1, elasticAgentProfile2));
     }
 }

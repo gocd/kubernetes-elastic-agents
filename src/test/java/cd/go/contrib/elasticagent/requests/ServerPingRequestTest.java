@@ -18,13 +18,13 @@ package cd.go.contrib.elasticagent.requests;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class ServerPingRequestTest {
     @Test
@@ -44,6 +44,6 @@ public class ServerPingRequestTest {
         clusterProfileConfigurations.put("go_server_url", "https://go-server/go");
         ServerPingRequest expected = new ServerPingRequest(Arrays.asList(clusterProfileConfigurations));
 
-        assertThat(serverPingRequest, is(expected));
+        assertThat(serverPingRequest).isEqualTo(expected);
     }
 }

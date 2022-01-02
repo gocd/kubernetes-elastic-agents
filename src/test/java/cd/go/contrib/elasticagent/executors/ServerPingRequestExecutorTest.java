@@ -26,8 +26,8 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -36,10 +36,10 @@ import java.util.*;
 
 import static cd.go.contrib.elasticagent.Constants.JOB_ID_LABEL_KEY;
 import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 public class ServerPingRequestExecutorTest extends BaseTest {
     @Mock
@@ -56,9 +56,9 @@ public class ServerPingRequestExecutorTest extends BaseTest {
     private PodResource<Pod, DoneablePod> podResource;
     private ObjectMeta objectMetadata;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        initMocks(this);
+        openMocks(this);
         when(factory.client(any())).thenReturn(mockedClient);
         when(mockedClient.pods()).thenReturn(mockedOperation);
         when(mockedOperation.create(any(Pod.class))).thenAnswer(new Answer<Pod>() {
@@ -128,13 +128,13 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
     @Test
     public void testShouldTerminateKubernetesPodsRunningAfterTimeout_forMultipleClusters() throws Exception {
-        String agentId1 = "agentId1-" + UUID.randomUUID().toString();
-        String agentId2 = "agentId2-" + UUID.randomUUID().toString();
-        String agentId3 = "agentId3-" + UUID.randomUUID().toString();
+        String agentId1 = "agentId1-" + UUID.randomUUID();
+        String agentId2 = "agentId2-" + UUID.randomUUID();
+        String agentId3 = "agentId3-" + UUID.randomUUID();
 
-        String agentId4 = "agentId4-" + UUID.randomUUID().toString();
-        String agentId5 = "agentId5-" + UUID.randomUUID().toString();
-        String agentId6 = "agentId6-" + UUID.randomUUID().toString();
+        String agentId4 = "agentId4-" + UUID.randomUUID();
+        String agentId5 = "agentId5-" + UUID.randomUUID();
+        String agentId6 = "agentId6-" + UUID.randomUUID();
 
         ClusterProfileProperties clusterProfilePropertiesForCluster1 = new ClusterProfileProperties("https://localhost:8154/go", null, null);
         ClusterProfileProperties clusterProfilePropertiesForCluster2 = new ClusterProfileProperties("https://localhost:8254/go", null, null);
@@ -201,8 +201,8 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
     @Test
     public void testShouldTerminateUnregisteredInstances_forSingleCluster() throws Exception {
-        String unregisteredAgentId1 = "unregisteredAgentId1-" + UUID.randomUUID().toString();
-        String unregisteredAgentId2 = "unregisteredAgentId2-" + UUID.randomUUID().toString();
+        String unregisteredAgentId1 = "unregisteredAgentId1-" + UUID.randomUUID();
+        String unregisteredAgentId2 = "unregisteredAgentId2-" + UUID.randomUUID();
 
         long time = Calendar.getInstance().getTimeInMillis();
         Pod mockedPod = mock(Pod.class);

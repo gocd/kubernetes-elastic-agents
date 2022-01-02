@@ -19,12 +19,12 @@ package cd.go.contrib.elasticagent.requests;
 import cd.go.contrib.elasticagent.ClusterProfileProperties;
 import cd.go.contrib.elasticagent.JobIdentifierMother;
 import com.google.gson.JsonObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class AgentStatusReportRequestTest {
     @Test
@@ -37,7 +37,7 @@ public class AgentStatusReportRequestTest {
         AgentStatusReportRequest agentStatusReportRequest = AgentStatusReportRequest.fromJSON(jsonObject.toString());
 
         AgentStatusReportRequest expected = new AgentStatusReportRequest("some-id", JobIdentifierMother.get(), null);
-        assertThat(agentStatusReportRequest, is(expected));
+        assertThat(agentStatusReportRequest).isEqualTo(expected);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class AgentStatusReportRequestTest {
         ClusterProfileProperties expectedClusterProfileProperties = ClusterProfileProperties.fromConfiguration(clusterProfileConfigurations);
 
         AgentStatusReportRequest expected = new AgentStatusReportRequest("some-id", JobIdentifierMother.get(), expectedClusterProfileProperties);
-        assertThat(agentStatusReportRequest, is(expected));
+        assertThat(agentStatusReportRequest).isEqualTo(expected);
     }
 
 }

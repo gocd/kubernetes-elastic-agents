@@ -17,14 +17,13 @@
 package cd.go.contrib.elasticagent.executors;
 
 import cd.go.contrib.elasticagent.model.MemoryMetadata;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 public class MemoryMetadataTest {
 
@@ -33,16 +32,16 @@ public class MemoryMetadataTest {
         assertTrue(new MemoryMetadata("Disk", false).validate("100mb").isEmpty());
 
         Map<String, String> validate = new MemoryMetadata("Disk", false).validate("xxx");
-        assertThat(validate.size(), is(2));
-        assertThat(validate, hasEntry("message", "Invalid size: xxx"));
-        assertThat(validate, hasEntry("key", "Disk"));
+        assertThat(validate.size()).isEqualTo(2);
+        assertThat(validate).containsEntry("message", "Invalid size: xxx");
+        assertThat(validate).containsEntry("key", "Disk");
     }
 
     @Test
     public void shouldValidateMemoryBytesWhenRequireField() throws Exception {
         Map<String, String> validate = new MemoryMetadata("Disk", true).validate(null);
-        assertThat(validate.size(), is(2));
-        assertThat(validate, hasEntry("message", "Disk must not be blank."));
-        assertThat(validate, hasEntry("key", "Disk"));
+        assertThat(validate.size()).isEqualTo(2);
+        assertThat(validate).containsEntry("message", "Disk must not be blank.");
+        assertThat(validate).containsEntry("key", "Disk");
     }
 }

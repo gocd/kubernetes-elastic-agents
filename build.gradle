@@ -62,11 +62,17 @@ dependencies {
     implementation group: 'org.freemarker', name: 'freemarker', version: '2.3.31'
 
     testImplementation group: 'cd.go.plugin', name: 'go-plugin-api', version: '21.4.0'
-    testImplementation group: 'junit', name: 'junit', version: '4.13.2'
-    testImplementation group: 'org.hamcrest', name: 'hamcrest-library', version: '2.2'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.8.2'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.8.2'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.8.2'
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.21.0'
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '4.2.0'
     testImplementation group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.0'
     testImplementation group: 'org.jsoup', name: 'jsoup', version: '1.14.3'
+}
+
+test {
+    useJUnitPlatform()
 }
 
 jar {

@@ -19,7 +19,6 @@ package cd.go.contrib.elasticagent.executors;
 import cd.go.contrib.elasticagent.ClusterProfileProperties;
 import cd.go.contrib.elasticagent.KubernetesClientFactory;
 import cd.go.contrib.elasticagent.PluginRequest;
-import cd.go.contrib.elasticagent.PluginSettings;
 import cd.go.contrib.elasticagent.builders.PluginStatusReportViewBuilder;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
 import cd.go.contrib.elasticagent.model.reports.agent.KubernetesElasticAgent;
@@ -33,8 +32,8 @@ import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 import io.fabric8.kubernetes.client.dsl.Resource;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.util.ArrayList;
@@ -42,12 +41,11 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static cd.go.contrib.elasticagent.Constants.JOB_IDENTIFIER_LABEL_KEY;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 public class AgentStatusReportExecutorTest {
 
@@ -93,9 +91,9 @@ public class AgentStatusReportExecutorTest {
     @Mock
     private Template template;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        initMocks(this);
+        openMocks(this);
         Pod pod = createDefaultPod();
         pod.getMetadata().setName(elasticAgentId);
         executor = new AgentStatusReportExecutor(statusReportRequest, kubernetesClientFactory, builder);
@@ -130,8 +128,8 @@ public class AgentStatusReportExecutorTest {
 
         GoPluginApiResponse response = executor.execute();
 
-        assertThat(response.responseCode(), is(200));
-        assertThat(response.responseBody(), is("{\"view\":\"my-view\"}"));
+        assertThat(response.responseCode()).isEqualTo(200);
+        assertThat(response.responseBody()).isEqualTo("{\"view\":\"my-view\"}");
     }
 
     @Test
@@ -151,8 +149,8 @@ public class AgentStatusReportExecutorTest {
 
         GoPluginApiResponse response = executor.execute();
 
-        assertThat(response.responseCode(), is(200));
-        assertThat(response.responseBody(), is("{\"view\":\"my-error-view\"}"));
+        assertThat(response.responseCode()).isEqualTo(200);
+        assertThat(response.responseBody()).isEqualTo("{\"view\":\"my-error-view\"}");
     }
 
     @Test
@@ -173,8 +171,8 @@ public class AgentStatusReportExecutorTest {
 
         GoPluginApiResponse response = executor.execute();
 
-        assertThat(response.responseCode(), is(200));
-        assertThat(response.responseBody(), is("{\"view\":\"my-error-view\"}"));
+        assertThat(response.responseCode()).isEqualTo(200);
+        assertThat(response.responseBody()).isEqualTo("{\"view\":\"my-error-view\"}");
     }
 
     private Pod createDefaultPod() {

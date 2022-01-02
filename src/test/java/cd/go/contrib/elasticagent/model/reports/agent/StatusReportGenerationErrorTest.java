@@ -24,12 +24,11 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import freemarker.template.TemplateException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -42,13 +41,13 @@ public class StatusReportGenerationErrorTest {
 
         final GoPluginApiResponse response = StatusReportGenerationErrorHandler.handle(PluginStatusReportViewBuilder.instance(), exception);
 
-        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseCode()).isEqualTo(200);
 
-        final String view = new JsonParser().parse(response.responseBody()).getAsJsonObject().get("view").getAsString();
+        final String view = JsonParser.parseString(response.responseBody()).getAsJsonObject().get("view").getAsString();
         final Document document = Jsoup.parse(view);
 
-        assertThat(document.select(".outer-container .container .error-container blockquote header").text(), is("Pod is not running."));
-        assertThat(document.select(".outer-container .container .error-container blockquote p").text(), is("Can not find a running pod for the provided elastic agent id 'foo'."));
+        assertThat(document.select(".outer-container .container .error-container blockquote header").text()).isEqualTo("Pod is not running.");
+        assertThat(document.select(".outer-container .container .error-container blockquote p").text()).isEqualTo("Can not find a running pod for the provided elastic agent id 'foo'.");
     }
 
     @Test
@@ -61,7 +60,7 @@ public class StatusReportGenerationErrorTest {
 
         final GoPluginApiResponse response = StatusReportGenerationErrorHandler.handle(viewBuilder, exception);
 
-        assertThat(response.responseCode(), is(500));
-        assertThat(response.responseBody(), is("Failed to generate error report: cd.go.contrib.elasticagent.reports.StatusReportGenerationException: Pod is not running."));
+        assertThat(response.responseCode()).isEqualTo(500);
+        assertThat(response.responseBody()).isEqualTo("Failed to generate error report: cd.go.contrib.elasticagent.reports.StatusReportGenerationException: Pod is not running.");
     }
 }

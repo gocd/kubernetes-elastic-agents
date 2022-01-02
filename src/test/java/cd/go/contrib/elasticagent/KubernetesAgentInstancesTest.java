@@ -26,8 +26,8 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 
@@ -38,10 +38,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static cd.go.contrib.elasticagent.Constants.JOB_ID_LABEL_KEY;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 public class KubernetesAgentInstancesTest {
     @Mock
@@ -73,9 +73,9 @@ public class KubernetesAgentInstancesTest {
 
     private HashMap<String, String> testProperties;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        initMocks(this);
+        openMocks(this);
         testProperties = new HashMap<>();
         when(mockCreateAgentRequest.properties()).thenReturn(testProperties);
         when(mockPluginSettings.getMaxPendingPods()).thenReturn(10);

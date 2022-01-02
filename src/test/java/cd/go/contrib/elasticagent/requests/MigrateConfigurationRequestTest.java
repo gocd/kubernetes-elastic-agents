@@ -20,14 +20,13 @@ import cd.go.contrib.elasticagent.ClusterProfile;
 import cd.go.contrib.elasticagent.ElasticAgentProfile;
 import cd.go.contrib.elasticagent.PluginSettings;
 import org.json.JSONException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.Arrays;
 import java.util.HashMap;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MigrateConfigurationRequestTest {
 
@@ -81,9 +80,9 @@ public class MigrateConfigurationRequestTest {
         properties.put("some_key2", "some_value2");
         elasticAgentProfile.setProperties(properties);
 
-        assertThat(pluginSettings, is(request.getPluginSettings()));
-        assertThat(Arrays.asList(clusterProfile), is(request.getClusterProfiles()));
-        assertThat(Arrays.asList(elasticAgentProfile), is(request.getElasticAgentProfiles()));
+        assertThat(pluginSettings).isEqualTo(request.getPluginSettings());
+        assertThat(Arrays.asList(clusterProfile)).isEqualTo(request.getClusterProfiles());
+        assertThat(Arrays.asList(elasticAgentProfile)).isEqualTo(request.getElasticAgentProfiles());
     }
 
     @Test
@@ -96,9 +95,9 @@ public class MigrateConfigurationRequestTest {
 
         MigrateConfigurationRequest request = MigrateConfigurationRequest.fromJSON(requestBody);
 
-        assertThat(new PluginSettings(), is(request.getPluginSettings()));
-        assertThat(Arrays.asList(), is(request.getClusterProfiles()));
-        assertThat(Arrays.asList(), is(request.getElasticAgentProfiles()));
+        assertThat(new PluginSettings()).isEqualTo(request.getPluginSettings());
+        assertThat(Arrays.asList()).isEqualTo(request.getClusterProfiles());
+        assertThat(Arrays.asList()).isEqualTo(request.getElasticAgentProfiles());
     }
 
     @Test

@@ -16,16 +16,15 @@
 
 package cd.go.contrib.elasticagent;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 
 public class AgentTest {
@@ -41,14 +40,14 @@ public class AgentTest {
     @Test
     public void shouldDeserializeFromJSON() throws Exception {
         List<Agent> agents = Agent.fromJSONArray("[{\"agent_id\":\"eeb9e0eb-1f12-4366-a5a5-59011810273b\",\"agent_state\":\"Building\",\"build_state\":\"Cancelled\",\"config_state\":\"Disabled\"}]");
-        assertThat(agents, hasSize(1));
+        assertThat(agents).hasSize(1);
 
         Agent agent = agents.get(0);
 
-        assertThat(agent.elasticAgentId(), is("eeb9e0eb-1f12-4366-a5a5-59011810273b"));
-        assertThat(agent.agentState(), is(Agent.AgentState.Building));
-        assertThat(agent.buildState(), is(Agent.BuildState.Cancelled));
-        assertThat(agent.configState(), is(Agent.ConfigState.Disabled));
+        assertThat(agent.elasticAgentId()).isEqualTo("eeb9e0eb-1f12-4366-a5a5-59011810273b");
+        assertThat(agent.agentState()).isEqualTo(Agent.AgentState.Building);
+        assertThat(agent.buildState()).isEqualTo(Agent.BuildState.Cancelled);
+        assertThat(agent.configState()).isEqualTo(Agent.ConfigState.Disabled);
     }
 
     @Test
@@ -56,21 +55,21 @@ public class AgentTest {
         Agent agent1 = new Agent("eeb9e0eb-1f12-4366-a5a5-59011810273b", Agent.AgentState.Building, Agent.BuildState.Cancelled, Agent.ConfigState.Disabled);
         Agent agent2 = new Agent("eeb9e0eb-1f12-4366-a5a5-59011810273b", Agent.AgentState.Building, Agent.BuildState.Cancelled, Agent.ConfigState.Disabled);
 
-        assertTrue(agent1.equals(agent2));
+        assertEquals(agent1, agent2);
     }
 
     @Test
     public void agentShouldEqualItself() throws Exception {
         Agent agent = new Agent("eeb9e0eb-1f12-4366-a5a5-59011810273b", Agent.AgentState.Building, Agent.BuildState.Cancelled, Agent.ConfigState.Disabled);
 
-        assertTrue(agent.equals(agent));
+        assertEquals(agent, agent);
     }
 
     @Test
     public void agentShouldNotEqualAnotherAgentWithDifferentAttributes() throws Exception {
         Agent agent = new Agent("eeb9e0eb-1f12-4366-a5a5-59011810273b", Agent.AgentState.Building, Agent.BuildState.Cancelled, Agent.ConfigState.Disabled);
 
-        assertFalse(agent.equals(new Agent()));
+        assertNotEquals(agent, new Agent());
     }
 
     @Test
@@ -78,7 +77,7 @@ public class AgentTest {
         Agent agent1 = new Agent("eeb9e0eb-1f12-4366-a5a5-59011810273b", Agent.AgentState.Building, Agent.BuildState.Cancelled, Agent.ConfigState.Disabled);
         Agent agent2 = new Agent("eeb9e0eb-1f12-4366-a5a5-59011810273b", Agent.AgentState.Building, Agent.BuildState.Cancelled, Agent.ConfigState.Disabled);
 
-        assertThat(agent1.hashCode(), equalTo(agent2.hashCode()));
+        assertThat(agent1.hashCode()).isEqualTo(agent2.hashCode());
     }
 
     @Test
@@ -86,6 +85,6 @@ public class AgentTest {
         Agent agent1 = new Agent("eeb9e0eb-1f12-4366-a5a5-59011810273b", Agent.AgentState.Building, Agent.BuildState.Cancelled, Agent.ConfigState.Disabled);
         Agent agent2 = new Agent();
 
-        assertThat(agent1.hashCode(), not(equalTo(agent2.hashCode())));
+        assertThat(agent1.hashCode()).isNotEqualTo(agent2.hashCode());
     }
 }

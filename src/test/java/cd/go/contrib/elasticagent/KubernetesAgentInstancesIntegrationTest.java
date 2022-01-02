@@ -22,9 +22,9 @@ import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.internal.PodOperationsImpl;
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.stubbing.Answer;
@@ -36,13 +36,13 @@ import java.util.List;
 import java.util.Map;
 
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.PRIVILEGED;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 public class KubernetesAgentInstancesIntegrationTest {
 
@@ -65,9 +65,9 @@ public class KubernetesAgentInstancesIntegrationTest {
     @Mock
     private ConsoleLogAppender consoleLogAppender;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        initMocks(this);
+        openMocks(this);
         kubernetesAgentInstances = new KubernetesAgentInstances(mockedKubernetesClientFactory);
         when(mockedKubernetesClientFactory.client(any())).thenReturn(mockKubernetesClient);
         when(pods.create(any())).thenAnswer((Answer<Pod>) invocation -> {
@@ -82,7 +82,7 @@ public class KubernetesAgentInstancesIntegrationTest {
         settings = PluginSettingsMother.defaultPluginSettings();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         FileUtils.deleteQuietly(new File("pod_spec"));
     }
@@ -102,15 +102,15 @@ public class KubernetesAgentInstancesIntegrationTest {
         Pod elasticAgentPod = argumentCaptor.getValue();
 
         List<Container> containers = elasticAgentPod.getSpec().getContainers();
-        assertThat(containers.size(), is(1));
+        assertThat(containers.size()).isEqualTo(1);
 
         Container gocdAgentContainer = containers.get(0);
 
-        assertThat(gocdAgentContainer.getName(), is(instance.name()));
+        assertThat(gocdAgentContainer.getName()).isEqualTo(instance.name());
 
-        assertThat(gocdAgentContainer.getImage(), is("gocd/custom-gocd-agent-alpine:latest"));
-        assertThat(gocdAgentContainer.getImagePullPolicy(), is("IfNotPresent"));
-        assertThat(gocdAgentContainer.getSecurityContext().getPrivileged(), is(false));
+        assertThat(gocdAgentContainer.getImage()).isEqualTo("gocd/custom-gocd-agent-alpine:latest");
+        assertThat(gocdAgentContainer.getImagePullPolicy()).isEqualTo("IfNotPresent");
+        assertThat(gocdAgentContainer.getSecurityContext().getPrivileged()).isEqualTo(false);
     }
 
     @Test
@@ -122,12 +122,12 @@ public class KubernetesAgentInstancesIntegrationTest {
         Pod elasticAgentPod = argumentCaptor.getValue();
 
         List<Container> containers = elasticAgentPod.getSpec().getContainers();
-        assertThat(containers.size(), is(1));
+        assertThat(containers.size()).isEqualTo(1);
 
         Container gocdAgentContainer = containers.get(0);
 
-        assertThat(gocdAgentContainer.getName(), is(instance.name()));
-        assertThat(gocdAgentContainer.getSecurityContext().getPrivileged(), is(true));
+        assertThat(gocdAgentContainer.getName()).isEqualTo(instance.name());
+        assertThat(gocdAgentContainer.getSecurityContext().getPrivileged()).isEqualTo(true);
     }
 
     @Test
@@ -138,14 +138,14 @@ public class KubernetesAgentInstancesIntegrationTest {
         Pod elasticAgentPod = argumentCaptor.getValue();
 
         List<Container> containers = elasticAgentPod.getSpec().getContainers();
-        assertThat(containers.size(), is(1));
+        assertThat(containers.size()).isEqualTo(1);
 
         Container gocdAgentContainer = containers.get(0);
 
         ResourceRequirements resources = gocdAgentContainer.getResources();
 
-        assertThat(resources.getLimits().get("memory").getAmount(), is(String.valueOf(1024 * 1024 * 1024)));
-        assertThat(resources.getLimits().get("cpu").getAmount(), is("2"));
+        assertThat(resources.getLimits().get("memory").getAmount()).isEqualTo(String.valueOf(1024 * 1024 * 1024));
+        assertThat(resources.getLimits().get("cpu").getAmount()).isEqualTo("2");
     }
 
     @Test
@@ -157,7 +157,7 @@ public class KubernetesAgentInstancesIntegrationTest {
         Pod elasticAgentPod = argumentCaptor.getValue();
 
         assertNotNull(elasticAgentPod.getMetadata());
-        assertThat(elasticAgentPod.getMetadata().getName(), is(instance.name()));
+        assertThat(elasticAgentPod.getMetadata().getName()).isEqualTo(instance.name());
     }
 
     @Test
@@ -191,9 +191,9 @@ public class KubernetesAgentInstancesIntegrationTest {
         expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_ELASTIC_PLUGIN_ID", Constants.PLUGIN_ID, null));
 
         List<Container> containers = elasticAgentPod.getSpec().getContainers();
-        assertThat(containers.size(), is(1));
+        assertThat(containers.size()).isEqualTo(1);
 
-        assertThat(containers.get(0).getEnv(), is(expectedEnvVars));
+        assertThat(containers.get(0).getEnv()).isEqualTo(expectedEnvVars);
     }
 
     @Test
@@ -208,7 +208,7 @@ public class KubernetesAgentInstancesIntegrationTest {
         Map<String, String> expectedAnnotations = new HashMap<>();
         expectedAnnotations.putAll(createAgentRequest.properties());
         expectedAnnotations.put(Constants.JOB_IDENTIFIER_LABEL_KEY, new Gson().toJson(createAgentRequest.jobIdentifier()));
-        assertThat(elasticAgentPod.getMetadata().getAnnotations(), is(expectedAnnotations));
+        assertThat(elasticAgentPod.getMetadata().getAnnotations()).isEqualTo(expectedAnnotations);
     }
 
     @Test
@@ -226,7 +226,7 @@ public class KubernetesAgentInstancesIntegrationTest {
         labels.put(Constants.KUBERNETES_POD_KIND_LABEL_KEY, Constants.KUBERNETES_POD_KIND_LABEL_VALUE);
         labels.put(Constants.ENVIRONMENT_LABEL_KEY, createAgentRequest.environment());
 
-        assertThat(elasticAgentPod.getMetadata().getLabels(), is(labels));
+        assertThat(elasticAgentPod.getMetadata().getLabels()).isEqualTo(labels);
     }
 
     //Tests Using Pod Yaml
@@ -249,13 +249,13 @@ public class KubernetesAgentInstancesIntegrationTest {
         Pod elasticAgentPod = argumentCaptor.getValue();
 
         List<Container> containers = elasticAgentPod.getSpec().getContainers();
-        assertThat(containers.size(), is(1));
+        assertThat(containers.size()).isEqualTo(1);
 
         Container gocdAgentContainer = containers.get(0);
 
-        assertThat(gocdAgentContainer.getName(), is("gocd-agent-container"));
-        assertThat(gocdAgentContainer.getImage(), is("gocd/gocd-agent-alpine-3.5:v17.12.0"));
-        assertThat(gocdAgentContainer.getImagePullPolicy(), is("Always"));
+        assertThat(gocdAgentContainer.getName()).isEqualTo("gocd-agent-container");
+        assertThat(gocdAgentContainer.getImage()).isEqualTo("gocd/gocd-agent-alpine-3.5:v17.12.0");
+        assertThat(gocdAgentContainer.getImagePullPolicy()).isEqualTo("Always");
     }
 
     @Test
@@ -269,9 +269,9 @@ public class KubernetesAgentInstancesIntegrationTest {
         Pod elasticAgentPod = argumentCaptor.getValue();
 
         assertNotNull(elasticAgentPod.getMetadata());
-        assertThat(elasticAgentPod.getMetadata().getName(), containsString("test-pod-yaml"));
+        assertThat(elasticAgentPod.getMetadata().getName()).contains("test-pod-yaml");
 
-        assertThat(elasticAgentPod.getMetadata().getName(), is(instance.name()));
+        assertThat(elasticAgentPod.getMetadata().getName()).isEqualTo(instance.name());
     }
 
     @Test
@@ -307,9 +307,9 @@ public class KubernetesAgentInstancesIntegrationTest {
         expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_ELASTIC_PLUGIN_ID", Constants.PLUGIN_ID, null));
 
         List<Container> containers = elasticAgentPod.getSpec().getContainers();
-        assertThat(containers.size(), is(1));
+        assertThat(containers.size()).isEqualTo(1);
 
-        assertThat(containers.get(0).getEnv(), is(expectedEnvVars));
+        assertThat(containers.get(0).getEnv()).isEqualTo(expectedEnvVars);
     }
 
     @Test
@@ -328,7 +328,7 @@ public class KubernetesAgentInstancesIntegrationTest {
         expectedAnnotations.put("annotation-key", "my-fancy-annotation-value");
         expectedAnnotations.put(Constants.JOB_IDENTIFIER_LABEL_KEY, new Gson().toJson(createAgentRequest.jobIdentifier()));
 
-        assertThat(elasticAgentPod.getMetadata().getAnnotations(), is(expectedAnnotations));
+        assertThat(elasticAgentPod.getMetadata().getAnnotations()).isEqualTo(expectedAnnotations);
     }
 
     @Test
@@ -350,7 +350,7 @@ public class KubernetesAgentInstancesIntegrationTest {
 
         labels.put("app", "gocd-agent");
 
-        assertThat(elasticAgentPod.getMetadata().getLabels(), is(labels));
+        assertThat(elasticAgentPod.getMetadata().getLabels()).isEqualTo(labels);
     }
 
     //Tests Using Remote File
@@ -373,13 +373,13 @@ public class KubernetesAgentInstancesIntegrationTest {
         Pod elasticAgentPod = argumentCaptor.getValue();
 
         List<Container> containers = elasticAgentPod.getSpec().getContainers();
-        assertThat(containers.size(), is(1));
+        assertThat(containers.size()).isEqualTo(1);
 
         Container gocdAgentContainer = containers.get(0);
 
-        assertThat(gocdAgentContainer.getName(), is("gocd-agent-container"));
-        assertThat(gocdAgentContainer.getImage(), is("gocd/gocd-agent-alpine-3.8:v19.1.0"));
-        assertThat(gocdAgentContainer.getImagePullPolicy(), is("Always"));
+        assertThat(gocdAgentContainer.getName()).isEqualTo("gocd-agent-container");
+        assertThat(gocdAgentContainer.getImage()).isEqualTo("gocd/gocd-agent-alpine-3.8:v19.1.0");
+        assertThat(gocdAgentContainer.getImagePullPolicy()).isEqualTo("Always");
     }
 
     @Test
@@ -393,9 +393,9 @@ public class KubernetesAgentInstancesIntegrationTest {
         Pod elasticAgentPod = argumentCaptor.getValue();
 
         assertNotNull(elasticAgentPod.getMetadata());
-        assertThat(elasticAgentPod.getMetadata().getName(), containsString("test-pod-json"));
+        assertThat(elasticAgentPod.getMetadata().getName()).contains("test-pod-json");
 
-        assertThat(elasticAgentPod.getMetadata().getName(), is(instance.name()));
+        assertThat(elasticAgentPod.getMetadata().getName()).isEqualTo(instance.name());
     }
 
     @Test
@@ -431,9 +431,9 @@ public class KubernetesAgentInstancesIntegrationTest {
         expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_ELASTIC_PLUGIN_ID", Constants.PLUGIN_ID, null));
 
         List<Container> containers = elasticAgentPod.getSpec().getContainers();
-        assertThat(containers.size(), is(1));
+        assertThat(containers.size()).isEqualTo(1);
 
-        assertThat(containers.get(0).getEnv(), is(expectedEnvVars));
+        assertThat(containers.get(0).getEnv()).isEqualTo(expectedEnvVars);
     }
 
     @Test
@@ -452,7 +452,7 @@ public class KubernetesAgentInstancesIntegrationTest {
         expectedAnnotations.put("annotation-key", "my-fancy-annotation-value");
         expectedAnnotations.put(Constants.JOB_IDENTIFIER_LABEL_KEY, new Gson().toJson(createAgentRequest.jobIdentifier()));
 
-        assertThat(elasticAgentPod.getMetadata().getAnnotations(), is(expectedAnnotations));
+        assertThat(elasticAgentPod.getMetadata().getAnnotations()).isEqualTo(expectedAnnotations);
     }
 
     @Test
@@ -474,7 +474,7 @@ public class KubernetesAgentInstancesIntegrationTest {
 
         labels.put("app", "gocd-agent");
 
-        assertThat(elasticAgentPod.getMetadata().getLabels(), is(labels));
+        assertThat(elasticAgentPod.getMetadata().getLabels()).isEqualTo(labels);
     }
 
 }
