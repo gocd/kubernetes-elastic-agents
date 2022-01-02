@@ -20,13 +20,13 @@ import cd.go.contrib.elasticagent.utils.Util;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
 import java.util.HashMap;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class GetPluginSettingsIconExecutorTest {
 
@@ -34,8 +34,8 @@ public class GetPluginSettingsIconExecutorTest {
     public void rendersIconInBase64() throws Exception {
         GoPluginApiResponse response = new GetPluginSettingsIconExecutor().execute();
         HashMap<String, String> hashMap = new Gson().fromJson(response.responseBody(), new TypeToken<HashMap<String, String>>(){}.getType());
-        assertThat(hashMap.size(), is(2));
-        assertThat(hashMap.get("content_type"), is("image/svg+xml"));
-        assertThat(Util.readResourceBytes("/kubernetes_logo.svg"), is(Base64.getDecoder().decode(hashMap.get("data"))));
+        assertThat(hashMap.size()).isEqualTo(2);
+        assertThat(hashMap.get("content_type")).isEqualTo("image/svg+xml");
+        assertThat(Util.readResourceBytes("/kubernetes_logo.svg")).isEqualTo(Base64.getDecoder().decode(hashMap.get("data")));
     }
 }

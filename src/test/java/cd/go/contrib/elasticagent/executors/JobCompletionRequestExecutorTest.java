@@ -20,8 +20,8 @@ import cd.go.contrib.elasticagent.*;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
 import cd.go.contrib.elasticagent.requests.JobCompletionRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
@@ -30,11 +30,11 @@ import org.mockito.Mock;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 public class JobCompletionRequestExecutorTest {
 
@@ -46,9 +46,9 @@ public class JobCompletionRequestExecutorTest {
     @Captor
     private ArgumentCaptor<List<Agent>> agentsArgumentCaptor;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        initMocks(this);
+        openMocks(this);
     }
 
     @Test

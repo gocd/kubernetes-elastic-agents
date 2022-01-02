@@ -20,14 +20,13 @@ import cd.go.contrib.elasticagent.model.Field;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GetProfileMetadataExecutorTest {
     @Test
@@ -42,7 +41,7 @@ public class GetProfileMetadataExecutorTest {
     public void assertJsonStructure() throws Exception {
         GoPluginApiResponse response = new GetProfileMetadataExecutor().execute();
 
-        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseCode()).isEqualTo(200);
         String expectedJSON = "[\n" +
                 "  {\n" +
                 "    \"key\": \"Image\",\n" +

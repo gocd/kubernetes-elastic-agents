@@ -19,11 +19,11 @@ package cd.go.contrib.elasticagent.executors;
 import cd.go.contrib.elasticagent.*;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class CreateAgentRequestExecutorTest {
@@ -54,12 +54,8 @@ public class CreateAgentRequestExecutorTest {
 
         when(agentInstances.create(any(), any(), any(), any())).thenThrow(new RuntimeException("Ouch!"));
 
-        try {
-            new CreateAgentRequestExecutor(request, agentInstances, pluginRequest).execute();
-            fail("Should have thrown an exception.");
-        } catch (Exception e) {
-            // This is expected. Ignore.
-        }
+        assertThrows(Exception.class, () -> new CreateAgentRequestExecutor(request, agentInstances, pluginRequest).execute());
+
         verify(pluginRequest).appendToConsoleLog(any(), contains("Received request to create a pod for job"));
         verify(pluginRequest).appendToConsoleLog(any(), contains("Failed to create agent pod"));
     }

@@ -17,11 +17,11 @@
 package cd.go.contrib.elasticagent.executors;
 
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class GetCapabilitiesExecutorTest {
 
@@ -29,7 +29,7 @@ public class GetCapabilitiesExecutorTest {
     public void shouldSupportStatusReport() throws Exception {
         final GoPluginApiResponse response = new GetCapabilitiesExecutor().execute();
 
-        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseCode()).isEqualTo(200);
         String expected = "{" +
                 "  \"supports_plugin_status_report\":false," +
                 "  \"supports_cluster_status_report\":true," +

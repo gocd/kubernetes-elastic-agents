@@ -22,7 +22,7 @@ import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.internal.NodeOperationsImpl;
 import io.fabric8.kubernetes.client.dsl.internal.PodOperationsImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.*;
 

@@ -29,11 +29,10 @@ import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.internal.NodeOperationsImpl;
 import io.fabric8.kubernetes.client.dsl.internal.PodOperationsImpl;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -45,7 +44,7 @@ public class ClusterStatusReportExecutorTest {
     private ClusterProfileProperties clusterProfileProperties;
     private KubernetesClient kubernetesClient;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         kubernetesClientFactory = mock(KubernetesClientFactory.class);
         request = mock(ClusterStatusReportRequest.class);
@@ -76,7 +75,7 @@ public class ClusterStatusReportExecutorTest {
 
         final GoPluginApiResponse response = new ClusterStatusReportExecutor(request, builder, kubernetesClientFactory).execute();
 
-        assertThat(response.responseCode(), is(200));
-        assertThat(response.responseBody(), is("{\"view\":\"status-report\"}"));
+        assertThat(response.responseCode()).isEqualTo(200);
+        assertThat(response.responseBody()).isEqualTo("{\"view\":\"status-report\"}");
     }
 }

@@ -24,21 +24,21 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class GetProfileViewExecutorTest {
     @Test
     public void shouldRenderTheTemplateInJSON() throws Exception {
         GoPluginApiResponse response = new GetProfileViewExecutor().execute();
-        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseCode()).isEqualTo(200);
         Map<String, String> hashSet = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
         }.getType());
-        assertThat(hashSet, hasEntry("template", Util.readResource("/profile.template.html")));
+        assertThat(hashSet).containsEntry("template", Util.readResource("/profile.template.html"));
     }
 
     @Test
@@ -51,15 +51,15 @@ public class GetProfileViewExecutorTest {
                 continue;
             }
             final Elements inputFieldForKey = document.getElementsByAttributeValue("ng-model", field.getKey());
-            assertThat(inputFieldForKey, hasSize(1));
+            assertThat(inputFieldForKey).hasSize(1);
 
             final Elements spanToShowError = document.getElementsByAttributeValue("ng-class", "{'is-visible': GOINPUTNAME[" + field.getKey() + "].$error.server}");
-            assertThat(spanToShowError, hasSize(1));
-            assertThat(spanToShowError.attr("ng-show"), is("GOINPUTNAME[" + field.getKey() + "].$error.server"));
-            assertThat(spanToShowError.text(), is("{{GOINPUTNAME[" + field.getKey() + "].$error.server}}"));
+            assertThat(spanToShowError).hasSize(1);
+            assertThat(spanToShowError.attr("ng-show")).isEqualTo("GOINPUTNAME[" + field.getKey() + "].$error.server");
+            assertThat(spanToShowError.text()).isEqualTo("{{GOINPUTNAME[" + field.getKey() + "].$error.server}}");
         }
 
         final Elements inputs = document.select("textarea,input[type=text],select,input[type=checkbox]");
-        assertThat(inputs, hasSize(GetProfileMetadataExecutor.FIELDS.size() - 3)); // do not include SPECIFIED_USING_POD_CONFIGURATION, POD_SPEC_TYPE, REMOTE_FILE_TYPE key
+        assertThat(inputs).hasSize(GetProfileMetadataExecutor.FIELDS.size() - 3); // do not include SPECIFIED_USING_POD_CONFIGURATION, POD_SPEC_TYPE, REMOTE_FILE_TYPE key
     }
 }

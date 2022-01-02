@@ -19,7 +19,7 @@ package cd.go.contrib.elasticagent;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.response.DefaultGoApiResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;

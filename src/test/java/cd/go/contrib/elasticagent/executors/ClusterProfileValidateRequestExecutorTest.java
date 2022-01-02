@@ -19,7 +19,7 @@ package cd.go.contrib.elasticagent.executors;
 import cd.go.contrib.elasticagent.PluginRequest;
 import cd.go.contrib.elasticagent.model.ServerInfo;
 import cd.go.contrib.elasticagent.requests.ClusterProfileValidateRequest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 

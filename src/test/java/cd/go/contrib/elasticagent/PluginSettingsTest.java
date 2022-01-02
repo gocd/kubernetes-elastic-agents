@@ -17,14 +17,13 @@
 package cd.go.contrib.elasticagent;
 
 import com.google.gson.Gson;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class PluginSettingsTest {
 
@@ -41,13 +40,13 @@ public class PluginSettingsTest {
 
         PluginSettings pluginSettings = PluginSettings.fromJSON(new Gson().toJson(pluginSettingsMap));
 
-        assertThat(pluginSettings.getGoServerUrl(), is("https://foo.go.cd/go"));
-        assertThat(pluginSettings.getAutoRegisterTimeout(), is(13));
-        assertThat(pluginSettings.getMaxPendingPods(), is(14));
-        assertThat(pluginSettings.getClusterUrl(), is("https://cloud.example.com"));
-        assertThat(pluginSettings.getCaCertData(), is("foo-ca-certs"));
-        assertThat(pluginSettings.getSecurityToken(), is("foo-token"));
-        assertThat(pluginSettings.getNamespace(), is("gocd"));
+        assertThat(pluginSettings.getGoServerUrl()).isEqualTo("https://foo.go.cd/go");
+        assertThat(pluginSettings.getAutoRegisterTimeout()).isEqualTo(13);
+        assertThat(pluginSettings.getMaxPendingPods()).isEqualTo(14);
+        assertThat(pluginSettings.getClusterUrl()).isEqualTo("https://cloud.example.com");
+        assertThat(pluginSettings.getCaCertData()).isEqualTo("foo-ca-certs");
+        assertThat(pluginSettings.getSecurityToken()).isEqualTo("foo-token");
+        assertThat(pluginSettings.getNamespace()).isEqualTo("gocd");
 
     }
 
@@ -64,13 +63,13 @@ public class PluginSettingsTest {
 
         PluginSettings pluginSettings = PluginSettings.fromJSON(new Gson().toJson(pluginSettingsMap));
 
-        assertThat(pluginSettings.getGoServerUrl(), is("https://foo.go.cd/go"));
-        assertThat(pluginSettings.getAutoRegisterTimeout(), is(10));
-        assertThat(pluginSettings.getMaxPendingPods(), is(10));
-        assertThat(pluginSettings.getClusterUrl(), is("https://cloud.example.com"));
-        assertThat(pluginSettings.getCaCertData(), is("foo-ca-certs"));
-        assertThat(pluginSettings.getSecurityToken(), is("foo-token"));
-        assertThat(pluginSettings.getNamespace(), is("gocd"));
+        assertThat(pluginSettings.getGoServerUrl()).isEqualTo("https://foo.go.cd/go");
+        assertThat(pluginSettings.getAutoRegisterTimeout()).isEqualTo(10);
+        assertThat(pluginSettings.getMaxPendingPods()).isEqualTo(10);
+        assertThat(pluginSettings.getClusterUrl()).isEqualTo("https://cloud.example.com");
+        assertThat(pluginSettings.getCaCertData()).isEqualTo("foo-ca-certs");
+        assertThat(pluginSettings.getSecurityToken()).isEqualTo("foo-token");
+        assertThat(pluginSettings.getNamespace()).isEqualTo("gocd");
     }
 
     @Test
@@ -78,9 +77,9 @@ public class PluginSettingsTest {
         PluginSettings pluginSettings = PluginSettings.fromJSON("{}");
 
         assertNull(pluginSettings.getGoServerUrl());
-        assertThat(pluginSettings.getAutoRegisterTimeout(), is(10));
-        assertThat(pluginSettings.getMaxPendingPods(), is(10));
-        assertThat(pluginSettings.getNamespace(), is("default"));
+        assertThat(pluginSettings.getAutoRegisterTimeout()).isEqualTo(10);
+        assertThat(pluginSettings.getMaxPendingPods()).isEqualTo(10);
+        assertThat(pluginSettings.getNamespace()).isEqualTo("default");
         assertNull(pluginSettings.getClusterUrl());
         assertNull(pluginSettings.getCaCertData());
     }
@@ -92,6 +91,6 @@ public class PluginSettingsTest {
 
         PluginSettings pluginSettings = PluginSettings.fromJSON(new Gson().toJson(pluginSettingsMap));
 
-        assertThat(pluginSettings.getNamespace(), is("default"));
+        assertThat(pluginSettings.getNamespace()).isEqualTo("default");
     }
 }

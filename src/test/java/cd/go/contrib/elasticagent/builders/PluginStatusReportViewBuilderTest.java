@@ -24,14 +24,13 @@ import freemarker.template.TemplateException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Date;
 
 import static java.util.Collections.singletonList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -57,7 +56,7 @@ public class PluginStatusReportViewBuilderTest {
     Element link = document.selectFirst("tbody tr td a");
     System.out.println(link);
 
-    assertThat(link.attr("href"), is("/go/admin/status_reports/cd.go.contrib.elastic.agent.kubernetes/agent/?job_id=3243546575676657"));
+    assertThat(link.attr("href")).isEqualTo("/go/admin/status_reports/cd.go.contrib.elastic.agent.kubernetes/agent/?job_id=3243546575676657");
   }
 
 }

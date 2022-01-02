@@ -16,9 +16,11 @@
 
 package cd.go.contrib.elasticagent.utils;
 
-import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class SizeTest {
 
@@ -29,24 +31,24 @@ public class SizeTest {
         assertEquals(parse.getQuantity(), 24000, 0);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionIfTheGivenSizeHasDifferentSuffix() {
-        Size parse = Size.parse("24000kig");
+        assertThrows(IllegalArgumentException.class, () -> Size.parse("24000kig"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionIfTheGivenSizeHasNoUint() {
-        Size parse = Size.parse("24000");
+        assertThrows(IllegalArgumentException.class, () -> Size.parse("24000"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionIfTheGivenSizeIsNull() {
-        Size.parse(null);
+        assertThrows(IllegalArgumentException.class, () -> Size.parse(null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionIfTheGivenSizeIsBlank() {
-        Size.parse("");
+        assertThrows(IllegalArgumentException.class, () -> Size.parse(""));
     }
 
     @Test

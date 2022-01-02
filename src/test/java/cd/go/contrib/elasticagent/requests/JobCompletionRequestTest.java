@@ -18,14 +18,11 @@ package cd.go.contrib.elasticagent.requests;
 
 import cd.go.contrib.elasticagent.ClusterProfileProperties;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
-import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
-import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JobCompletionRequestTest {
     @Test
@@ -55,19 +52,19 @@ public class JobCompletionRequestTest {
         HashMap<String, String> expectedElasticAgentProperties = new HashMap<>();
         expectedElasticAgentProperties.put("key1", "value1");
         expectedElasticAgentProperties.put("key2", "value2");
-        assertThat(request.properties(), Matchers.<Map<String, String>>equalTo(expectedElasticAgentProperties));
+        assertThat(request.properties()).isEqualTo(expectedElasticAgentProperties);
 
         HashMap<String, String> clusterProfileConfigurations = new HashMap<>();
         clusterProfileConfigurations.put("go_server_url", "go-server-url");
         ClusterProfileProperties expectedClusterProfileProperties = ClusterProfileProperties.fromConfiguration(clusterProfileConfigurations);
-        assertThat(request.clusterProfileProperties(), is(expectedClusterProfileProperties));
+        assertThat(request.clusterProfileProperties()).isEqualTo(expectedClusterProfileProperties);
 
         JobIdentifier expectedJobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", 100L);
         JobIdentifier actualJobIdentifier = request.jobIdentifier();
 
-        assertThat(actualJobIdentifier, is(expectedJobIdentifier));
+        assertThat(actualJobIdentifier).isEqualTo(expectedJobIdentifier);
 
-        assertThat(request.getElasticAgentId(), is("ea1"));
+        assertThat(request.getElasticAgentId()).isEqualTo("ea1");
     }
 
 }

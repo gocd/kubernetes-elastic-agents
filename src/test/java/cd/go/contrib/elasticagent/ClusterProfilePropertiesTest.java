@@ -18,12 +18,12 @@ package cd.go.contrib.elasticagent;
 
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagent.requests.ShouldAssignWorkRequest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class ClusterProfilePropertiesTest {
     @Test
@@ -32,7 +32,7 @@ public class ClusterProfilePropertiesTest {
         clusterProfileConfigurations.put("go_server_url", "go-server-url");
         ClusterProfileProperties profileProperties = ClusterProfileProperties.fromConfiguration(clusterProfileConfigurations);
 
-        assertThat(profileProperties.uuid(), is(profileProperties.uuid()));
+        assertThat(profileProperties.uuid()).isEqualTo(profileProperties.uuid());
     }
 
     @Test
@@ -87,6 +87,6 @@ public class ClusterProfilePropertiesTest {
                 "}";
 
         ShouldAssignWorkRequest shouldAssignWorkRequest = ShouldAssignWorkRequest.fromJSON(shouldAssignWorkJSON);
-        assertThat(createAgentRequest.clusterProfileProperties().uuid(), is(shouldAssignWorkRequest.clusterProfileProperties().uuid()));
+        assertThat(createAgentRequest.clusterProfileProperties().uuid()).isEqualTo(shouldAssignWorkRequest.clusterProfileProperties().uuid());
     }
 }

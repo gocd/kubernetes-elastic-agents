@@ -21,26 +21,24 @@ import cd.go.contrib.elasticagent.utils.Util;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.hamcrest.Matchers;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class GetClusterProfileViewRequestExecutorTest {
     @Test
     public void shouldRenderTheTemplateInJSON() throws Exception {
         GoPluginApiResponse response = new GetClusterProfileViewRequestExecutor().execute();
-        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseCode()).isEqualTo(200);
         Map<String, String> hashSet = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
         }.getType());
-        assertThat(hashSet, Matchers.hasEntry("template", Util.readResource("/plugin-settings.template.html")));
+        assertThat(hashSet).containsEntry("template", Util.readResource("/plugin-settings.template.html"));
     }
 
     @Test
@@ -50,15 +48,15 @@ public class GetClusterProfileViewRequestExecutorTest {
 
         for (Metadata field : GetClusterProfileMetadataExecutor.FIELDS) {
             final Elements inputFieldForKey = document.getElementsByAttributeValue("ng-model", field.getKey());
-            assertThat(inputFieldForKey, hasSize(1));
+            assertThat(inputFieldForKey).hasSize(1);
 
             final Elements spanToShowError = document.getElementsByAttributeValue("ng-show", "GOINPUTNAME[" + field.getKey() + "].$error.server");
-            assertThat(spanToShowError, hasSize(1));
-            assertThat(spanToShowError.attr("ng-show"), is("GOINPUTNAME[" + field.getKey() + "].$error.server"));
-            assertThat(spanToShowError.text(), is("{{GOINPUTNAME[" + field.getKey() + "].$error.server}}"));
+            assertThat(spanToShowError).hasSize(1);
+            assertThat(spanToShowError.attr("ng-show")).isEqualTo("GOINPUTNAME[" + field.getKey() + "].$error.server");
+            assertThat(spanToShowError.text()).isEqualTo("{{GOINPUTNAME[" + field.getKey() + "].$error.server}}");
         }
 
         final Elements inputs = document.select("textarea,input[type=text],select,input[type=checkbox]");
-        assertThat(inputs, hasSize(GetProfileMetadataExecutor.FIELDS.size() - 3)); // do not include SPECIFIED_USING_POD_CONFIGURATION, POD_SPEC_TYPE, REMOTE_FILE_TYPE key
+        assertThat(inputs).hasSize(GetProfileMetadataExecutor.FIELDS.size() - 3); // do not include SPECIFIED_USING_POD_CONFIGURATION, POD_SPEC_TYPE, REMOTE_FILE_TYPE key
     }
 }
