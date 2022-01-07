@@ -57,7 +57,7 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
     implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
     implementation group: 'joda-time', name: 'joda-time', version: '2.10.13'
-    implementation group: 'io.fabric8', name: 'kubernetes-client', version: '4.6.0'
+    implementation group: 'io.fabric8', name: 'kubernetes-client', version: '5.11.2'
     implementation group: 'com.github.spullara.mustache.java', name: 'compiler', version: '0.9.10'
     implementation group: 'org.freemarker', name: 'freemarker', version: '2.3.31'
 
