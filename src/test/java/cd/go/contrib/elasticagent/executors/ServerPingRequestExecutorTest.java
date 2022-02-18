@@ -18,7 +18,6 @@ package cd.go.contrib.elasticagent.executors;
 
 import cd.go.contrib.elasticagent.*;
 import cd.go.contrib.elasticagent.requests.ServerPingRequest;
-import io.fabric8.kubernetes.api.model.DoneablePod;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
@@ -29,7 +28,6 @@ import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.util.*;
@@ -47,13 +45,11 @@ public class ServerPingRequestExecutorTest extends BaseTest {
     @Mock
     private KubernetesClient mockedClient;
     @Mock
-    private MixedOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>> mockedOperation;
+    private MixedOperation<Pod, PodList, PodResource<Pod>> mockedOperation;
     @Mock
     private Pod mockedPod;
     @Mock
-    private PluginRequest pluginRequest;
-    @Mock
-    private PodResource<Pod, DoneablePod> podResource;
+    private PodResource<Pod> podResource;
     private ObjectMeta objectMetadata;
 
     @BeforeEach
@@ -61,12 +57,9 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         openMocks(this);
         when(factory.client(any())).thenReturn(mockedClient);
         when(mockedClient.pods()).thenReturn(mockedOperation);
-        when(mockedOperation.create(any(Pod.class))).thenAnswer(new Answer<Pod>() {
-            @Override
-            public Pod answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                return (Pod) args[0];
-            }
+        when(mockedOperation.create(any(Pod.class))).thenAnswer((Answer<Pod>) invocation -> {
+            Object[] args = invocation.getArguments();
+            return (Pod) args[0];
         });
 
         when(mockedOperation.withName(anyString())).thenReturn(podResource);

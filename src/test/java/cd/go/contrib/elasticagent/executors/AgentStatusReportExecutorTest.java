@@ -34,6 +34,7 @@ import io.fabric8.kubernetes.client.dsl.PodResource;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Answers;
 import org.mockito.Mock;
 
 import java.util.ArrayList;
@@ -61,32 +62,32 @@ public class AgentStatusReportExecutorTest {
     @Mock
     private KubernetesClientFactory kubernetesClientFactory;
 
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private KubernetesClient client;
 
     @Mock
     private PluginStatusReportViewBuilder builder;
 
     @Mock
-    private MixedOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>> mockedOperation;
+    private MixedOperation<Pod, PodList, PodResource<Pod>> mockedOperation;
 
     @Mock
     private PodList podList;
 
     @Mock
-    private MixedOperation<Event, EventList, DoneableEvent, Resource<Event, DoneableEvent>> events;
+    private MixedOperation<Event, EventList, Resource<Event>> events;
 
     @Mock
-    private NonNamespaceOperation<Event, EventList, DoneableEvent, Resource<Event, DoneableEvent>> eventspace;
+    private NonNamespaceOperation<Event, EventList, Resource<Event>> eventspace;
 
     @Mock
     private EventList eventsList;
 
     @Mock
-    private PodResource<Pod, DoneablePod> podresource;
+    private PodResource<Pod> podresource;
 
     @Mock
-    private PodResource<Pod, DoneablePod> containerResource;
+    private PodResource<Pod> containerResource;
 
     @Mock
     private Template template;
@@ -107,7 +108,7 @@ public class AgentStatusReportExecutorTest {
 
         when(containerResource.getLog()).thenReturn("agent-logs");
 
-        when(client.events()).thenReturn(events);
+        when(client.v1().events()).thenReturn(events);
         when(events.inAnyNamespace()).thenReturn(eventspace);
         when(eventspace.list()).thenReturn(eventsList);
         when(eventsList.getItems()).thenReturn(new ArrayList<>());

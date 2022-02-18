@@ -21,7 +21,6 @@ import cd.go.contrib.elasticagent.model.JobIdentifier;
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagent.requests.ShouldAssignWorkRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import io.fabric8.kubernetes.api.model.DoneablePod;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -30,7 +29,6 @@ import io.fabric8.kubernetes.client.dsl.PodResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
@@ -57,7 +55,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     @Mock
     private PluginRequest pluginRequest;
     @Mock
-    private MixedOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>> mockedOperation;
+    private MixedOperation<Pod, PodList, PodResource<Pod>> mockedOperation;
     private String environment = "QA";
 
     @BeforeEach
@@ -70,12 +68,9 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
         when(mockedOperation.list()).thenReturn(podList);
         when(podList.getItems()).thenReturn(Collections.emptyList());
 
-        when(mockedOperation.create(any(Pod.class))).thenAnswer(new Answer<Pod>() {
-            @Override
-            public Pod answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                return (Pod) args[0];
-            }
+        when(mockedOperation.create(any(Pod.class))).thenAnswer((Answer<Pod>) invocation -> {
+            Object[] args = invocation.getArguments();
+            return (Pod) args[0];
         });
 
         agentInstances = new KubernetesAgentInstances(factory);
