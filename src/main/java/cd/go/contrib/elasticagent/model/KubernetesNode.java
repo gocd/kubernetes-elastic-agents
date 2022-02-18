@@ -17,7 +17,6 @@
 package cd.go.contrib.elasticagent.model;
 
 import cd.go.contrib.elasticagent.utils.Size;
-import cd.go.contrib.elasticagent.utils.Util;
 import io.fabric8.kubernetes.api.model.Node;
 
 import java.util.ArrayList;

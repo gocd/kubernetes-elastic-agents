@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Properties;
 import java.util.TimeZone;

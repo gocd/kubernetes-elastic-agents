@@ -17,7 +17,6 @@
 package cd.go.contrib.elasticagent.requests;
 
 import cd.go.contrib.elasticagent.ClusterProfileProperties;
-import cd.go.contrib.elasticagent.KubernetesAgentInstances;
 import cd.go.contrib.elasticagent.builders.PluginStatusReportViewBuilder;
 import cd.go.contrib.elasticagent.executors.ClusterStatusReportExecutor;
 import com.google.gson.annotations.Expose;

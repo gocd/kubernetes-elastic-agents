@@ -20,12 +20,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 
 public interface Clock {
-    Clock DEFAULT = new Clock() {
-        @Override
-        public DateTime now() {
-            return new DateTime();
-        }
-    };
+    Clock DEFAULT = DateTime::new;
 
     DateTime now();
 

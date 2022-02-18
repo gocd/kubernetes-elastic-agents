@@ -16,7 +16,6 @@
 
 package cd.go.contrib.elasticagent.builders;
 
-import cd.go.contrib.elasticagent.model.KubernetesCluster;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
