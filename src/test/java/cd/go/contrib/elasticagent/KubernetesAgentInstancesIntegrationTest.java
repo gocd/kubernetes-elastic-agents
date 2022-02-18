@@ -20,7 +20,8 @@ import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import com.google.gson.Gson;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.dsl.internal.PodOperationsImpl;
+import io.fabric8.kubernetes.client.dsl.MixedOperation;
+import io.fabric8.kubernetes.client.dsl.PodResource;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,7 +61,7 @@ public class KubernetesAgentInstancesIntegrationTest {
     private KubernetesClient mockKubernetesClient;
 
     @Mock
-    private PodOperationsImpl pods;
+    private MixedOperation<Pod, PodList, PodResource<Pod>> pods;
 
     @Mock
     private ConsoleLogAppender consoleLogAppender;
@@ -70,7 +71,7 @@ public class KubernetesAgentInstancesIntegrationTest {
         openMocks(this);
         kubernetesAgentInstances = new KubernetesAgentInstances(mockedKubernetesClientFactory);
         when(mockedKubernetesClientFactory.client(any())).thenReturn(mockKubernetesClient);
-        when(pods.create(any())).thenAnswer((Answer<Pod>) invocation -> {
+        when(pods.create(any(Pod.class))).thenAnswer((Answer<Pod>) invocation -> {
             Object[] args = invocation.getArguments();
             return (Pod) args[0];
         });

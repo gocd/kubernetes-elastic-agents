@@ -24,13 +24,19 @@ import cd.go.contrib.elasticagent.model.KubernetesCluster;
 import cd.go.contrib.elasticagent.requests.ClusterStatusReportRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import freemarker.template.Template;
+import io.fabric8.kubernetes.api.model.Node;
 import io.fabric8.kubernetes.api.model.NodeList;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.dsl.internal.NodeOperationsImpl;
-import io.fabric8.kubernetes.client.dsl.internal.PodOperationsImpl;
+import io.fabric8.kubernetes.client.dsl.MixedOperation;
+import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
+import io.fabric8.kubernetes.client.dsl.PodResource;
+import io.fabric8.kubernetes.client.dsl.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,14 +44,22 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+
 public class ClusterStatusReportExecutorTest {
     private KubernetesClientFactory kubernetesClientFactory;
     private ClusterStatusReportRequest request;
     private ClusterProfileProperties clusterProfileProperties;
     private KubernetesClient kubernetesClient;
 
+    @Mock
+    private NonNamespaceOperation<Node, NodeList, Resource<Node>> nodes;
+
+    @Mock
+    private MixedOperation<Pod, PodList, PodResource<Pod>> pods;
+
     @BeforeEach
     public void setUp() throws Exception {
+        MockitoAnnotations.openMocks(this);
         kubernetesClientFactory = mock(KubernetesClientFactory.class);
         request = mock(ClusterStatusReportRequest.class);
         clusterProfileProperties = mock(ClusterProfileProperties.class);
@@ -57,9 +71,6 @@ public class ClusterStatusReportExecutorTest {
 
     @Test
     public void shouldBuildStatusReportView() throws Exception {
-        NodeOperationsImpl nodes = mock(NodeOperationsImpl.class);
-        PodOperationsImpl pods = mock(PodOperationsImpl.class);
-
         when(nodes.list()).thenReturn(new NodeList());
         when(kubernetesClient.nodes()).thenReturn(nodes);
 

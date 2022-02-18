@@ -111,7 +111,7 @@ public class KubernetesElasticAgent {
     private static ArrayList<KubernetesPodEvent> getAllEventsForPod(Pod pod, KubernetesClient client) {
         ArrayList<KubernetesPodEvent> events = new ArrayList<>();
 
-        for (Event event : client.events().inAnyNamespace().list().getItems()) {
+        for (Event event : client.v1().events().inAnyNamespace().list().getItems()) {
             if (event.getInvolvedObject().getKind().equals("Pod") && event.getInvolvedObject().getName().equals(pod.getMetadata().getName())) {
                 KubernetesPodEvent podEvent = new KubernetesPodEvent(event.getFirstTimestamp(),
                         event.getLastTimestamp(),

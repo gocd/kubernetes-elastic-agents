@@ -17,22 +17,38 @@
 package cd.go.contrib.elasticagent.model;
 
 import cd.go.contrib.elasticagent.Constants;
+import io.fabric8.kubernetes.api.model.Node;
 import io.fabric8.kubernetes.api.model.NodeList;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.dsl.internal.NodeOperationsImpl;
-import io.fabric8.kubernetes.client.dsl.internal.PodOperationsImpl;
+import io.fabric8.kubernetes.client.dsl.MixedOperation;
+import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
+import io.fabric8.kubernetes.client.dsl.PodResource;
+import io.fabric8.kubernetes.client.dsl.Resource;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import static org.mockito.Mockito.*;
 
 public class KubernetesClusterTest {
+
+    @Mock
+    private NonNamespaceOperation<Node, NodeList, Resource<Node>> nodes;
+
+    @Mock
+    private MixedOperation<Pod, PodList, PodResource<Pod>> pods;
+
+    @BeforeEach
+    public void setUp() throws Exception {
+        MockitoAnnotations.openMocks(this);
+    }
+
     @Test
     public void shouldCreateKubernetesClusterObject() throws Exception {
         final KubernetesClient kubernetesClient = mock(KubernetesClient.class);
-
-        NodeOperationsImpl nodes = mock(NodeOperationsImpl.class);
-        PodOperationsImpl pods = mock(PodOperationsImpl.class);
 
         when(nodes.list()).thenReturn(new NodeList());
         when(kubernetesClient.nodes()).thenReturn(nodes);

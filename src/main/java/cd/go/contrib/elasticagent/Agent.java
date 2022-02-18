@@ -16,8 +16,6 @@
 
 package cd.go.contrib.elasticagent;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;

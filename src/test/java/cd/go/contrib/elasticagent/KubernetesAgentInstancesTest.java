@@ -18,7 +18,6 @@ package cd.go.contrib.elasticagent;
 
 import cd.go.contrib.elasticagent.model.JobIdentifier;
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
-import io.fabric8.kubernetes.api.model.DoneablePod;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
@@ -39,7 +38,6 @@ import java.util.Map;
 
 import static cd.go.contrib.elasticagent.Constants.JOB_ID_LABEL_KEY;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -63,7 +61,7 @@ public class KubernetesAgentInstancesTest {
     PluginRequest mockPluginRequest;
 
     @Mock
-    private MixedOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>> mockedOperation;
+    private MixedOperation<Pod, PodList, PodResource<Pod>> mockedOperation;
 
     @Mock
     private PodList podList;
