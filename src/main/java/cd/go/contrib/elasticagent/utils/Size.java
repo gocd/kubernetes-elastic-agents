@@ -17,6 +17,7 @@
 package cd.go.contrib.elasticagent.utils;
 
 import com.google.common.collect.ImmutableSortedMap;
+import io.fabric8.kubernetes.api.model.Quantity;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.DecimalFormat;
@@ -103,6 +104,10 @@ public class Size implements Comparable<Size> {
         }
 
         return new Size(count, unit);
+    }
+
+    public static Size fromQuantity(Quantity quantity) {
+        return bytes(Quantity.getAmountInBytes(quantity).doubleValue());
     }
 
     public double getQuantity() {

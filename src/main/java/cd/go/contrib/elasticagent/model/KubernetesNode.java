@@ -47,13 +47,11 @@ public class KubernetesNode {
         nodeAddress = node.getStatus().getAddresses().get(0).getAddress();
 
         totalCPU = node.getStatus().getCapacity().get("cpu").getAmount();
-        Size mem = Size.parse(node.getStatus().getCapacity().get("memory").getAmount());
-        totalMemory = mem.readableSize();
+        totalMemory = Size.fromQuantity(node.getStatus().getCapacity().get("memory")).readableSize();
         totalPods = node.getStatus().getCapacity().get("pods").getAmount();
 
         allocatableCPU = node.getStatus().getAllocatable().get("cpu").getAmount();
-        String allocatableMemory = node.getStatus().getAllocatable().get("memory").getAmount();
-        this.allocatableMemory = Size.parse(allocatableMemory).readableSize();
+        allocatableMemory = Size.fromQuantity(node.getStatus().getAllocatable().get("memory")).readableSize();
         allocatablePods = node.getStatus().getAllocatable().get("pods").getAmount();
 
         osImage = node.getStatus().getNodeInfo().getOsImage();

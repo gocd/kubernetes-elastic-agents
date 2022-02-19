@@ -17,6 +17,7 @@
 package cd.go.contrib.elasticagent.utils;
 
 
+import io.fabric8.kubernetes.api.model.Quantity;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,6 +50,11 @@ public class SizeTest {
     @Test
     public void shouldThrowExceptionIfTheGivenSizeIsBlank() {
         assertThrows(IllegalArgumentException.class, () -> Size.parse(""));
+    }
+
+    @Test
+    public void fromQuantity() {
+        assertEquals("58 GB", Size.fromQuantity(Quantity.parse("58Gi")).readableSize());
     }
 
     @Test
