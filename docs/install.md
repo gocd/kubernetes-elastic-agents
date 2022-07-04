@@ -7,7 +7,8 @@
 
 ## Installation
 
-* Copy the file `build/libs/kubernetes-elastic-agent-plugin-VERSION.jar` to the GoCD server under `${GO_SERVER_DIR}/plugins/external` 
+* Download the right version of the plugin from [the Releases](https://github.com/gocd/kubernetes-elastic-agents/releases) page. The direct link to the latest released version is: https://github.com/gocd/kubernetes-elastic-agents/releases/latest
+* Copy the file `kubernetes-elastic-agent-plugin-VERSION.jar` to the GoCD server under `${GO_SERVER_DIR}/plugins/external` 
 and restart the server. 
 * The `GO_SERVER_DIR` is usually `/var/lib/go-server` on Linux and `C:\Program Files\Go Server` 
 on Windows.
