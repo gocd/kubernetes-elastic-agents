@@ -64,7 +64,7 @@ dependencies {
     implementation group: 'org.freemarker', name: 'freemarker', version: '2.3.31'
 
     testImplementation group: 'cd.go.plugin', name: 'go-plugin-api', version: '21.4.0'
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.8.2'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.9.0'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.8.2'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.8.2'
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.23.1'
