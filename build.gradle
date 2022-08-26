@@ -70,7 +70,7 @@ dependencies {
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.23.1'
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '4.7.0'
     testImplementation group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.1'
-    testImplementation group: 'org.jsoup', name: 'jsoup', version: '1.15.2'
+    testImplementation group: 'org.jsoup', name: 'jsoup', version: '1.15.3'
 }
 
 test {
