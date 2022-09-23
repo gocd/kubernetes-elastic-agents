@@ -55,7 +55,7 @@ java {
 ext {
     deps = [
         gocdPluginApi: 'cd.go.plugin:go-plugin-api:22.2.0',
-        junit        : 'org.junit.jupiter:junit-jupiter-api:5.9.0',
+        junit        : 'org.junit.jupiter:junit-jupiter-api:5.9.1',
     ]
 
     versions = project.ext.deps.collectEntries { lib, libGav -> [lib, libGav.split(':').last()] }
