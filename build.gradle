@@ -55,7 +55,6 @@ java {
 ext {
     deps = [
         gocdPluginApi: 'cd.go.plugin:go-plugin-api:22.2.0',
-        junit        : 'org.junit.jupiter:junit-jupiter-api:5.9.1',
     ]
 
     versions = project.ext.deps.collectEntries { lib, libGav -> [lib, libGav.split(':').last()] }
@@ -72,10 +71,11 @@ dependencies {
     implementation group: 'com.github.spullara.mustache.java', name: 'compiler', version: '0.9.10'
     implementation group: 'org.freemarker', name: 'freemarker', version: '2.3.31'
 
-    testImplementation group: 'cd.go.plugin', name: 'go-plugin-api', version: project.versions.gocdPluginApi
-    testImplementation project.deps.junit
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: project.versions.junit
-    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: project.versions.junit
+    testImplementation project.deps.gocdPluginApi
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params'
+    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.23.1'
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '4.8.0'
     testImplementation group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.1'
