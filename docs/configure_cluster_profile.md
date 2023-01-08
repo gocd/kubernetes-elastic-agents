@@ -17,7 +17,7 @@
         - namespace: list, get
         - pods, pods/log: *
         ```
-    7. Optionally, Specify `Cluster ca certificate data`.
+    7. Optionally, Specify `Cluster CA certificate data`.
     
     !["Kubernetes Cluster Profile"][1]
     

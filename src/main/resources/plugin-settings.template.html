@@ -124,11 +124,11 @@
 		</div>
 
 		<div class="row">
-			<label>Cluster ca certificate data</label>
+			<label>Cluster CA certificate data</label>
 			<textarea ng-model="kubernetes_cluster_ca_cert" rows="7"></textarea>
 			<span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server">{{GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server}}</span>
 			<label class="form-help-content">
-				Kubernetes cluster ca certificate data. Do not provide <code> -----BEGIN * </code> and <code> -----END * </code> in your certificate data.
+				Kubernetes cluster CA certificate data. Include the entire PEM contents, including <code> -----BEGIN * </code> and <code> -----END * </code>.
 			</label>
 		</div>
 	</fieldset>
