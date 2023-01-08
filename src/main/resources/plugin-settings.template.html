@@ -119,8 +119,7 @@
 			<textarea rows="5" ng-model="security_token"></textarea>
 			<span class="form_error form-error" ng-show="GOINPUTNAME[security_token].$error.server">{{GOINPUTNAME[security_token].$error.server}}</span>
 			<label class="form-help-content">
-				Get the service account token by running following command <code>kubectl describe secret
-				TOKEN_NAME</code> and copy the value of token here.
+				Get the service account token by running following command <code>kubectl describe secret TOKEN_NAME</code> and copy the value of token here.
 			</label>
 		</div>
 
@@ -129,8 +128,7 @@
 			<textarea ng-model="kubernetes_cluster_ca_cert" rows="7"></textarea>
 			<span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server">{{GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server}}</span>
 			<label class="form-help-content">
-				Kubernetes cluster ca certificate data. Do not provide <code> -----BEGIN * </code> and <code> -----END
-				* </code> in your certificate data.
+				Kubernetes cluster ca certificate data. Do not provide <code> -----BEGIN * </code> and <code> -----END * </code> in your certificate data.
 			</label>
 		</div>
 	</fieldset>
