@@ -17,8 +17,8 @@
 
 1. Specify `Cluster URL`.
 
-1. Optionally specify `Namespace`. If not provided, GoCD agents will be
-   launched in the default Kubernetes namespace. Note: If you have multiple
+1. Optionally specify `Namespace`. If not provided, the plugin will launch GoCD
+   agent pods in the default Kubernetes namespace. Note: If you have multiple
    GoCD servers with cluster profiles pointing to the same Kubernetes cluster,
    make sure that the namespace used by each GoCD server is different.
    Otherwise, the plugin of one GoCD server will end up terminating pods
@@ -29,14 +29,13 @@
 
    | Resource       | Actions     |
    | -------------- | ----------- |
-   | nodes          | list, get   |
+   | nodes          | list        |
    | events         | list        |
-   | namespace      | list, get   |
    | pods, pods/log | *           |
 
    If the plugin is using a non-default namespace, then the pods and pods/log permissions
    can be limited to that namespace (using a role + role binding), and the plugin
-   will still work. All other permissions need to be attached at the cluster
+   will still work. Nodes list and events list need to be attached at the cluster
    level (using a cluster role + cluster role binding) regardless of the
    namespace chosen.
 
