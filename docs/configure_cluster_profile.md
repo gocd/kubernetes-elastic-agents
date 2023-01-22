@@ -39,7 +39,10 @@
    level (using a cluster role + cluster role binding) regardless of the
    namespace chosen.
 
-1. Optionally specify `Cluster CA certificate data`. This should be the base-64-encoded certificate
+   If you are comfortable with cluster-wide permissions you can refer to the [example within the GoCD official helm
+   chart](https://github.com/gocd/helm-chart/blob/master/gocd/templates/gocd-ea-cluster-role.yaml).
+
+1. Specify `Cluster CA certificate data`. This should be the base-64-encoded certificate
    of the Kubernetes API server. It can be omitted in the rare case that the Kubernetes API
    is configured to serve plain HTTP.
 
