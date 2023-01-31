@@ -17,21 +17,20 @@
 package cd.go.contrib.elasticagent;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
+import java.time.Instant;
 import java.util.Map;
 
 public class KubernetesInstance {
-    private final DateTime createdAt;
+    private final Instant createdAt;
     private final String environment;
     private final String name;
     private final Map<String, String> properties;
     private final Long jobId;
     private final PodState state;
 
-    public KubernetesInstance(DateTime createdAt, String environment, String name, Map<String, String> properties, Long jobId, PodState state) {
-        this.createdAt = createdAt.withZone(DateTimeZone.UTC);
+    public KubernetesInstance(Instant createdAt, String environment, String name, Map<String, String> properties, Long jobId, PodState state) {
+        this.createdAt = createdAt;
         this.environment = environment;
         this.name = name;
         this.properties = properties;
@@ -47,7 +46,7 @@ public class KubernetesInstance {
         return name;
     }
 
-    public DateTime createdAt() {
+    public Instant createdAt() {
         return createdAt;
     }
 

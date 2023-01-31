@@ -24,13 +24,15 @@ import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.PodResource;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.stubbing.Answer;
 
+import java.time.Instant;
 import java.util.*;
+
+import static java.time.temporal.ChronoUnit.MINUTES;
 
 import static cd.go.contrib.elasticagent.Constants.JOB_ID_LABEL_KEY;
 import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
@@ -66,7 +68,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         when(podResource.get()).thenReturn(mockedPod);
 
         objectMetadata = new ObjectMeta();
-        objectMetadata.setCreationTimestamp(getSimpleDateFormat().format(new Date()));
+        objectMetadata.setCreationTimestamp(getSimpleDateFormat().format(Instant.now()));
 
         when(mockedPod.getMetadata()).thenReturn(objectMetadata);
 
@@ -88,9 +90,9 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         Agent agent2 = new Agent(agentId2, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled); //idle just created
         Agent agent3 = new Agent(agentId3, Agent.AgentState.Building, Agent.BuildState.Building, Agent.ConfigState.Enabled); //running time elapsed
 
-        KubernetesInstance k8sPodForAgent1 = new KubernetesInstance(new DateTime().minusMinutes(100), null, agentId1, Collections.emptyMap(), 1L, PodState.Running);
-        KubernetesInstance k8sPodForAgent2 = new KubernetesInstance(new DateTime(), null, agentId2, Collections.emptyMap(), 2L, PodState.Running);
-        KubernetesInstance k8sPodForAgent3 = new KubernetesInstance(new DateTime().minusMinutes(100), null, agentId3, Collections.emptyMap(), 3L, PodState.Running);
+        KubernetesInstance k8sPodForAgent1 = new KubernetesInstance(Instant.now().minus(100, MINUTES), null, agentId1, Collections.emptyMap(), 1L, PodState.Running);
+        KubernetesInstance k8sPodForAgent2 = new KubernetesInstance(Instant.now(), null, agentId2, Collections.emptyMap(), 2L, PodState.Running);
+        KubernetesInstance k8sPodForAgent3 = new KubernetesInstance(Instant.now().minus(100, MINUTES), null, agentId3, Collections.emptyMap(), 3L, PodState.Running);
 
         final Agents allAgentsInitially = new Agents(Arrays.asList(agent1, agent2, agent3));
         final Agents allAgentsAfterDisablingIdleAgents = new Agents(Arrays.asList(agent1AfterDisabling, agent2, agent3));
@@ -142,13 +144,13 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         Agent agent5 = new Agent(agentId5, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled); //idle just created
         Agent agent6 = new Agent(agentId6, Agent.AgentState.Building, Agent.BuildState.Building, Agent.ConfigState.Enabled); //running time elapsed
 
-        KubernetesInstance k8sPodForAgent1 = new KubernetesInstance(new DateTime().minusMinutes(100), null, agentId1, Collections.emptyMap(), 1L, PodState.Running);
-        KubernetesInstance k8sPodForAgent2 = new KubernetesInstance(new DateTime(), null, agentId2, Collections.emptyMap(), 2L, PodState.Running);
-        KubernetesInstance k8sPodForAgent3 = new KubernetesInstance(new DateTime().minusMinutes(100), null, agentId3, Collections.emptyMap(), 3L, PodState.Running);
+        KubernetesInstance k8sPodForAgent1 = new KubernetesInstance(Instant.now().minus(100, MINUTES), null, agentId1, Collections.emptyMap(), 1L, PodState.Running);
+        KubernetesInstance k8sPodForAgent2 = new KubernetesInstance(Instant.now(), null, agentId2, Collections.emptyMap(), 2L, PodState.Running);
+        KubernetesInstance k8sPodForAgent3 = new KubernetesInstance(Instant.now().minus(100, MINUTES), null, agentId3, Collections.emptyMap(), 3L, PodState.Running);
 
-        KubernetesInstance k8sPodForAgent4 = new KubernetesInstance(new DateTime().minusMinutes(100), null, agentId4, Collections.emptyMap(), 1L, PodState.Running);
-        KubernetesInstance k8sPodForAgent5 = new KubernetesInstance(new DateTime(), null, agentId5, Collections.emptyMap(), 2L, PodState.Running);
-        KubernetesInstance k8sPodForAgent6 = new KubernetesInstance(new DateTime().minusMinutes(100), null, agentId6, Collections.emptyMap(), 3L, PodState.Running);
+        KubernetesInstance k8sPodForAgent4 = new KubernetesInstance(Instant.now().minus(100, MINUTES), null, agentId4, Collections.emptyMap(), 1L, PodState.Running);
+        KubernetesInstance k8sPodForAgent5 = new KubernetesInstance(Instant.now(), null, agentId5, Collections.emptyMap(), 2L, PodState.Running);
+        KubernetesInstance k8sPodForAgent6 = new KubernetesInstance(Instant.now().minus(100, MINUTES), null, agentId6, Collections.emptyMap(), 3L, PodState.Running);
 
         final Agents allAgentsInitially = new Agents(Arrays.asList(agent1, agent2, agent3, agent4, agent5, agent6));
         final Agents allAgentsAfterDisablingIdleAgentsFromCluster1 = new Agents(Arrays.asList(agent1AfterDisabling, agent2, agent3, agent4, agent5, agent6));
@@ -204,14 +206,14 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         objectMetadata = new ObjectMeta();
         objectMetadata.setLabels(Collections.singletonMap(JOB_ID_LABEL_KEY, "20"));
         objectMetadata.setName(unregisteredAgentId1);
-        objectMetadata.setCreationTimestamp(getSimpleDateFormat().format(new Date(time - (20 * 60000))));
+        objectMetadata.setCreationTimestamp(getSimpleDateFormat().format(Instant.now().minus(20, MINUTES)));
 
         when(mockedPod.getMetadata()).thenReturn(objectMetadata);
 
         ClusterProfileProperties clusterProfilePropertiesForCluster1 = new ClusterProfileProperties("https://localhost:8154/go", null, null);
 
-        KubernetesInstance k8sUnregisteredCluster1Pod1 = new KubernetesInstance(new DateTime().minusMinutes(100), null, unregisteredAgentId1, Collections.emptyMap(), 3L, PodState.Running);
-        KubernetesInstance k8sUnregisteredCluster1Pod2 = new KubernetesInstance(new DateTime(), null, unregisteredAgentId2, Collections.emptyMap(), 3L, PodState.Running);
+        KubernetesInstance k8sUnregisteredCluster1Pod1 = new KubernetesInstance(Instant.now().minus(100, MINUTES), null, unregisteredAgentId1, Collections.emptyMap(), 3L, PodState.Running);
+        KubernetesInstance k8sUnregisteredCluster1Pod2 = new KubernetesInstance(Instant.now(), null, unregisteredAgentId2, Collections.emptyMap(), 3L, PodState.Running);
 
         final Agents allAgentsInitially = new Agents();
 

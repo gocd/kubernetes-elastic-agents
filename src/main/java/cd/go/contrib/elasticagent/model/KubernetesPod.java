@@ -21,6 +21,7 @@ import cd.go.contrib.elasticagent.utils.Util;
 import io.fabric8.kubernetes.api.model.Pod;
 
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.Date;
 
 public class KubernetesPod {
@@ -37,7 +38,7 @@ public class KubernetesPod {
         podName = pod.getMetadata().getName();
         image = pod.getSpec().getContainers().get(0).getImage();
         podIP = pod.getStatus().getPodIP();
-        creationTimestamp = Util.getSimpleDateFormat().parse(pod.getMetadata().getCreationTimestamp());
+        creationTimestamp = Date.from(Instant.parse(pod.getMetadata().getCreationTimestamp()));
         status = pod.getStatus().getPhase();
 
         nodeName = pod.getSpec().getNodeName();

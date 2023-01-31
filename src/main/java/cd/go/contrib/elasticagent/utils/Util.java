@@ -26,9 +26,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
-import java.util.TimeZone;
 
 import static cd.go.contrib.elasticagent.Constants.KUBERNETES_POD_CREATION_TIME_FORMAT;
 
@@ -38,10 +38,8 @@ public class Util {
             .excludeFieldsWithoutExposeAnnotation()
             .create();
 
-    public static SimpleDateFormat getSimpleDateFormat() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(KUBERNETES_POD_CREATION_TIME_FORMAT);
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return simpleDateFormat;
+    public static DateTimeFormatter getSimpleDateFormat() {
+        return DateTimeFormatter.ofPattern(KUBERNETES_POD_CREATION_TIME_FORMAT).withZone(ZoneOffset.UTC);
     }
 
     public static String readResource(String resourceFile) {
