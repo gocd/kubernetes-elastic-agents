@@ -17,10 +17,9 @@
 package cd.go.contrib.elasticagent;
 
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.FluentIterable;
-
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Represents a map of {@link Agent#elasticAgentId()} to the {@link Agent} for easy lookups
@@ -57,11 +56,11 @@ public class Agents {
     }
 
     public Collection<Agent> findInstancesToDisable() {
-        return FluentIterable.from(agents.values()).filter(AGENT_IDLE_PREDICATE).toList();
+        return agents.values().stream().filter(AGENT_IDLE_PREDICATE).collect(Collectors.toList());
     }
 
     public Collection<Agent> findInstancesToTerminate() {
-        return FluentIterable.from(agents.values()).filter(AGENT_DISABLED_PREDICATE).toList();
+        return agents.values().stream().filter(AGENT_DISABLED_PREDICATE).collect(Collectors.toList());
     }
 
     public Set<String> agentIds() {
