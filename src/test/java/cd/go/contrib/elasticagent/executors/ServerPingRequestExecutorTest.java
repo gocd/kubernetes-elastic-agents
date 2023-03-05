@@ -68,7 +68,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         when(podResource.get()).thenReturn(mockedPod);
 
         objectMetadata = new ObjectMeta();
-        objectMetadata.setCreationTimestamp(getSimpleDateFormat().format(Instant.now()));
+        objectMetadata.setCreationTimestamp(Instant.now().toString());
 
         when(mockedPod.getMetadata()).thenReturn(objectMetadata);
 
