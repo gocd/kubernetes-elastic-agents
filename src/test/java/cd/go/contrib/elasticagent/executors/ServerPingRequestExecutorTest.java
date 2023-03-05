@@ -35,7 +35,6 @@ import java.util.*;
 import static java.time.temporal.ChronoUnit.MINUTES;
 
 import static cd.go.contrib.elasticagent.Constants.JOB_ID_LABEL_KEY;
-import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -206,7 +205,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         objectMetadata = new ObjectMeta();
         objectMetadata.setLabels(Collections.singletonMap(JOB_ID_LABEL_KEY, "20"));
         objectMetadata.setName(unregisteredAgentId1);
-        objectMetadata.setCreationTimestamp(getSimpleDateFormat().format(Instant.now().minus(20, MINUTES)));
+        objectMetadata.setCreationTimestamp(Instant.now().minus(20, MINUTES).toString());
 
         when(mockedPod.getMetadata()).thenReturn(objectMetadata);
 

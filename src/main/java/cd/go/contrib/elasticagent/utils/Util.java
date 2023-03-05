@@ -26,21 +26,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.Properties;
-
-import static cd.go.contrib.elasticagent.Constants.KUBERNETES_POD_CREATION_TIME_FORMAT;
 
 public class Util {
     public static final Gson GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .excludeFieldsWithoutExposeAnnotation()
             .create();
-
-    public static DateTimeFormatter getSimpleDateFormat() {
-        return DateTimeFormatter.ofPattern(KUBERNETES_POD_CREATION_TIME_FORMAT).withZone(ZoneOffset.UTC);
-    }
 
     public static String readResource(String resourceFile) {
         return new String(readResourceBytes(resourceFile), StandardCharsets.UTF_8);

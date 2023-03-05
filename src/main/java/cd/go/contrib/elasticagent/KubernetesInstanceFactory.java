@@ -41,7 +41,6 @@ import java.util.*;
 import static cd.go.contrib.elasticagent.Constants.*;
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.*;
-import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
 import static java.lang.String.valueOf;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.text.MessageFormat.format;
@@ -104,7 +103,7 @@ public class KubernetesInstanceFactory {
     }
 
     private void setGoCDMetadata(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest, Pod elasticAgentPod) {
-        elasticAgentPod.getMetadata().setCreationTimestamp(getSimpleDateFormat().format(Instant.now()));
+        elasticAgentPod.getMetadata().setCreationTimestamp(Instant.now().toString());
 
         setContainerEnvVariables(elasticAgentPod, request, settings, pluginRequest);
         setAnnotations(elasticAgentPod, request);
