@@ -22,15 +22,12 @@ import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.PodResource;
-import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.stubbing.Answer;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,11 +78,6 @@ public class KubernetesAgentInstancesIntegrationTest {
 
         createAgentRequest = CreateAgentRequestMother.defaultCreateAgentRequest();
         settings = PluginSettingsMother.defaultPluginSettings();
-    }
-
-    @AfterEach
-    public void tearDown() {
-        FileUtils.deleteQuietly(new File("pod_spec"));
     }
 
     @Test

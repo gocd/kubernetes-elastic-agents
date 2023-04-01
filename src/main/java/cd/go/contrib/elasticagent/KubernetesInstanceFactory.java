@@ -26,14 +26,15 @@ import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -262,17 +263,16 @@ public class KubernetesInstanceFactory {
             throw new IllegalArgumentException("RemoteFileType value should be one of `json` or `yaml`.");
         }
 
-        File podSpecFile = new File(String.format("pod_spec_%s", UUID.randomUUID().toString()));
-        try {
-            FileUtils.copyURLToFile(new URL(fileToDownload), podSpecFile);
+        Path podSpecFile = Path.of(String.format("pod_spec_%s", UUID.randomUUID()));
+        try (InputStream downloadStream = new URL(fileToDownload).openStream()){
+            Files.copy(downloadStream, podSpecFile);
             LOG.debug(format("Finished downloading %s to %s", fileToDownload, podSpecFile));
-            String spec = FileUtils.readFileToString(podSpecFile, UTF_8);
+            String spec = Files.readString(podSpecFile, UTF_8);
             String templatizedPodSpec = getTemplatizedPodSpec(spec);
             elasticAgentPod = mapper.readValue(templatizedPodSpec, Pod.class);
             setPodNameIfNecessary(elasticAgentPod, spec);
-            FileUtils.deleteQuietly(podSpecFile);
+            Files.deleteIfExists(podSpecFile);
             LOG.debug(format("Deleted %s", podSpecFile));
-
         } catch (IOException e) {
             //ignore error here, handle this inside validate profile!
             LOG.error(e.getMessage());
