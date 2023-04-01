@@ -22,18 +22,16 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.Period;
 
 import java.net.SocketTimeoutException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
-import static cd.go.contrib.elasticagent.utils.Util.getSimpleDateFormat;
 import static java.text.MessageFormat.format;
 
 public class KubernetesAgentInstances implements AgentInstances<KubernetesInstance> {
@@ -196,7 +194,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     }
 
     private KubernetesAgentInstances unregisteredAfterTimeout(PluginSettings settings, Agents knownAgents) throws Exception {
-        Period period = settings.getAutoRegisterPeriod();
+        Duration period = settings.getAutoRegisterPeriod();
         KubernetesAgentInstances unregisteredInstances = new KubernetesAgentInstances();
         KubernetesClient client = factory.client(settings);
 
@@ -211,10 +209,9 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
                 continue;
             }
 
-            Date createdAt = getSimpleDateFormat().parse(pod.getMetadata().getCreationTimestamp());
-            DateTime dateTimeCreated = new DateTime(createdAt);
+            Instant createdAt = Constants.KUBERNETES_POD_CREATION_TIME_FORMAT.parse(pod.getMetadata().getCreationTimestamp(), Instant::from);
 
-            if (clock.now().isAfter(dateTimeCreated.plus(period))) {
+            if (clock.now().isAfter(createdAt.plus(period))) {
                 unregisteredInstances.register(kubernetesInstanceFactory.fromKubernetesPod(pod));
             }
         }

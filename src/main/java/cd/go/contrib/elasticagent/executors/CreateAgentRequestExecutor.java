@@ -20,16 +20,18 @@ import cd.go.contrib.elasticagent.*;
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.joda.time.DateTime;
-import org.joda.time.LocalTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static java.text.MessageFormat.format;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+
 public class CreateAgentRequestExecutor implements RequestExecutor {
-    private static final DateTimeFormatter MESSAGE_PREFIX_FORMATTER = DateTimeFormat.forPattern("'##|'HH:mm:ss.SSS '[go]'");
+    private static final DateTimeFormatter MESSAGE_PREFIX_FORMATTER = DateTimeFormatter.ofPattern("'##|'HH:mm:ss.SSS '[go]'");
+    private static final DateTimeFormatter UTC_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss +00:00");
     private final AgentInstances<KubernetesInstance> agentInstances;
     private final PluginRequest pluginRequest;
     private final CreateAgentRequest request;
@@ -44,10 +46,11 @@ public class CreateAgentRequestExecutor implements RequestExecutor {
     public GoPluginApiResponse execute() throws Exception {
         LOG.debug(format("[Create Agent] creating elastic agent for profile {0} in cluster {1}", request.properties(), request.clusterProfileProperties()));
         ConsoleLogAppender consoleLogAppender = text -> {
-            final String message = String.format("%s %s\n", LocalTime.now().toString(MESSAGE_PREFIX_FORMATTER), text);
+            final String message = String.format("%s %s\n", MESSAGE_PREFIX_FORMATTER.format(LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC)), text);
             pluginRequest.appendToConsoleLog(request.jobIdentifier(), message);
         };
-        consoleLogAppender.accept(format("Received request to create a pod for job {0} in cluster {1} at {2}", request.jobIdentifier(), request.clusterProfileProperties().getClusterUrl(), new DateTime().toString("yyyy-MM-dd HH:mm:ss ZZ")));
+        LocalDateTime localNow = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        consoleLogAppender.accept(format("Received request to create a pod for job {0} in cluster {1} at {2}", request.jobIdentifier(), request.clusterProfileProperties().getClusterUrl(), UTC_FORMAT.format(localNow)));
         try {
             agentInstances.create(request, request.clusterProfileProperties(), pluginRequest, consoleLogAppender);
         } catch (Exception e) {

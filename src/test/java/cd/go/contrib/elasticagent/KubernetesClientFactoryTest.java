@@ -18,10 +18,11 @@ package cd.go.contrib.elasticagent;
 
 import com.google.gson.Gson;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,19 +60,19 @@ public class KubernetesClientFactoryTest {
     public void shouldReuseTheExistingClientIfNotTimeElapsed() {
         KubernetesClient client = factory.client(pluginSettings);
 
-        clock.set(new DateTime().plusMinutes(1));
+        clock.set(Instant.now().plus(1, ChronoUnit.MINUTES));
         KubernetesClient client2 = factory.client(pluginSettings);
         assertEquals(client, client2);
 
-        clock.set(new DateTime().plusMinutes(2));
+        clock.set(Instant.now().plus(2, ChronoUnit.MINUTES));
         KubernetesClient client3 = factory.client(pluginSettings);
         assertEquals(client, client3);
 
-        clock.set(new DateTime().plusMinutes(5));
+        clock.set(Instant.now().plus(5, ChronoUnit.MINUTES));
         KubernetesClient client4 = factory.client(pluginSettings);
         assertEquals(client, client4);
 
-        clock.set(new DateTime().plusMinutes(9));
+        clock.set(Instant.now().plus(9, ChronoUnit.MINUTES));
         KubernetesClient client5 = factory.client(pluginSettings);
         assertEquals(client, client5);
     }
@@ -80,12 +81,12 @@ public class KubernetesClientFactoryTest {
     public void shouldRecycleClientOnTimer() {
         KubernetesClient client = factory.client(pluginSettings);
 
-        clock.set(new DateTime().plusMinutes(9));
+        clock.set(Instant.now().plus(9, ChronoUnit.MINUTES));
 
         KubernetesClient client2 = factory.client(pluginSettings);
         assertEquals(client, client2);
 
-        clock.set(new DateTime().plusMinutes(11));
+        clock.set(Instant.now().plus(11, ChronoUnit.MINUTES));
 
         KubernetesClient clientAfterTimeElapse = factory.client(pluginSettings);
         assertNotEquals(client, clientAfterTimeElapse);
@@ -97,11 +98,11 @@ public class KubernetesClientFactoryTest {
 
         KubernetesClient client = factory.client(pluginSettings);
 
-        clock.set(new DateTime().plusMinutes(1));
+        clock.set(Instant.now().plus(1, ChronoUnit.MINUTES));
         KubernetesClient client2 = factory.client(pluginSettings);
         assertEquals(client, client2);
 
-        clock.set(new DateTime().plusMinutes(3));
+        clock.set(Instant.now().plus(3, ChronoUnit.MINUTES));
         KubernetesClient client3 = factory.client(pluginSettings);
         assertNotEquals(client, client3);
     }
@@ -112,15 +113,15 @@ public class KubernetesClientFactoryTest {
 
         KubernetesClient client = factory.client(pluginSettings);
 
-        clock.set(new DateTime().plusMinutes(1));
+        clock.set(Instant.now().plus(1, ChronoUnit.MINUTES));
         KubernetesClient client2 = factory.client(pluginSettings);
         assertEquals(client, client2);
 
-        clock.set(new DateTime().plusMinutes(9));
+        clock.set(Instant.now().plus(9, ChronoUnit.MINUTES));
         KubernetesClient client3 = factory.client(pluginSettings);
         assertEquals(client, client3);
 
-        clock.set(new DateTime().plusMinutes(11));
+        clock.set(Instant.now().plus(11, ChronoUnit.MINUTES));
         KubernetesClient client4 = factory.client(pluginSettings);
         assertNotEquals(client, client4);
     }

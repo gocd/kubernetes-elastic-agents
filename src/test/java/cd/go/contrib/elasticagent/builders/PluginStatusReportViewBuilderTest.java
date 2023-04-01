@@ -35,28 +35,28 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PluginStatusReportViewBuilderTest {
-  @Test
-  public void shouldBuildStatusReportHtmlWithAgentStatusReportLink() throws IOException, TemplateException {
-    KubernetesPod pod = mock(KubernetesPod.class);
-    when(pod.getJobIdentifier()).thenReturn(new JobIdentifier(3243546575676657L));
-    when(pod.getCreationTimestamp()).thenReturn(new Date());
+    @Test
+    public void shouldBuildStatusReportHtmlWithAgentStatusReportLink() throws IOException, TemplateException {
+        KubernetesPod pod = mock(KubernetesPod.class);
+        when(pod.getJobIdentifier()).thenReturn(new JobIdentifier(3243546575676657L));
+        when(pod.getCreationTimestamp()).thenReturn(new Date());
 
-    KubernetesNode node = mock(KubernetesNode.class);
-    when(node.getPods()).thenReturn(singletonList(pod));
+        KubernetesNode node = mock(KubernetesNode.class);
+        when(node.getPods()).thenReturn(singletonList(pod));
 
-    KubernetesCluster cluster = mock(KubernetesCluster.class);
-    when(cluster.getNodes()).thenReturn(singletonList(node));
-    when(cluster.getPluginId()).thenReturn("cd.go.contrib.elastic.agent.kubernetes");
-    PluginStatusReportViewBuilder builder = PluginStatusReportViewBuilder.instance();
+        KubernetesCluster cluster = mock(KubernetesCluster.class);
+        when(cluster.getNodes()).thenReturn(singletonList(node));
+        when(cluster.getPluginId()).thenReturn("cd.go.contrib.elastic.agent.kubernetes");
+        PluginStatusReportViewBuilder builder = PluginStatusReportViewBuilder.instance();
 
-    String build = builder.build(builder.getTemplate("status-report.template.ftlh"), cluster);
+        String build = builder.build(builder.getTemplate("status-report.template.ftlh"), cluster);
 
-    Document document = Jsoup.parse(build);
+        Document document = Jsoup.parse(build);
 
-    Element link = document.selectFirst("tbody tr td a");
-    System.out.println(link);
+        Element link = document.selectFirst("tbody tr td a");
+        System.out.println(link);
 
-    assertThat(link.attr("href")).isEqualTo("/go/admin/status_reports/cd.go.contrib.elastic.agent.kubernetes/agent/?job_id=3243546575676657");
-  }
+        assertThat(link.attr("href")).isEqualTo("/go/admin/status_reports/cd.go.contrib.elastic.agent.kubernetes/agent/?job_id=3243546575676657");
+    }
 
 }

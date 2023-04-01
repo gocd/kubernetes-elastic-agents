@@ -58,14 +58,14 @@ public class KubernetesClientFactory {
         LOG.debug(format("Creating a new client because {0}.", (client == null) ? "client is null" : "cluster profile configurations has changed"));
         this.clusterProfileConfigurations = clusterProfileConfigurations;
         this.client = createClientFor(clusterProfileConfigurations);
-        this.clientCreatedTime = this.clock.now().getMillis();
+        this.clientCreatedTime = this.clock.now().toEpochMilli();
         LOG.debug("New client is created.");
 
         return this.client;
     }
 
     private void clearOutClientOnTimer() {
-        long currentTime = this.clock.now().getMillis();
+        long currentTime = this.clock.now().toEpochMilli();
         long differenceInMinutes = TimeUnit.MILLISECONDS.toMinutes(currentTime - this.clientCreatedTime);
         if (differenceInMinutes > getKubernetesClientRecycleInterval()) {
             LOG.info("Recycling kubernetes client on timer...");
