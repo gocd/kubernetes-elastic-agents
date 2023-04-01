@@ -17,28 +17,27 @@
 package cd.go.contrib.elasticagent.model;
 
 import cd.go.contrib.elasticagent.Constants;
-import cd.go.contrib.elasticagent.utils.Util;
 import io.fabric8.kubernetes.api.model.Pod;
 
-import java.text.ParseException;
 import java.time.Instant;
 import java.util.Date;
 
 public class KubernetesPod {
     private final String podName;
-    private String nodeName;
+    private final String nodeName;
     private final String image;
     private final Date creationTimestamp;
     private final String podIP;
     private final String status;
-    private JobIdentifier jobIdentifier;
+    private final JobIdentifier jobIdentifier;
 
-    public KubernetesPod(Pod pod) throws ParseException {
+    public KubernetesPod(Pod pod) {
         jobIdentifier = JobIdentifier.fromJson(pod.getMetadata().getAnnotations().get(Constants.JOB_IDENTIFIER_LABEL_KEY));
         podName = pod.getMetadata().getName();
         image = pod.getSpec().getContainers().get(0).getImage();
         podIP = pod.getStatus().getPodIP();
-        creationTimestamp = Date.from(Instant.parse(pod.getMetadata().getCreationTimestamp()));
+        final CharSequence text = pod.getMetadata().getCreationTimestamp();
+        creationTimestamp = Date.from(Constants.KUBERNETES_POD_CREATION_TIME_FORMAT.parse(text, Instant::from));
         status = pod.getStatus().getPhase();
 
         nodeName = pod.getSpec().getNodeName();

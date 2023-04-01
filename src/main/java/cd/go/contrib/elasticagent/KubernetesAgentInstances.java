@@ -209,7 +209,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
                 continue;
             }
 
-            Instant createdAt = Instant.parse(pod.getMetadata().getCreationTimestamp());
+            Instant createdAt = Constants.KUBERNETES_POD_CREATION_TIME_FORMAT.parse(pod.getMetadata().getCreationTimestamp(), Instant::from);
 
             if (clock.now().isAfter(createdAt.plus(period))) {
                 unregisteredInstances.register(kubernetesInstanceFactory.fromKubernetesPod(pod));

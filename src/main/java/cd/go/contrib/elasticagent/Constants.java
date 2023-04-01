@@ -19,6 +19,7 @@ package cd.go.contrib.elasticagent;
 import cd.go.contrib.elasticagent.utils.Util;
 import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
 public interface Constants {
@@ -53,6 +54,7 @@ public interface Constants {
     String KUBERNETES_POD_KIND_LABEL_KEY = "kind";
     String KUBERNETES_POD_KIND_LABEL_VALUE = "kubernetes-elastic-agent";
     String KUBERNETES_POD_NAME_PREFIX = "k8s-ea";
+    DateTimeFormatter KUBERNETES_POD_CREATION_TIME_FORMAT = DateTimeFormatter.ISO_INSTANT;
 
     String POD_POSTFIX = "POD_POSTFIX";
     String CONTAINER_POSTFIX = "CONTAINER_POSTFIX";
