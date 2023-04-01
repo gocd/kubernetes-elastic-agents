@@ -19,11 +19,11 @@ package cd.go.contrib.elasticagent;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.concurrent.TimeUnit;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
+import static cd.go.contrib.elasticagent.utils.Util.isBlank;
 import static java.text.MessageFormat.format;
 
 public class KubernetesClientFactory {
@@ -98,7 +98,7 @@ public class KubernetesClientFactory {
         }
 
         String property = System.getProperty(CLIENT_RECYCLE_SYSTEM_PROPERTY_KEY);
-        if (StringUtils.isBlank(property)) {
+        if (isBlank(property)) {
             //set default to 10 minutes when system property is not specified
             this.kubernetesClientRecycleIntervalInMinutes = 10;
             return this.kubernetesClientRecycleIntervalInMinutes;

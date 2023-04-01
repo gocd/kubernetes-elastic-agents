@@ -18,12 +18,11 @@ package cd.go.contrib.elasticagent.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static cd.go.contrib.elasticagent.utils.Util.isBlank;
 
 public class Metadata {
 
@@ -51,7 +50,7 @@ public class Metadata {
     public Map<String, String> validate(String input) {
         HashMap<String, String> result = new HashMap<>();
         String validationError = doValidate(input);
-        if (isNotBlank(validationError)) {
+        if (!isBlank(validationError)) {
             result.put("key", key);
             result.put("message", validationError);
         }
@@ -59,10 +58,8 @@ public class Metadata {
     }
 
     protected String doValidate(String input) {
-        if (isRequired()) {
-            if (StringUtils.isBlank(input)) {
-                return this.key + " must not be blank.";
-            }
+        if (isRequired() && isBlank(input)) {
+            return this.key + " must not be blank.";
         }
         return null;
     }

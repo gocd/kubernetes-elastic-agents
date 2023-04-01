@@ -20,11 +20,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import org.apache.commons.lang3.StringUtils;
+
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
 import static cd.go.contrib.elasticagent.utils.Util.IntTypeAdapter;
+import static cd.go.contrib.elasticagent.utils.Util.isBlank;
 
 public class PluginSettings {
     @Expose
@@ -81,12 +82,12 @@ public class PluginSettings {
     }
 
     Integer getAutoRegisterTimeout() {
-        Integer autoRegisterTimeoutInt = StringUtils.isNotBlank(autoRegisterTimeout) ? Integer.valueOf(autoRegisterTimeout) : null;
+        Integer autoRegisterTimeoutInt = !isBlank(autoRegisterTimeout) ? Integer.valueOf(autoRegisterTimeout) : null;
         return getOrDefault(autoRegisterTimeoutInt, 10);
     }
 
     public Integer getMaxPendingPods() {
-        Integer maximumPendingPodsInt = StringUtils.isNotBlank(this.maxPendingPods) ? Integer.valueOf(this.maxPendingPods) : null;
+        Integer maximumPendingPodsInt = !isBlank(this.maxPendingPods) ? Integer.valueOf(this.maxPendingPods) : null;
         return getOrDefault(maximumPendingPodsInt, 10);
     }
 
@@ -111,7 +112,7 @@ public class PluginSettings {
     }
 
     private <T> T getOrDefault(T t, T defaultValue) {
-        if (t instanceof String && StringUtils.isBlank(String.valueOf(t))) {
+        if (t instanceof String && isBlank(String.valueOf(t))) {
             return defaultValue;
         }
 

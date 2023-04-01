@@ -28,7 +28,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static cd.go.contrib.elasticagent.utils.Util.isBlank;
 
 public class CreateAgentRequest {
     @Expose
@@ -97,10 +97,10 @@ public class CreateAgentRequest {
 
     public Collection<EnvVar> autoregisterPropertiesAsEnvironmentVars(String elasticAgentId) {
         ArrayList<EnvVar> vars = new ArrayList<>();
-        if (isNotBlank(autoRegisterKey)) {
+        if (!isBlank(autoRegisterKey)) {
             vars.add(new EnvVar("GO_EA_AUTO_REGISTER_KEY", autoRegisterKey, null));
         }
-        if (isNotBlank(environment)) {
+        if (!isBlank(environment)) {
             vars.add(new EnvVar("GO_EA_AUTO_REGISTER_ENVIRONMENT", environment, null));
         }
         vars.add(new EnvVar("GO_EA_AUTO_REGISTER_ELASTIC_AGENT_ID", elasticAgentId, null));

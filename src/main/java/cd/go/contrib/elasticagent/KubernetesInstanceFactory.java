@@ -26,7 +26,6 @@ import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,10 +41,10 @@ import java.util.*;
 import static cd.go.contrib.elasticagent.Constants.*;
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.*;
+import static cd.go.contrib.elasticagent.utils.Util.isBlank;
 import static java.lang.String.valueOf;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.text.MessageFormat.format;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class KubernetesInstanceFactory {
     public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
@@ -97,7 +96,7 @@ public class KubernetesInstanceFactory {
 
     private Boolean privileged(CreateAgentRequest request) {
         final String privilegedMode = request.properties().get(PRIVILEGED.getKey());
-        if (StringUtils.isBlank(privilegedMode)) {
+        if (isBlank(privilegedMode)) {
             return false;
         }
         return Boolean.valueOf(privilegedMode);
@@ -116,7 +115,7 @@ public class KubernetesInstanceFactory {
         HashMap<String, Quantity> limits = new HashMap<>();
 
         String maxMemory = request.properties().get("MaxMemory");
-        if (StringUtils.isNotBlank(maxMemory)) {
+        if (!isBlank(maxMemory)) {
             Size mem = Size.parse(maxMemory);
             LOG.debug(format("[Create Agent] Setting memory resource limit on k8s pod: {0}.", new Quantity(valueOf((long) mem.toMegabytes()), "M")));
             long memory = (long) mem.toBytes();
@@ -124,7 +123,7 @@ public class KubernetesInstanceFactory {
         }
 
         String maxCPU = request.properties().get("MaxCPU");
-        if (StringUtils.isNotBlank(maxCPU)) {
+        if (!isBlank(maxCPU)) {
             LOG.debug(format("[Create Agent] Setting cpu resource limit on k8s pod: {0}.", new Quantity(maxCPU)));
             limits.put("cpu", new Quantity(maxCPU));
         }
@@ -158,7 +157,7 @@ public class KubernetesInstanceFactory {
         try {
             ObjectMeta metadata = elasticAgentPod.getMetadata();
             Instant createdAt = Instant.now();
-            if (StringUtils.isNotBlank(metadata.getCreationTimestamp())) {
+            if (!isBlank(metadata.getCreationTimestamp())) {
                 createdAt = Constants.KUBERNETES_POD_CREATION_TIME_FORMAT.parse(metadata.getCreationTimestamp(), Instant::from);
             }
             String environment = metadata.getLabels().get(ENVIRONMENT_LABEL_KEY);
@@ -172,10 +171,10 @@ public class KubernetesInstanceFactory {
 
     private static List<EnvVar> environmentFrom(CreateAgentRequest request, PluginSettings settings, String podName, PluginRequest pluginRequest) {
         ArrayList<EnvVar> env = new ArrayList<>();
-        String goServerUrl = StringUtils.isBlank(settings.getGoServerUrl()) ? pluginRequest.getSeverInfo().getSecureSiteUrl() : settings.getGoServerUrl();
+        String goServerUrl = isBlank(settings.getGoServerUrl()) ? pluginRequest.getSeverInfo().getSecureSiteUrl() : settings.getGoServerUrl();
         env.add(new EnvVar("GO_EA_SERVER_URL", goServerUrl, null));
         String environment = request.properties().get("Environment");
-        if (StringUtils.isNotBlank(environment)) {
+        if (!isBlank(environment)) {
             env.addAll(parseEnvironments(environment));
         }
         env.addAll(request.autoregisterPropertiesAsEnvironmentVars(podName));
@@ -207,7 +206,7 @@ public class KubernetesInstanceFactory {
         labels.put(CREATED_BY_LABEL_KEY, PLUGIN_ID);
         labels.put(JOB_ID_LABEL_KEY, valueOf(request.jobIdentifier().getJobId()));
 
-        if (StringUtils.isNotBlank(request.environment())) {
+        if (!isBlank(request.environment())) {
             labels.put(ENVIRONMENT_LABEL_KEY, request.environment());
         }
 

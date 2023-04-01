@@ -21,7 +21,6 @@ import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import org.apache.commons.lang3.StringUtils;
 
 import java.net.SocketTimeoutException;
 import java.time.Duration;
@@ -175,7 +174,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         for (Pod pod : list.getItems()) {
             Map<String, String> podLabels = pod.getMetadata().getLabels();
             if (podLabels != null) {
-                if (StringUtils.equals(Constants.KUBERNETES_POD_KIND_LABEL_VALUE, podLabels.get(Constants.KUBERNETES_POD_KIND_LABEL_KEY))) {
+                if (Constants.KUBERNETES_POD_KIND_LABEL_VALUE.equals(podLabels.get(Constants.KUBERNETES_POD_KIND_LABEL_KEY))) {
                     register(kubernetesInstanceFactory.fromKubernetesPod(pod));
                 }
             }

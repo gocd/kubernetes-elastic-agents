@@ -25,7 +25,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import io.fabric8.kubernetes.api.model.Pod;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.*;
@@ -33,6 +32,7 @@ import java.util.*;
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static cd.go.contrib.elasticagent.executors.GetProfileMetadataExecutor.*;
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
+import static cd.go.contrib.elasticagent.utils.Util.isBlank;
 import static java.text.MessageFormat.format;
 
 public class ProfileValidateRequestExecutor implements RequestExecutor {
@@ -104,17 +104,17 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
     }
 
     private void validateRemoteFileSpec(HashMap<String, String> properties, ArrayList<Map<String, String>> result) {
-        if (StringUtils.isBlank(properties.get(REMOTE_FILE.getKey()))) {
+        if (isBlank(properties.get(REMOTE_FILE.getKey()))) {
             addNotBlankError(result, REMOTE_FILE.getKey(), "RemoteFile");
         }
-        if (StringUtils.isBlank(properties.get(REMOTE_FILE_TYPE.getKey()))) {
+        if (isBlank(properties.get(REMOTE_FILE_TYPE.getKey()))) {
             addNotBlankError(result, REMOTE_FILE_TYPE.getKey(), "RemoteFileType");
         }
     }
 
     private void validateConfigPropertiesYaml(HashMap<String, String> properties, ArrayList<Map<String, String>> result) {
         String key = IMAGE.getKey();
-        if (StringUtils.isBlank(properties.get(key))) {
+        if (isBlank(properties.get(key))) {
             addNotBlankError(result, key, "Image");
         }
     }
@@ -122,7 +122,7 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
     private void validatePodYaml(HashMap<String, String> properties, ArrayList<Map<String, String>> result) {
         String key = POD_CONFIGURATION.getKey();
         String podYaml = properties.get(key);
-        if (StringUtils.isBlank(podYaml)) {
+        if (isBlank(podYaml)) {
             addNotBlankError(result, key, "Pod Configuration");
             return;
         }
@@ -135,7 +135,7 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
             return;
         }
 
-        if (StringUtils.isNotBlank(pod.getMetadata().getGenerateName())) {
+        if (!isBlank(pod.getMetadata().getGenerateName())) {
             addError(result, key, "Invalid Pod Yaml. generateName field is not supported by GoCD. Please use {{ POD_POSTFIX }} instead.");
         }
     }

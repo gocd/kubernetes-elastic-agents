@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagent.executors;
 
-import cd.go.contrib.elasticagent.model.Field;
+import cd.go.contrib.elasticagent.model.Metadata;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -33,7 +33,7 @@ public class GetClusterProfileMetadataExecutorTest {
     @Test
     public void shouldSerializeAllFields() throws Exception {
         GoPluginApiResponse response = new GetClusterProfileMetadataExecutor().execute();
-        List<Field> list = new Gson().fromJson(response.responseBody(), new TypeToken<List<Field>>() {
+        List<Metadata> list = new Gson().fromJson(response.responseBody(), new TypeToken<List<Metadata>>() {
         }.getType());
         assertEquals(list.size(), GetClusterProfileMetadataExecutor.FIELDS.size());
     }

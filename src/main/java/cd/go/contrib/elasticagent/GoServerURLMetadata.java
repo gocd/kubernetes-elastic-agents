@@ -17,9 +17,10 @@
 package cd.go.contrib.elasticagent;
 
 import cd.go.contrib.elasticagent.model.Metadata;
-import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
+
+import static cd.go.contrib.elasticagent.utils.Util.isBlank;
 
 
 public class GoServerURLMetadata extends Metadata {
@@ -31,7 +32,7 @@ public class GoServerURLMetadata extends Metadata {
 
     @Override
     public String doValidate(String input) {
-        if (StringUtils.isBlank(input)) {
+        if (isBlank(input)) {
             return null;
         }
 
@@ -40,7 +41,7 @@ public class GoServerURLMetadata extends Metadata {
             if (uri.getHost().equalsIgnoreCase("localhost") || uri.getHost().equalsIgnoreCase("127.0.0.1")) {
                 return String.format("%s must not be localhost, since this gets resolved on the agents.", GO_SERVER_URL);
             }
-            if (!StringUtils.endsWith(input, "/go")) {
+            if (!input.endsWith("/go")) {
                 return String.format("%s must be in format https://<GO_SERVER_URL>:<GO_SERVER_PORT>/go.", GO_SERVER_URL);
             }
         } catch (Exception e) {

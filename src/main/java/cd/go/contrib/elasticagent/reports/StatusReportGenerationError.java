@@ -18,8 +18,7 @@ package cd.go.contrib.elasticagent.reports;
 
 import cd.go.contrib.elasticagent.PluginSettingsNotConfiguredException;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static cd.go.contrib.elasticagent.utils.Util.isBlank;
 
 public class StatusReportGenerationError {
     private static final String DEFAULT_ERROR_MESSAGE = "We're sorry, but something went wrong.";
@@ -49,7 +48,7 @@ public class StatusReportGenerationError {
     }
 
     private String getOrDefaultMessage(Throwable throwable) {
-        if (isNotBlank(throwable.getMessage())) {
+        if (!isBlank(throwable.getMessage())) {
             return throwable.getMessage();
         }
 

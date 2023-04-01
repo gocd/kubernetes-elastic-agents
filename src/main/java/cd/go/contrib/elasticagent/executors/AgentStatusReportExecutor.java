@@ -29,11 +29,11 @@ import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
+import static cd.go.contrib.elasticagent.utils.Util.isBlank;
 import static java.text.MessageFormat.format;
 
 public class AgentStatusReportExecutor {
@@ -59,7 +59,7 @@ public class AgentStatusReportExecutor {
 
         try {
             Pod pod;
-            if (StringUtils.isNotBlank(elasticAgentId)) {
+            if (!isBlank(elasticAgentId)) {
                 pod = findPodUsingElasticAgentId(elasticAgentId, client);
             } else {
                 pod = findPodUsingJobIdentifier(jobIdentifier, client);

@@ -18,7 +18,6 @@ package cd.go.contrib.elasticagent.model;
 
 
 import cd.go.contrib.elasticagent.utils.Size;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +45,6 @@ public class MemoryMetadata extends Metadata {
         if (errors.isEmpty()) {
             return null;
         }
-        return StringUtils.join(errors, ". ");
+        return String.join(". ", errors);
     }
 }

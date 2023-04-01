@@ -17,17 +17,13 @@
 package cd.go.contrib.elasticagent.utils;
 
 import io.fabric8.kubernetes.api.model.Quantity;
-import org.apache.commons.lang3.StringUtils;
 
 import java.text.DecimalFormat;
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static cd.go.contrib.elasticagent.utils.Util.isBlank;
 import static java.util.Objects.requireNonNull;
 
 public class Size implements Comparable<Size> {
@@ -96,7 +92,7 @@ public class Size implements Comparable<Size> {
     }
 
     public static Size parse(String size) {
-        if (StringUtils.isBlank(size)) {
+        if (isBlank(size)) {
             throw new IllegalArgumentException();
         }
         final Matcher matcher = SIZE_PATTERN.matcher(size);
