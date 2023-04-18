@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 import static java.text.MessageFormat.format;
 
 public class KubernetesPodDetails {
+
     private String name;
-    private String clusterName;
     private String nodeName;
     private String namespace;
     private String createdAt;
@@ -24,7 +24,6 @@ public class KubernetesPodDetails {
         KubernetesPodDetails podDetails = new KubernetesPodDetails();
 
         podDetails.name = pod.getMetadata().getName();
-        podDetails.clusterName = pod.getMetadata().getClusterName();
         podDetails.nodeName = pod.getSpec().getNodeName();
         podDetails.namespace = pod.getMetadata().getNamespace();
 
@@ -48,10 +47,6 @@ public class KubernetesPodDetails {
 
     public String getName() {
         return name;
-    }
-
-    public String getClusterName() {
-        return clusterName;
     }
 
     public String getNodeName() {
