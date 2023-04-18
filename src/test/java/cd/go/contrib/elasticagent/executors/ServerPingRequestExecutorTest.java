@@ -45,11 +45,11 @@ public class ServerPingRequestExecutorTest extends BaseTest {
     @Mock
     private KubernetesClient mockedClient;
     @Mock
-    private MixedOperation<Pod, PodList, PodResource<Pod>> mockedOperation;
+    private MixedOperation<Pod, PodList, PodResource> mockedOperation;
     @Mock
     private Pod mockedPod;
     @Mock
-    private PodResource<Pod> podResource;
+    private PodResource podResource;
     private ObjectMeta objectMetadata;
 
     @BeforeEach

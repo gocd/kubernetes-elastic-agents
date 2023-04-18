@@ -58,7 +58,7 @@ public class KubernetesAgentInstancesIntegrationTest {
     private KubernetesClient mockKubernetesClient;
 
     @Mock
-    private MixedOperation<Pod, PodList, PodResource<Pod>> pods;
+    private MixedOperation<Pod, PodList, PodResource> pods;
 
     @Mock
     private ConsoleLogAppender consoleLogAppender;

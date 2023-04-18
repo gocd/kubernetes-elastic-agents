@@ -55,7 +55,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     @Mock
     private PluginRequest pluginRequest;
     @Mock
-    private MixedOperation<Pod, PodList, PodResource<Pod>> mockedOperation;
+    private MixedOperation<Pod, PodList, PodResource> mockedOperation;
     private String environment = "QA";
 
     @BeforeEach
