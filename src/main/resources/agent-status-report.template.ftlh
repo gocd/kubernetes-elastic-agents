@@ -356,10 +356,6 @@
                                 <span>${ podDetails.name !}</span>
                             </li>
                             <li class="name-value_pair">
-                                <label>Cluster Name</label>
-                                <span>${ podDetails.clusterName !}</span>
-                            </li>
-                            <li class="name-value_pair">
                                 <label>Node Name</label>
                                 <span>${ podDetails.nodeName !}</span>
                             </li>
