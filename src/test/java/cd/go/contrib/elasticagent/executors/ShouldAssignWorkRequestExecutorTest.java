@@ -43,19 +43,29 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
+
     @Mock
-    KubernetesClientFactory factory;
+    private KubernetesClientFactory factory;
+
     private AgentInstances<KubernetesInstance> agentInstances;
     private KubernetesInstance instance;
     private Map<String, String> properties = new HashMap<>();
+
     @Mock
     private KubernetesClient mockedClient;
+
     @Mock
     private ConsoleLogAppender consoleLogAppender;
+
     @Mock
     private PluginRequest pluginRequest;
+
     @Mock
-    private MixedOperation<Pod, PodList, PodResource<Pod>> mockedOperation;
+    private MixedOperation<Pod, PodList, PodResource> mockedOperation;
+
+    @Mock
+    private PodResource mockedPodResource;
+
     private String environment = "QA";
 
     @BeforeEach
@@ -68,9 +78,13 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
         when(mockedOperation.list()).thenReturn(podList);
         when(podList.getItems()).thenReturn(Collections.emptyList());
 
-        when(mockedOperation.create(any(Pod.class))).thenAnswer((Answer<Pod>) invocation -> {
+        when(mockedOperation.resource(any(Pod.class))).thenAnswer((Answer<PodResource>) invocation -> {
             Object[] args = invocation.getArguments();
-            return (Pod) args[0];
+            Pod pod = (Pod) args[0];
+
+            when(mockedPodResource.create()).thenReturn(pod);
+
+            return mockedPodResource;
         });
 
         agentInstances = new KubernetesAgentInstances(factory);

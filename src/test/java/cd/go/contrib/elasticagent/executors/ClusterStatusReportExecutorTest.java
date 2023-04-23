@@ -55,7 +55,7 @@ public class ClusterStatusReportExecutorTest {
     private NonNamespaceOperation<Node, NodeList, Resource<Node>> nodes;
 
     @Mock
-    private MixedOperation<Pod, PodList, PodResource<Pod>> pods;
+    private MixedOperation<Pod, PodList, PodResource> pods;
 
     @BeforeEach
     public void setUp() throws Exception {

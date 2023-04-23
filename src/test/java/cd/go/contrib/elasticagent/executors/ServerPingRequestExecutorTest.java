@@ -45,11 +45,11 @@ public class ServerPingRequestExecutorTest extends BaseTest {
     @Mock
     private KubernetesClient mockedClient;
     @Mock
-    private MixedOperation<Pod, PodList, PodResource<Pod>> mockedOperation;
+    private MixedOperation<Pod, PodList, PodResource> mockedOperation;
     @Mock
     private Pod mockedPod;
     @Mock
-    private PodResource<Pod> podResource;
+    private PodResource podResource;
     private ObjectMeta objectMetadata;
 
     @BeforeEach
@@ -57,9 +57,13 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         openMocks(this);
         when(factory.client(any())).thenReturn(mockedClient);
         when(mockedClient.pods()).thenReturn(mockedOperation);
-        when(mockedOperation.create(any(Pod.class))).thenAnswer((Answer<Pod>) invocation -> {
+        when(mockedOperation.resource(any(Pod.class))).thenAnswer((Answer<PodResource>) invocation -> {
             Object[] args = invocation.getArguments();
-            return (Pod) args[0];
+            Pod pod = (Pod) args[0];
+
+            when(podResource.create()).thenReturn(pod);
+
+            return podResource;
         });
 
         when(mockedOperation.withName(anyString())).thenReturn(podResource);

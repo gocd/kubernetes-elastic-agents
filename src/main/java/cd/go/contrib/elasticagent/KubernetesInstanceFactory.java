@@ -148,7 +148,7 @@ public class KubernetesInstanceFactory {
 
     private KubernetesInstance createKubernetesPod(KubernetesClient client, Pod elasticAgentPod) {
         LOG.info(format("[Create Agent] Creating K8s pod with spec: {0}.", elasticAgentPod.toString()));
-        Pod pod = client.pods().create(elasticAgentPod);
+        Pod pod = client.pods().resource(elasticAgentPod).create();
         return fromKubernetesPod(pod);
     }
 
