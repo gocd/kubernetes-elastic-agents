@@ -16,53 +16,172 @@
 
 package cd.go.contrib.elasticagent;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
-
-import java.time.Instant;
+import java.util.Collections;
 import java.util.Map;
+import java.time.Instant;
 
+/**
+ * KubernetesInstance represents an agent pod in Kubernetes.
+ * Its fields are immutable.
+ */
 public class KubernetesInstance {
-    private final Instant createdAt;
-    private final String environment;
-    private final String name;
-    private final Map<String, String> properties;
-    private final Long jobId;
-    private final PodState state;
+    /**
+     * AgentState represents the possible agent states from the
+     * GoCD server perspective - whether it is currently running a job,
+     * ready to accept a new job, etc.
+     */
+    public enum AgentState {
+        /**
+         * Unknown means the agent hasn't yet been registered with the plugin.
+         * For example, if the GoCD server restarted while a pod was building,
+         * the state will be Unknown until the pod finishes its job.
+         */
+        Unknown,
+        /**
+         * Idle means the agent has just finished a job.
+         */
+        Idle,
+        /**
+         * Building means the agent has been assigned a job.
+         */
+        Building,
+    }
 
-    public KubernetesInstance(Instant createdAt, String environment, String name, Map<String, String> properties, Long jobId, PodState state) {
+    /**
+     * ELASTIC_CONFIG_HASH is a pod annotation that contains a hash of the cluster profile
+     * configuration and elastic profile configuration that were used to create the pod.
+     */
+    public static final String ELASTIC_CONFIG_HASH = "go.cd/elastic-config-hash";
+
+    private final Instant createdAt;
+
+    public Instant getCreatedAt() {
+        return this.createdAt;
+    }
+
+    /**
+     * environment is populated from k8s pod metadata.labels.Elastic-Agent-Environment
+     */
+    private final String environment;
+
+    public String getEnvironment() {
+        return this.environment;
+    }
+
+    private final String podName;
+
+    public String getPodName() {
+        return this.podName;
+    }
+
+    /**
+     * podAnnotations is populated from k8s pod metadata.annotations
+     */
+    private final Map<String, String> podAnnotations;
+
+    public Map<String, String> getPodAnnotations() {
+        return Map.copyOf(this.podAnnotations);
+    }
+
+    /**
+     * jobId is populated from k8s pod metadata.labels.Elastic-Agent-Job-Id
+     */
+    private final Long jobId;
+    public Long getJobId() {
+        return this.jobId;
+    }
+
+    private final PodState podState;
+    public PodState getPodState() {
+        return this.podState;
+    }
+
+    private final AgentState agentState;
+    public AgentState getAgentState() {
+        return this.agentState;
+    }
+
+    KubernetesInstance(
+            Instant createdAt,
+            String environment,
+            String podName,
+            Map<String, String> podAnnotations,
+            Long jobId,
+            PodState podState,
+            AgentState agentState) {
         this.createdAt = createdAt;
         this.environment = environment;
-        this.name = name;
-        this.properties = properties;
+        this.podName = podName;
+        this.podAnnotations = Map.copyOf(podAnnotations);
         this.jobId = jobId;
-        this.state = state;
+        this.podState = podState;
+        this.agentState = agentState;
     }
 
-    public void terminate(KubernetesClient client) {
-        client.pods().withName(name).delete();
+    public static class KubernetesInstanceBuilder {
+        private Instant createdAt = Instant.now();
+        public KubernetesInstanceBuilder createdAt(Instant createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
+        private String environment;
+        public KubernetesInstanceBuilder environment(String environment) {
+            this.environment = environment;
+            return this;
+        }
+
+        private String podName;
+        public KubernetesInstanceBuilder podName(String podName) {
+            this.podName = podName;
+            return this;
+        }
+
+        private Map<String, String> podAnnotations = Collections.emptyMap();
+        public KubernetesInstanceBuilder podAnnotations(Map<String, String> podAnnotations) {
+            if (podAnnotations == null) {
+                this.podAnnotations = Collections.emptyMap();
+            } else {
+                this.podAnnotations = Map.copyOf(podAnnotations);
+            }
+            return this;
+        }
+
+        private Long jobId;
+        public KubernetesInstanceBuilder jobId(Long jobId) {
+            this.jobId = jobId;
+            return this;
+        }
+
+        private PodState podState = PodState.Pending;
+        public KubernetesInstanceBuilder podState(PodState podState) {
+            this.podState = podState;
+            return this;
+        }
+
+        private AgentState agentState = AgentState.Unknown;
+        public KubernetesInstanceBuilder agentState(AgentState agentState) {
+            this.agentState = agentState;
+            return this;
+        }
+
+        public KubernetesInstance build() {
+            return new KubernetesInstance(createdAt, environment, podName, podAnnotations, jobId, podState, agentState);
+        }
     }
 
-    public String name() {
-        return name;
+    public static KubernetesInstanceBuilder builder() {
+        return new KubernetesInstanceBuilder();
     }
 
-    public Instant createdAt() {
-        return createdAt;
-    }
-
-    public String environment() {
-        return environment;
-    }
-
-    public Map<String, String> getInstanceProperties() {
-        return properties;
-    }
-
-    public Long jobId() {
-        return jobId;
-    }
-
-    public boolean isPending() {
-        return this.state.equals(PodState.Pending);
+    public KubernetesInstanceBuilder toBuilder() {
+        return new KubernetesInstanceBuilder()
+                .createdAt(createdAt)
+                .environment(environment)
+                .podName(podName)
+                .podAnnotations(podAnnotations)
+                .jobId(jobId)
+                .podState(podState)
+                .agentState(agentState);
     }
 }

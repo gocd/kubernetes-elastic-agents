@@ -91,6 +91,13 @@
 		<label class="form-help-content">Defaults to <code>10 pods</code>.</label>
 	</div>
 
+	<div class="row">
+		<input id="enable_agent_reuse" type="checkbox" ng-model="enable_agent_reuse" ng-required="true" ng-true-value="true" ng-false-value="false"/>
+		<label for="enable_agent_reuse">Enable agent reuse</label>
+		<span class="form_error" ng-show="GOINPUTNAME[enable_agent_reuse].$error.server">{{GOINPUTNAME[enable_agent_reuse].$error.server}}</span>
+		<label class="form-help-content">(Experimental feature) Enable agent pods on this cluster to be reused for multiple jobs.</label>
+	</div>
+
 	<fieldset>
 		<legend>Cluster Information</legend>
 		<div class="row">
