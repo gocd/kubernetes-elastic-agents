@@ -21,11 +21,9 @@ import cd.go.contrib.elasticagent.requests.JobCompletionRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
-import static java.text.MessageFormat.format;
 
 public class JobCompletionRequestExecutor implements RequestExecutor {
     private final JobCompletionRequest jobCompletionRequest;
@@ -40,20 +38,38 @@ public class JobCompletionRequestExecutor implements RequestExecutor {
 
     @Override
     public GoPluginApiResponse execute() throws Exception {
-        ClusterProfileProperties clusterProfileProperties = jobCompletionRequest.clusterProfileProperties();
-
         String elasticAgentId = jobCompletionRequest.getElasticAgentId();
+        ClusterProfileProperties clusterProfileProperties = jobCompletionRequest.clusterProfileProperties();
+        if (!clusterProfileProperties.getEnableAgentReuse()) {
+            // Agent reuse disabled - immediately clean up the pod and agent, as it was only valid for this job.
+            Agent agent = new Agent();
+            agent.setElasticAgentId(elasticAgentId);
 
-        Agent agent = new Agent();
-        agent.setElasticAgentId(elasticAgentId);
+            LOG.info("[Job Completion] Terminating elastic agent with id {} on job completion {}.", elasticAgentId, jobCompletionRequest.jobIdentifier());
 
-        LOG.info(format("[Job Completion] Terminating elastic agent with id {0} on job completion {1}.", agent.elasticAgentId(), jobCompletionRequest.jobIdentifier()));
-
-        List<Agent> agents = Arrays.asList(agent);
-        pluginRequest.disableAgents(agents);
-        agentInstances.terminate(agent.elasticAgentId(), clusterProfileProperties);
-        pluginRequest.deleteAgents(agents);
-
+            List<Agent> agents = List.of(agent);
+            pluginRequest.disableAgents(agents);
+            agentInstances.terminate(agent.elasticAgentId(), clusterProfileProperties);
+            pluginRequest.deleteAgents(agents);
+        } else {
+            // Agent reuse enabled - mark the pod/agent as idle and leave it for reuse by other jobs or eventual cleanup.
+            KubernetesInstance updated = agentInstances.updateAgent(
+                    elasticAgentId,
+                    instance -> instance.toBuilder().agentState(KubernetesInstance.AgentState.Idle).build());
+            if (updated != null) {
+                LOG.info("[Job Completion] Received job completion for agent ID {}. It is now marked Idle.", elasticAgentId);
+            } else {
+                // This is unlikely to happen. This means the agent just
+                // completed a job, but is not present in the plugin's
+                // in-memory view of agents. If this agent continues running,
+                // it will eventually be found by the periodic call to refresh
+                // all agents, put in an Unknown state, and then terminated
+                // after a timeout.
+                // Alternatively, this could register the instance and put it
+                // in an idle state.
+                LOG.warn("[Job Completion] Received job completion for agent ID {}, which is not known to this plugin.", elasticAgentId);
+            }
+        }
         return DefaultGoPluginApiResponse.success("");
     }
 }
