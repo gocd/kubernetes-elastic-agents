@@ -86,8 +86,6 @@ public class KubernetesPlugin implements GoPlugin {
                     return shouldAssignWorkRequest.executor(getAgentInstancesFor(clusterProfileProperties)).execute();
                 case REQUEST_SERVER_PING:
                     ServerPingRequest serverPingRequest = ServerPingRequest.fromJSON(request.requestBody());
-                    List<ClusterProfileProperties> listOfClusterProfileProperties = serverPingRequest.allClusterProfileProperties();
-                    refreshInstancesForAllClusters(listOfClusterProfileProperties);
                     return serverPingRequest.executor(clusterSpecificAgentInstances, pluginRequest).execute();
                 case REQUEST_JOB_COMPLETION:
                     JobCompletionRequest jobCompletionRequest = JobCompletionRequest.fromJSON(request.requestBody());
@@ -108,18 +106,14 @@ public class KubernetesPlugin implements GoPlugin {
                     return new DefaultGoPluginApiResponse(200);
                 case REQUEST_MIGRATE_CONFIGURATION:
                     return MigrateConfigurationRequest.fromJSON(request.requestBody()).executor().execute();
+                case REQUEST_PLUGIN_SETTINGS:
+                    return DefaultGoPluginApiResponse.success("{}");
                 default:
                     throw new UnhandledRequestTypeException(request.requestName());
             }
         } catch (Exception e) {
             LOG.error("Failed to handle request " + request.requestName(), e);
             return DefaultGoPluginApiResponse.error("Failed to handle request " + request.requestName());
-        }
-    }
-
-    private void refreshInstancesForAllClusters(List<ClusterProfileProperties> listOfClusterProfileProperties) throws Exception {
-        for (ClusterProfileProperties clusterProfileProperties : listOfClusterProfileProperties) {
-            refreshInstancesForCluster(clusterProfileProperties);
         }
     }
 
