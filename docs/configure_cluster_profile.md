@@ -13,25 +13,27 @@
 
 1. Optionally specify `Agent auto-register timeout (in minutes)`. This defaults to 10 (minutes) if not provided.
 
-1. Optionally Specify `Maximum pending pods`. This defaults to 10 (pods) if not provided.
+2. Optionally specify `The cluster request timeout`. This defaults to 10000 (milliseconds) if not provided.
 
-1. Specify `Cluster URL`.
+3. Optionally Specify `Maximum pending pods`. This defaults to 10 (pods) if not provided.
 
-1. Optionally specify `Namespace`. If not provided, the plugin will launch GoCD
+4. Specify `Cluster URL`.
+
+5. Optionally specify `Namespace`. If not provided, the plugin will launch GoCD
    agent pods in the default Kubernetes namespace. Note: If you have multiple
    GoCD servers with cluster profiles pointing to the same Kubernetes cluster,
    make sure that the namespace used by each GoCD server is different.
    Otherwise, the plugin of one GoCD server will end up terminating pods
    started by the plugin in the other GoCD servers.
 
-1. Specify `Security token`. This should be a Kubernetes API token with the
+6. Specify `Security token`. This should be a Kubernetes API token with the
    following permissions:
 
-   | Resource       | Actions     |
-   | -------------- | ----------- |
-   | nodes          | list        |
-   | events         | list        |
-   | pods, pods/log | *           |
+   | Resource       | Actions |
+   | -------------- | ------- |
+   | nodes          | list    |
+   | events         | list    |
+   | pods, pods/log | *       |
 
    If the plugin is using a non-default namespace, then the pods and pods/log permissions
    can be limited to that namespace (using a role + role binding), and the plugin
@@ -42,7 +44,7 @@
    If you are comfortable with cluster-wide permissions you can refer to the [example within the GoCD official helm
    chart](https://github.com/gocd/helm-chart/blob/master/gocd/templates/gocd-cluster-role.yaml).
 
-1. Specify `Cluster CA certificate data`. This should be the base-64-encoded certificate
+7. Specify `Cluster CA certificate data`. This should be the base-64-encoded certificate
    of the Kubernetes API server. It can be omitted in the rare case that the Kubernetes API
    is configured to serve plain HTTP.
 
