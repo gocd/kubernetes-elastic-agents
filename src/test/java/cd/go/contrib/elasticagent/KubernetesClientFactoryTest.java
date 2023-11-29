@@ -42,10 +42,10 @@ public class KubernetesClientFactoryTest {
         pluginSettingsMap.put("go_server_url", "https://foo.go.cd/go");
         pluginSettingsMap.put("auto_register_timeout", "13");
         pluginSettingsMap.put("pending_pods_count", "14");
-        pluginSettingsMap.put("cluster_request_timeout", "10000");
         pluginSettingsMap.put("kubernetes_cluster_url", "https://cloud.example.com");
         pluginSettingsMap.put("security_token", "foo-token");
         pluginSettingsMap.put("namespace", "gocd");
+        pluginSettingsMap.put("cluster_request_timeout", "10000");
 
         clock = new Clock.TestClock();
         factory = new KubernetesClientFactory(clock);
@@ -54,7 +54,7 @@ public class KubernetesClientFactoryTest {
 
     @Test
     public void shouldInitializeClient() {
-        KubernetesClient client = factory.client(pluginSettings);
+        factory.client(pluginSettings);
     }
 
     @Test

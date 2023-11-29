@@ -85,13 +85,6 @@
 	</div>
 
 	<div class="row">
-		<label>The cluster request timeout(in milliseconds)</label>
-		<input type="text" ng-model="cluster_request_timeout" ng-required="true"/>
-		<span class="form_error" ng-show="GOINPUTNAME[cluster_request_timeout].$error.server">{{GOINPUTNAME[cluster_request_timeout].$error.server}}</span>
-		<label class="form-help-content">Defaults to <code>10000 milliseconds</code>.</label>
-	</div>
-
-	<div class="row">
 		<label>Maximum pending pods</label>
 		<input type="text" ng-model="pending_pods_count" ng-required="true"/>
 		<span class="form_error" ng-show="GOINPUTNAME[pending_pods_count].$error.server">{{GOINPUTNAME[pending_pods_count].$error.server}}</span>
@@ -137,6 +130,13 @@
 			<label class="form-help-content">
 				Kubernetes cluster CA certificate data. Include the entire PEM contents, including <code> -----BEGIN * </code> and <code> -----END * </code>.
 			</label>
+		</div>
+
+		<div class="row">
+			<label>Cluster request timeout (in milliseconds)</label>
+			<input type="text" ng-model="cluster_request_timeout"/>
+			<span class="form_error" ng-show="GOINPUTNAME[cluster_request_timeout].$error.server">{{GOINPUTNAME[cluster_request_timeout].$error.server}}</span>
+			<label class="form-help-content">Defaults to <code>10000 milliseconds</code>.</label>
 		</div>
 	</fieldset>
 </div>

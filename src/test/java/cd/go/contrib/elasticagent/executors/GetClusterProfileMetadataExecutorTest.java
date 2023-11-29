@@ -65,13 +65,6 @@ public class GetClusterProfileMetadataExecutorTest {
                 "    }\n" +
                 "  },\n" +
                 "  {\n" +
-                "    \"key\": \"cluster_request_timeout\",\n" +
-                "    \"metadata\": {\n" +
-                "      \"required\": false,\n" +
-                "      \"secure\": false\n" +
-                "    }\n" +
-                "  },\n" +
-                "  {\n" +
                 "    \"key\": \"kubernetes_cluster_url\",\n" +
                 "    \"metadata\": {\n" +
                 "      \"required\": true,\n" +
@@ -97,6 +90,13 @@ public class GetClusterProfileMetadataExecutorTest {
                 "    \"metadata\": {\n" +
                 "      \"required\": false,\n" +
                 "      \"secure\": true\n" +
+                "    }\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"key\": \"cluster_request_timeout\",\n" +
+                "    \"metadata\": {\n" +
+                "      \"required\": false,\n" +
+                "      \"secure\": false\n" +
                 "    }\n" +
                 "  }\n" +
                 "]";

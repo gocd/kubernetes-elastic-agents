@@ -41,10 +41,6 @@ public class PluginSettings {
     private String maxPendingPods;
 
     @Expose
-    @SerializedName("cluster_request_timeout")
-    private String clusterRequestTimeout;
-
-    @Expose
     @SerializedName("kubernetes_cluster_url")
     private String clusterUrl;
 
@@ -59,6 +55,10 @@ public class PluginSettings {
     @Expose
     @SerializedName("namespace")
     private String namespace;
+
+    @Expose
+    @SerializedName("cluster_request_timeout")
+    private String clusterRequestTimeout;
 
     private Duration autoRegisterPeriod;
 
@@ -86,20 +86,13 @@ public class PluginSettings {
     }
 
     Integer getAutoRegisterTimeout() {
-        Integer autoRegisterTimeoutInt = !isBlank(autoRegisterTimeout) ? Integer.valueOf(autoRegisterTimeout) : null;
-        return getOrDefault(autoRegisterTimeoutInt, 10);
+        Integer value = !isBlank(autoRegisterTimeout) ? Integer.valueOf(autoRegisterTimeout) : null;
+        return getOrDefault(value, 10);
     }
 
     public Integer getMaxPendingPods() {
-        Integer maximumPendingPodsInt = !isBlank(this.maxPendingPods) ? Integer.valueOf(this.maxPendingPods) : null;
-        return getOrDefault(maximumPendingPodsInt, 10);
-    }
-
-    public Integer getClusterRequestTimeout() {
-        Integer maximumPendingPodsInt = !isBlank(this.clusterRequestTimeout)
-                ? Integer.valueOf(this.clusterRequestTimeout)
-                : null;
-        return getOrDefault(maximumPendingPodsInt, 10000);
+        Integer value = !isBlank(this.maxPendingPods) ? Integer.valueOf(this.maxPendingPods) : null;
+        return getOrDefault(value, 10);
     }
 
     public String getGoServerUrl() {
@@ -116,6 +109,11 @@ public class PluginSettings {
 
     public String getCaCertData() {
         return clusterCACertData;
+    }
+
+    public Integer getClusterRequestTimeout() {
+        Integer value = !isBlank(this.clusterRequestTimeout) ? Integer.valueOf(this.clusterRequestTimeout) : null;
+        return getOrDefault(value, 10000);
     }
 
     public String getNamespace() {
@@ -147,13 +145,13 @@ public class PluginSettings {
             return false;
         if (maxPendingPods != null ? !maxPendingPods.equals(that.maxPendingPods) : that.maxPendingPods != null)
             return false;
-        if (clusterRequestTimeout != null ? !clusterRequestTimeout.equals(that.clusterRequestTimeout) : that.clusterRequestTimeout != null)
-            return false;
         if (clusterUrl != null ? !clusterUrl.equals(that.clusterUrl) : that.clusterUrl != null)
             return false;
         if (securityToken != null ? !securityToken.equals(that.securityToken) : that.securityToken != null)
             return false;
         if (clusterCACertData != null ? !clusterCACertData.equals(that.clusterCACertData) : that.clusterCACertData != null)
+            return false;
+        if (clusterRequestTimeout != null ? !clusterRequestTimeout.equals(that.clusterRequestTimeout) : that.clusterRequestTimeout != null)
             return false;
         return namespace != null ? namespace.equals(that.namespace) : that.namespace == null;
     }
@@ -163,10 +161,10 @@ public class PluginSettings {
         int result = goServerUrl != null ? goServerUrl.hashCode() : 0;
         result = 31 * result + (autoRegisterTimeout != null ? autoRegisterTimeout.hashCode() : 0);
         result = 31 * result + (maxPendingPods != null ? maxPendingPods.hashCode() : 0);
-        result = 31 * result + (clusterRequestTimeout != null ? clusterRequestTimeout.hashCode() : 0);
         result = 31 * result + (clusterUrl != null ? clusterUrl.hashCode() : 0);
         result = 31 * result + (securityToken != null ? securityToken.hashCode() : 0);
         result = 31 * result + (clusterCACertData != null ? clusterCACertData.hashCode() : 0);
+        result = 31 * result + (clusterRequestTimeout != null ? clusterRequestTimeout.hashCode() : 0);
         result = 31 * result + (namespace != null ? namespace.hashCode() : 0);
         return result;
     }
@@ -177,10 +175,10 @@ public class PluginSettings {
                 "goServerUrl='" + goServerUrl + '\'' +
                 ", autoRegisterTimeout=" + autoRegisterTimeout +
                 ", maxPendingPods=" + maxPendingPods +
-                ", clusterRequestTimeout=" + clusterRequestTimeout +
                 ", clusterUrl='" + clusterUrl + '\'' +
                 ", securityToken='" + securityToken + '\'' +
                 ", clusterCACertData='" + clusterCACertData + '\'' +
+                ", clusterRequestTimeout=" + clusterRequestTimeout +
                 ", namespace='" + namespace + '\'' +
                 ", autoRegisterPeriod=" + autoRegisterPeriod +
                 '}';

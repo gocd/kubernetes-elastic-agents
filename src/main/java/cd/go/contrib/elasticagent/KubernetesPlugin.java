@@ -113,7 +113,6 @@ public class KubernetesPlugin implements GoPlugin {
             }
         } catch (Exception e) {
             LOG.error("Failed to handle request " + request.requestName(), e);
-
             return DefaultGoPluginApiResponse.error("Failed to handle request " + request.requestName());
         }
     }

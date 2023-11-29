@@ -76,11 +76,11 @@ public class KubernetesClientFactory {
     private KubernetesClient createClientFor(PluginSettings pluginSettings) {
         final ConfigBuilder configBuilder = new ConfigBuilder()
                 .withAutoConfigure(false)
-                .withRequestTimeout(pluginSettings.getClusterRequestTimeout())
-                .withOauthToken(pluginSettings.getSecurityToken())
                 .withMasterUrl(pluginSettings.getClusterUrl())
+                .withNamespace(pluginSettings.getNamespace())
+                .withOauthToken(pluginSettings.getSecurityToken())
                 .withCaCertData(pluginSettings.getCaCertData())
-                .withNamespace(pluginSettings.getNamespace());
+                .withRequestTimeout(pluginSettings.getClusterRequestTimeout());
 
         return new KubernetesClientBuilder().withConfig(configBuilder.build()).build();
     }

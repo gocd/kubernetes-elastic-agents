@@ -33,22 +33,22 @@ public class PluginSettingsTest {
         pluginSettingsMap.put("go_server_url", "https://foo.go.cd/go");
         pluginSettingsMap.put("auto_register_timeout", "13");
         pluginSettingsMap.put("pending_pods_count", "14");
-        pluginSettingsMap.put("cluster_request_timeout", "60000");
         pluginSettingsMap.put("kubernetes_cluster_url", "https://cloud.example.com");
         pluginSettingsMap.put("security_token", "foo-token");
         pluginSettingsMap.put("kubernetes_cluster_ca_cert", "foo-ca-certs");
         pluginSettingsMap.put("namespace", "gocd");
+        pluginSettingsMap.put("cluster_request_timeout", "60000");
 
         PluginSettings pluginSettings = PluginSettings.fromJSON(new Gson().toJson(pluginSettingsMap));
 
         assertThat(pluginSettings.getGoServerUrl()).isEqualTo("https://foo.go.cd/go");
         assertThat(pluginSettings.getAutoRegisterTimeout()).isEqualTo(13);
         assertThat(pluginSettings.getMaxPendingPods()).isEqualTo(14);
-        assertThat(pluginSettings.getClusterRequestTimeout()).isEqualTo(60000);
         assertThat(pluginSettings.getClusterUrl()).isEqualTo("https://cloud.example.com");
         assertThat(pluginSettings.getCaCertData()).isEqualTo("foo-ca-certs");
         assertThat(pluginSettings.getSecurityToken()).isEqualTo("foo-token");
         assertThat(pluginSettings.getNamespace()).isEqualTo("gocd");
+        assertThat(pluginSettings.getClusterRequestTimeout()).isEqualTo(60000);
 
     }
 
@@ -58,22 +58,22 @@ public class PluginSettingsTest {
         pluginSettingsMap.put("go_server_url", "https://foo.go.cd/go");
         pluginSettingsMap.put("auto_register_timeout", "");
         pluginSettingsMap.put("pending_pods_count", null);
-        pluginSettingsMap.put("cluster_request_timeout", null);
         pluginSettingsMap.put("kubernetes_cluster_url", "https://cloud.example.com");
         pluginSettingsMap.put("security_token", "foo-token");
         pluginSettingsMap.put("kubernetes_cluster_ca_cert", "foo-ca-certs");
         pluginSettingsMap.put("namespace", "gocd");
+        pluginSettingsMap.put("cluster_request_timeout", null);
 
         PluginSettings pluginSettings = PluginSettings.fromJSON(new Gson().toJson(pluginSettingsMap));
 
         assertThat(pluginSettings.getGoServerUrl()).isEqualTo("https://foo.go.cd/go");
         assertThat(pluginSettings.getAutoRegisterTimeout()).isEqualTo(10);
         assertThat(pluginSettings.getMaxPendingPods()).isEqualTo(10);
-        assertThat(pluginSettings.getClusterRequestTimeout()).isEqualTo(10000);
         assertThat(pluginSettings.getClusterUrl()).isEqualTo("https://cloud.example.com");
         assertThat(pluginSettings.getCaCertData()).isEqualTo("foo-ca-certs");
         assertThat(pluginSettings.getSecurityToken()).isEqualTo("foo-token");
         assertThat(pluginSettings.getNamespace()).isEqualTo("gocd");
+        assertThat(pluginSettings.getClusterRequestTimeout()).isEqualTo(10000);
     }
 
     @Test
@@ -83,10 +83,10 @@ public class PluginSettingsTest {
         assertNull(pluginSettings.getGoServerUrl());
         assertThat(pluginSettings.getAutoRegisterTimeout()).isEqualTo(10);
         assertThat(pluginSettings.getMaxPendingPods()).isEqualTo(10);
-        assertThat(pluginSettings.getClusterRequestTimeout()).isEqualTo(10000);
         assertThat(pluginSettings.getNamespace()).isEqualTo("default");
         assertNull(pluginSettings.getClusterUrl());
         assertNull(pluginSettings.getCaCertData());
+        assertThat(pluginSettings.getClusterRequestTimeout()).isEqualTo(10000);
     }
 
     @Test
