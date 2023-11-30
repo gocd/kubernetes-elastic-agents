@@ -28,7 +28,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
 public class GetClusterProfileMetadataExecutorTest {
     @Test
     public void shouldSerializeAllFields() throws Exception {
@@ -60,6 +59,13 @@ public class GetClusterProfileMetadataExecutorTest {
                 "  },\n" +
                 "  {\n" +
                 "    \"key\": \"pending_pods_count\",\n" +
+                "    \"metadata\": {\n" +
+                "      \"required\": false,\n" +
+                "      \"secure\": false\n" +
+                "    }\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"key\": \"cluster_request_timeout\",\n" +
                 "    \"metadata\": {\n" +
                 "      \"required\": false,\n" +
                 "      \"secure\": false\n" +

@@ -41,6 +41,10 @@ public class PluginSettings {
     private String maxPendingPods;
 
     @Expose
+    @SerializedName("cluster_request_timeout")
+    private String clusterRequestTimeout;
+
+    @Expose
     @SerializedName("kubernetes_cluster_url")
     private String clusterUrl;
 
@@ -91,6 +95,13 @@ public class PluginSettings {
         return getOrDefault(maximumPendingPodsInt, 10);
     }
 
+    public Integer getClusterRequestTimeout() {
+        Integer maximumPendingPodsInt = !isBlank(this.clusterRequestTimeout)
+                ? Integer.valueOf(this.clusterRequestTimeout)
+                : null;
+        return getOrDefault(maximumPendingPodsInt, 10000);
+    }
+
     public String getGoServerUrl() {
         return goServerUrl;
     }
@@ -130,12 +141,16 @@ public class PluginSettings {
 
         PluginSettings that = (PluginSettings) o;
 
-        if (goServerUrl != null ? !goServerUrl.equals(that.goServerUrl) : that.goServerUrl != null) return false;
+        if (goServerUrl != null ? !goServerUrl.equals(that.goServerUrl) : that.goServerUrl != null)
+            return false;
         if (autoRegisterTimeout != null ? !autoRegisterTimeout.equals(that.autoRegisterTimeout) : that.autoRegisterTimeout != null)
             return false;
         if (maxPendingPods != null ? !maxPendingPods.equals(that.maxPendingPods) : that.maxPendingPods != null)
             return false;
-        if (clusterUrl != null ? !clusterUrl.equals(that.clusterUrl) : that.clusterUrl != null) return false;
+        if (clusterRequestTimeout != null ? !clusterRequestTimeout.equals(that.clusterRequestTimeout) : that.clusterRequestTimeout != null)
+            return false;
+        if (clusterUrl != null ? !clusterUrl.equals(that.clusterUrl) : that.clusterUrl != null)
+            return false;
         if (securityToken != null ? !securityToken.equals(that.securityToken) : that.securityToken != null)
             return false;
         if (clusterCACertData != null ? !clusterCACertData.equals(that.clusterCACertData) : that.clusterCACertData != null)
@@ -148,6 +163,7 @@ public class PluginSettings {
         int result = goServerUrl != null ? goServerUrl.hashCode() : 0;
         result = 31 * result + (autoRegisterTimeout != null ? autoRegisterTimeout.hashCode() : 0);
         result = 31 * result + (maxPendingPods != null ? maxPendingPods.hashCode() : 0);
+        result = 31 * result + (clusterRequestTimeout != null ? clusterRequestTimeout.hashCode() : 0);
         result = 31 * result + (clusterUrl != null ? clusterUrl.hashCode() : 0);
         result = 31 * result + (securityToken != null ? securityToken.hashCode() : 0);
         result = 31 * result + (clusterCACertData != null ? clusterCACertData.hashCode() : 0);
@@ -161,6 +177,7 @@ public class PluginSettings {
                 "goServerUrl='" + goServerUrl + '\'' +
                 ", autoRegisterTimeout=" + autoRegisterTimeout +
                 ", maxPendingPods=" + maxPendingPods +
+                ", clusterRequestTimeout=" + clusterRequestTimeout +
                 ", clusterUrl='" + clusterUrl + '\'' +
                 ", securityToken='" + securityToken + '\'' +
                 ", clusterCACertData='" + clusterCACertData + '\'' +

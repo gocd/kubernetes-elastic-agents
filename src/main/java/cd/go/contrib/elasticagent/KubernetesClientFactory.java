@@ -76,6 +76,7 @@ public class KubernetesClientFactory {
     private KubernetesClient createClientFor(PluginSettings pluginSettings) {
         final ConfigBuilder configBuilder = new ConfigBuilder()
                 .withAutoConfigure(false)
+                .withRequestTimeout(pluginSettings.getClusterRequestTimeout())
                 .withOauthToken(pluginSettings.getSecurityToken())
                 .withMasterUrl(pluginSettings.getClusterUrl())
                 .withCaCertData(pluginSettings.getCaCertData())

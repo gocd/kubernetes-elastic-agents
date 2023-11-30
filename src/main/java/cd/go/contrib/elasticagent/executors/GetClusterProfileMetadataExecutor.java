@@ -33,6 +33,7 @@ public class GetClusterProfileMetadataExecutor implements RequestExecutor {
     public static final Metadata GO_SERVER_URL = new GoServerURLMetadata();
     public static final Metadata AUTO_REGISTER_TIMEOUT = new Metadata("auto_register_timeout", false, false);
     public static final Metadata MAX_PENDING_PODS = new Metadata("pending_pods_count", false, false);
+    public static final Metadata CLUSTER_REQUEST_TIMEOUT = new Metadata("cluster_request_timeout", false, false);
     public static final Metadata CLUSTER_URL = new Metadata("kubernetes_cluster_url", true, false);
     public static final Metadata NAMESPACE = new Metadata("namespace", false, false);
     public static final Metadata SECURITY_TOKEN = new Metadata("security_token", true, true);
@@ -44,6 +45,7 @@ public class GetClusterProfileMetadataExecutor implements RequestExecutor {
         FIELDS.add(GO_SERVER_URL);
         FIELDS.add(AUTO_REGISTER_TIMEOUT);
         FIELDS.add(MAX_PENDING_PODS);
+        FIELDS.add(CLUSTER_REQUEST_TIMEOUT);
         FIELDS.add(CLUSTER_URL);
         FIELDS.add(NAMESPACE);
         FIELDS.add(SECURITY_TOKEN);

@@ -38,6 +38,7 @@ import java.util.Map;
 
 import static cd.go.contrib.elasticagent.Constants.JOB_ID_LABEL_KEY;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -77,6 +78,7 @@ public class KubernetesAgentInstancesTest {
         testProperties = new HashMap<>();
         when(mockCreateAgentRequest.properties()).thenReturn(testProperties);
         when(mockPluginSettings.getMaxPendingPods()).thenReturn(10);
+        when(mockPluginSettings.getClusterRequestTimeout()).thenReturn(10000);
         when(factory.client(mockPluginSettings)).thenReturn(mockKubernetesClient);
         JobIdentifier jobId = new JobIdentifier("test", 1L, "Test pipeline", "test name", "1", "test job", 100L);
         when(mockCreateAgentRequest.jobIdentifier()).thenReturn(jobId);
@@ -117,7 +119,8 @@ public class KubernetesAgentInstancesTest {
                 thenReturn(kubernetesInstance);
         testProperties.put("PodSpecType", "remote");
         KubernetesAgentInstances agentInstances = new KubernetesAgentInstances(factory, mockKubernetesInstanceFactory);
-        KubernetesInstance instance = agentInstances.create(mockCreateAgentRequest, mockPluginSettings, mockPluginRequest, consoleLogAppender);
+        KubernetesInstance instance = agentInstances.create(mockCreateAgentRequest, mockPluginSettings,
+                mockPluginRequest, consoleLogAppender);
         assertTrue(agentInstances.instanceExists(instance));
     }
 
