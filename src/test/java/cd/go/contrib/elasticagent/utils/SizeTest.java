@@ -38,11 +38,6 @@ public class SizeTest {
     }
 
     @Test
-    public void shouldThrowExceptionIfTheGivenSizeHasNoUint() {
-        assertThrows(IllegalArgumentException.class, () -> Size.parse("24000"));
-    }
-
-    @Test
     public void shouldThrowExceptionIfTheGivenSizeIsNull() {
         assertThrows(IllegalArgumentException.class, () -> Size.parse(null));
     }
@@ -55,6 +50,12 @@ public class SizeTest {
     @Test
     public void fromQuantity() {
         assertEquals("58 GB", Size.fromQuantity(Quantity.parse("58Gi")).readableSize());
+    }
+
+    @Test
+    public void defaultSizeUnitIsBytes() {
+        Size oneKB = Size.parse("1024");
+        assertEquals(oneKB.toBytes(), 1024, 0);
     }
 
     @Test

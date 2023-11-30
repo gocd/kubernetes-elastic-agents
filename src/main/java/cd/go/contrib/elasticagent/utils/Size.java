@@ -27,7 +27,7 @@ import static cd.go.contrib.elasticagent.utils.Util.isBlank;
 import static java.util.Objects.requireNonNull;
 
 public class Size implements Comparable<Size> {
-    private static final Pattern SIZE_PATTERN = Pattern.compile("(\\d+)\\s*(\\S+)");
+    private static final Pattern SIZE_PATTERN = Pattern.compile("(\\d+)\\s*(\\S*)");
 
     private static final Map<String, SizeUnit> SUFFIXES;
 
@@ -101,10 +101,11 @@ public class Size implements Comparable<Size> {
         }
 
         final double count = Double.parseDouble(matcher.group(1));
-        final SizeUnit unit = SUFFIXES.get(matcher.group(2));
-        if (unit == null) {
+        String suffix = matcher.group(2);
+        if (!suffix.isBlank() && !SUFFIXES.containsKey(suffix)) {
             throw new IllegalArgumentException("Invalid size: " + size + ". Wrong size unit");
         }
+        final SizeUnit unit = SUFFIXES.getOrDefault(suffix, SizeUnit.BYTES);
 
         return new Size(count, unit);
     }
