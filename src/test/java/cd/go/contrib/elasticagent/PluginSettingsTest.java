@@ -98,4 +98,14 @@ public class PluginSettingsTest {
 
         assertThat(pluginSettings.getNamespace()).isEqualTo("default");
     }
+
+    @Test
+    public void shouldConsiderBlankCertAsNull() {
+        final Map<String, Object> pluginSettingsMap = new HashMap<>();
+        pluginSettingsMap.put("kubernetes_cluster_ca_cert", "   ");
+
+        PluginSettings pluginSettings = PluginSettings.fromJSON(new Gson().toJson(pluginSettingsMap));
+
+        assertThat(pluginSettings.getCaCertData()).isNull();
+    }
 }

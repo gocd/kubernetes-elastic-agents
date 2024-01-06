@@ -108,7 +108,7 @@ public class PluginSettings {
     }
 
     public String getCaCertData() {
-        return clusterCACertData;
+        return isBlank(clusterCACertData) ? null : clusterCACertData;
     }
 
     public Integer getClusterRequestTimeout() {
