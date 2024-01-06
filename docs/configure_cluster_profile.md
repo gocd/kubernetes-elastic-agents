@@ -24,7 +24,7 @@
    Otherwise, the plugin of one GoCD server will end up terminating pods
    started by the plugin in the other GoCD servers.
 
-1. Specify `Security token`. This should be a Kubernetes API token with the
+1. Specify `Security token`. This should be a Kubernetes API token linked to a service account which has the
    following permissions:
 
    | Resource       | Actions |
