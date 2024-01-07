@@ -100,15 +100,15 @@ public class PluginSettings {
     }
 
     public String getSecurityToken() {
-        return securityToken;
+        return getOrDefault(securityToken, null);
     }
 
     public String getClusterUrl() {
-        return clusterUrl;
+        return getOrDefault(clusterUrl, null);
     }
 
     public String getCaCertData() {
-        return isBlank(clusterCACertData) ? null : clusterCACertData;
+        return getOrDefault(clusterCACertData, null);
     }
 
     public Integer getClusterRequestTimeout() {
@@ -117,7 +117,7 @@ public class PluginSettings {
     }
 
     public String getNamespace() {
-        return getOrDefault(this.namespace, "default");
+        return getOrDefault(this.namespace, null);
     }
 
     private <T> T getOrDefault(T t, T defaultValue) {

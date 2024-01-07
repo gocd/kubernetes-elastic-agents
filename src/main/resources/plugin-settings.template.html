@@ -94,12 +94,25 @@
 	<fieldset>
 		<legend>Cluster Information</legend>
 		<div class="row">
+			<div class="columns large-12 end">
+				<label class="form-help-content">
+					The values below are all <b>optional</b> when the server is running on Kubernetes - the plugin will
+					auto-configure itself from the GoCD server's environment and the pod is attached to a <code>ServiceAccount</code>
+					with tokens auto-mounted into the pod.
+					<br/><br/>
+					In <b>most</b> cases you should only override these if you are running your server outside Kubernetes
+					<i>or</i> wish to create agent pods in a different cluster (or namespace) to the server,
+					<i>or</i> you wish to use a service account token whose lifecycle is managed separately to the GoCD Server pod.
+				</label>
+			</div>
+		</div>
+		<div class="row">
 			<div class="columns large-5">
-				<label>Cluster URL<span class='asterix'>*</span></label>
+				<label>Cluster URL</label>
 				<input type="text" ng-model="kubernetes_cluster_url" ng-required="true"/>
 				<span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_url].$error.server">{{GOINPUTNAME[kubernetes_cluster_url].$error.server}}</span>
 				<label class="form-help-content">
-					Kubernetes Cluster URL. Can be obtained by running <code>kubectl cluster-info</code>
+					Cluster API Server master URL.<br/>Defaults to the same as that of the GoCD server pod (when on K8S).
 				</label>
 			</div>
 			<div class="columns large-5 end">
@@ -107,19 +120,22 @@
 				<input type="text" ng-model="namespace" ng-required="true"/>
 				<span class="form_error" ng-show="GOINPUTNAME[namespace].$error.server">{{GOINPUTNAME[namespace].$error.server}}</span>
 				<label class="form-help-content">
-					Namespace in which plugin will create the agent pods. defaults to <code>default</code> namespace.
+					Namespace to create agent pods.<br/>Defaults to the same namespace as the GoCD server (when on K8S).
 				</label>
 			</div>
 		</div>
 
 		<div class="row">
-			<label>Security token
-				<span class='asterix'>*</span>
-			</label>
+			<label>Security token</label>
 			<textarea rows="5" ng-model="security_token"></textarea>
 			<span class="form_error form-error" ng-show="GOINPUTNAME[security_token].$error.server">{{GOINPUTNAME[security_token].$error.server}}</span>
 			<label class="form-help-content">
-				Get the service account token by running following command <code>kubectl describe secret TOKEN_NAME</code> and copy the value of token here.
+				A service account token to talk to the API server to list and create agent pods. If unset, defaults to
+				any service account token auto-mounted into standard pod locations (<b>strongly recommended</b> when
+				server is on K8S).
+				<br/><br/>
+				If you have a custom <code>Secret</code> of type <code>kubernetes.io/service-account-token</code> with
+				indefinite lifetime, or are not running the GoCD server on K8s copy a valid token value here.
 			</label>
 		</div>
 
@@ -128,7 +144,10 @@
 			<textarea ng-model="kubernetes_cluster_ca_cert" rows="7"></textarea>
 			<span class="form_error" ng-show="GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server">{{GOINPUTNAME[kubernetes_cluster_ca_cert].$error.server}}</span>
 			<label class="form-help-content">
-				Kubernetes cluster CA certificate data. Include the entire PEM contents, including <code> -----BEGIN * </code> and <code> -----END * </code>.
+				Kubernetes cluster CA certificate data. If unset, defaults to the CA certificate auto-mounted into
+				standard pod locations alongside a service account token (<b>strongly recommended</b> when server is on K8S).
+				<br/><br/>
+				Otherwise, include the entire PEM contents, including <code>-----BEGIN</code> and <code>-----END</code>.
 			</label>
 		</div>
 

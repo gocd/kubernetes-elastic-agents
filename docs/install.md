@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-* GoCD server version v19.3.0 or above
+* GoCD server version v20.9.0 or above
 * Kubernetes Cluster
 
 ## Installation
