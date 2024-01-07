@@ -54,14 +54,6 @@ public class ClusterProfileValidateRequestExecutorTest {
                 "  {" +
                 "    \"message\":\"Secure site url is not configured. Please specify Go Server Url.\"," +
                 "    \"key\":\"go_server_url\"" +
-                "  }," +
-                "  {" +
-                "    \"message\":\"kubernetes_cluster_url must not be blank.\"," +
-                "    \"key\":\"kubernetes_cluster_url\"" +
-                "  }," +
-                "  {" +
-                "    \"message\":\"security_token must not be blank.\"," +
-                "    \"key\":\"security_token\"" +
                 "  }" +
                 "]";
 

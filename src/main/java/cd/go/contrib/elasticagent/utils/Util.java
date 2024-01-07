@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
+import java.util.function.Consumer;
 
 public class Util {
     public static final Gson GSON = new GsonBuilder()
@@ -36,6 +37,12 @@ public class Util {
 
     public static boolean isBlank(String str) {
         return str == null || str.isBlank();
+    }
+
+    public static void setIfNotBlank(Consumer<String> action, String str) {
+        if (!isBlank(str)) {
+            action.accept(str);
+        }
     }
 
     public static String readResource(String resourceFile) {

@@ -67,7 +67,7 @@ public class GetClusterProfileMetadataExecutorTest {
                 "  {\n" +
                 "    \"key\": \"kubernetes_cluster_url\",\n" +
                 "    \"metadata\": {\n" +
-                "      \"required\": true,\n" +
+                "      \"required\": false,\n" +
                 "      \"secure\": false\n" +
                 "    }\n" +
                 "  },\n" +
@@ -81,7 +81,7 @@ public class GetClusterProfileMetadataExecutorTest {
                 "  {\n" +
                 "    \"key\": \"security_token\",\n" +
                 "    \"metadata\": {\n" +
-                "      \"required\": true,\n" +
+                "      \"required\": false,\n" +
                 "      \"secure\": true\n" +
                 "    }\n" +
                 "  },\n" +

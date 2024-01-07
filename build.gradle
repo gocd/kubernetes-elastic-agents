@@ -20,7 +20,7 @@ apply from: "https://raw.githubusercontent.com/gocd/gocd-plugin-gradle-task-help
 
 gocdPlugin {
   id = 'cd.go.contrib.elasticagent.kubernetes'
-  pluginVersion = '3.9.1'
+  pluginVersion = '4.0.0'
   goCdVersion = '20.9.0'
   name = 'Kubernetes Elastic Agent Plugin'
   description = 'Kubernetes Based Elastic Agent Plugins for GoCD'
@@ -80,6 +80,7 @@ dependencies {
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.8.0'
     testImplementation group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.1'
     testImplementation group: 'org.jsoup', name: 'jsoup', version: '1.17.2'
+    testImplementation group: 'uk.org.webcompere', name: 'system-stubs-jupiter', version: '2.1.5'
 }
 
 test {

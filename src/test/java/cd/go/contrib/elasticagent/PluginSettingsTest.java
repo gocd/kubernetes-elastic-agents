@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class PluginSettingsTest {
 
@@ -80,32 +79,29 @@ public class PluginSettingsTest {
     public void shouldHaveDefaultValueAfterDeSerialization() {
         PluginSettings pluginSettings = PluginSettings.fromJSON("{}");
 
-        assertNull(pluginSettings.getGoServerUrl());
+        assertThat(pluginSettings.getGoServerUrl()).isNull();
         assertThat(pluginSettings.getAutoRegisterTimeout()).isEqualTo(10);
         assertThat(pluginSettings.getMaxPendingPods()).isEqualTo(10);
-        assertThat(pluginSettings.getNamespace()).isEqualTo("default");
-        assertNull(pluginSettings.getClusterUrl());
-        assertNull(pluginSettings.getCaCertData());
+        assertThat(pluginSettings.getNamespace()).isNull();
+        assertThat(pluginSettings.getClusterUrl()).isNull();
+        assertThat(pluginSettings.getCaCertData()).isNull();
+        assertThat(pluginSettings.getSecurityToken()).isNull();
         assertThat(pluginSettings.getClusterRequestTimeout()).isEqualTo(10000);
     }
 
     @Test
-    public void shouldConsiderBlankStringAsNull() {
+    public void shouldConsiderBlankClusterValuesAsNull() {
         final Map<String, Object> pluginSettingsMap = new HashMap<>();
+        pluginSettingsMap.put("kubernetes_cluster_url", "   ");
         pluginSettingsMap.put("namespace", "   ");
-
-        PluginSettings pluginSettings = PluginSettings.fromJSON(new Gson().toJson(pluginSettingsMap));
-
-        assertThat(pluginSettings.getNamespace()).isEqualTo("default");
-    }
-
-    @Test
-    public void shouldConsiderBlankCertAsNull() {
-        final Map<String, Object> pluginSettingsMap = new HashMap<>();
+        pluginSettingsMap.put("security_token", "   ");
         pluginSettingsMap.put("kubernetes_cluster_ca_cert", "   ");
 
         PluginSettings pluginSettings = PluginSettings.fromJSON(new Gson().toJson(pluginSettingsMap));
 
+        assertThat(pluginSettings.getNamespace()).isNull();
+        assertThat(pluginSettings.getClusterUrl()).isNull();
+        assertThat(pluginSettings.getSecurityToken()).isNull();
         assertThat(pluginSettings.getCaCertData()).isNull();
     }
 }

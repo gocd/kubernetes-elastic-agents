@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagent;
 
-import io.fabric8.kubernetes.client.ConfigBuilder;
+import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 
@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static cd.go.contrib.elasticagent.utils.Util.isBlank;
+import static cd.go.contrib.elasticagent.utils.Util.setIfNotBlank;
 import static java.text.MessageFormat.format;
 
 public class KubernetesClientFactory {
@@ -35,13 +36,14 @@ public class KubernetesClientFactory {
     private long kubernetesClientRecycleIntervalInMinutes = -1;
     public static final String CLIENT_RECYCLE_SYSTEM_PROPERTY_KEY = "go.kubernetes.elastic-agent.plugin.client.recycle.interval.in.minutes";
 
-    public KubernetesClientFactory() {
-        this.clock = Clock.DEFAULT;
+    KubernetesClientFactory() {
+        this(Clock.DEFAULT);
     }
 
     //used for testing..
-    public KubernetesClientFactory(Clock clock) {
+    KubernetesClientFactory(Clock clock) {
         this.clock = clock;
+        System.setProperty(Config.KUBERNETES_AUTH_TRYKUBECONFIG_SYSTEM_PROPERTY, "false");
     }
 
     public static KubernetesClientFactory instance() {
@@ -74,15 +76,15 @@ public class KubernetesClientFactory {
     }
 
     private KubernetesClient createClientFor(PluginSettings pluginSettings) {
-        final ConfigBuilder configBuilder = new ConfigBuilder()
-                .withAutoConfigure(false)
-                .withMasterUrl(pluginSettings.getClusterUrl())
-                .withNamespace(pluginSettings.getNamespace())
-                .withOauthToken(pluginSettings.getSecurityToken())
-                .withCaCertData(pluginSettings.getCaCertData())
-                .withRequestTimeout(pluginSettings.getClusterRequestTimeout());
+        Config config = Config.autoConfigure(null);
 
-        return new KubernetesClientBuilder().withConfig(configBuilder.build()).build();
+        setIfNotBlank(config::setMasterUrl, pluginSettings.getClusterUrl());
+        setIfNotBlank(config::setNamespace, pluginSettings.getNamespace());
+        setIfNotBlank(config::setOauthToken, pluginSettings.getSecurityToken());
+        setIfNotBlank(config::setCaCertData, pluginSettings.getCaCertData());
+        config.setRequestTimeout(pluginSettings.getClusterRequestTimeout());
+
+        return new KubernetesClientBuilder().withConfig(config).build();
     }
 
     public void clearOutExistingClient() {
