@@ -55,7 +55,7 @@ java {
 ext {
     deps = [
         gocdPluginApi: 'cd.go.plugin:go-plugin-api:23.5.0',
-        kubernetesClientApi: 'io.fabric8:kubernetes-client-api:6.9.2',
+        kubernetesClientApi: 'io.fabric8:kubernetes-client-api:6.10.0',
     ]
 
     versions = project.ext.deps.collectEntries { lib, libGav -> [lib, libGav.split(':').last()] }
