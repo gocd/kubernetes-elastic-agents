@@ -67,9 +67,12 @@ dependencies {
     implementation project.deps.kubernetesClientApi
     runtimeOnly group: 'io.fabric8', name: 'kubernetes-client', version: project.versions.kubernetesClientApi
     constraints {
-        // Force upgrade transitive dependencies of fabric client to versions without vulnerabilities
-        implementation 'com.squareup.okhttp3:okhttp:3.14.9'
-        implementation 'com.squareup.okio:okio:1.17.6'
+        implementation('com.squareup.okhttp3:okhttp:3.14.9') {
+            because 'Fabric Client uses an older version with vulnerable dependencies'
+        }
+        implementation('com.squareup.okio:okio:1.17.6') {
+            because 'Fabric Client uses an older version with vulnerable dependencies'
+        }
     }
 
     runtimeOnly group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.78.1'
