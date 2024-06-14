@@ -32,10 +32,12 @@ import org.mockito.stubbing.Answer;
 import java.time.Instant;
 import java.util.*;
 
+import static cd.go.contrib.elasticagent.Constants.ENVIRONMENT_LABEL_KEY;
 import static cd.go.contrib.elasticagent.Constants.JOB_ID_LABEL_KEY;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -92,9 +94,9 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         Agent agent2 = new Agent(agentId2, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled); //idle just created
         Agent agent3 = new Agent(agentId3, Agent.AgentState.Building, Agent.BuildState.Building, Agent.ConfigState.Enabled); //running time elapsed
 
-        KubernetesInstance k8sPodForAgent1 = new KubernetesInstance(Instant.now().minus(100, MINUTES), null, agentId1, Collections.emptyMap(), 1L, PodState.Running);
-        KubernetesInstance k8sPodForAgent2 = new KubernetesInstance(Instant.now(), null, agentId2, Collections.emptyMap(), 2L, PodState.Running);
-        KubernetesInstance k8sPodForAgent3 = new KubernetesInstance(Instant.now().minus(100, MINUTES), null, agentId3, Collections.emptyMap(), 3L, PodState.Running);
+        KubernetesInstance k8sPodForAgent1 = KubernetesInstance.builder().createdAt(Instant.now().minus(100, MINUTES)).environment("test").podName(agentId1).jobId(1L).podState(PodState.Running).build();
+        KubernetesInstance k8sPodForAgent2 = KubernetesInstance.builder().createdAt(Instant.now()).environment("test").podName(agentId2).jobId(2L).podState(PodState.Running).build();
+        KubernetesInstance k8sPodForAgent3 = KubernetesInstance.builder().createdAt(Instant.now().minus(100, MINUTES)).environment("test").podName(agentId3).jobId(3L).podState(PodState.Running).build();
 
         final Agents allAgentsInitially = new Agents(Arrays.asList(agent1, agent2, agent3));
         final Agents allAgentsAfterDisablingIdleAgents = new Agents(Arrays.asList(agent1AfterDisabling, agent2, agent3));
@@ -114,13 +116,13 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
         when(pluginRequest.listAgents()).thenReturn(allAgentsInitially, allAgentsAfterDisablingIdleAgents, new Agents());
 
-        assertTrue(clusterSpecificInstances.get(clusterProfileProperties.uuid()).hasInstance(k8sPodForAgent1.name()));
+        assertTrue(clusterSpecificInstances.get(clusterProfileProperties.uuid()).hasInstance(k8sPodForAgent1.getPodName()));
 
-        new ServerPingRequestExecutor(serverPingRequest, clusterSpecificInstances, pluginRequest).execute();
+        new ServerPingRequestExecutor(serverPingRequest.allClusterProfileProperties(), clusterSpecificInstances, pluginRequest).execute();
 
         verify(pluginRequest, atLeastOnce()).disableAgents(Collections.singletonList(agent1));
         verify(pluginRequest, atLeastOnce()).deleteAgents(Collections.singletonList(agent1AfterDisabling));
-        assertFalse(clusterSpecificInstances.get(clusterProfileProperties.uuid()).hasInstance(k8sPodForAgent1.name()));
+        assertFalse(clusterSpecificInstances.get(clusterProfileProperties.uuid()).hasInstance(k8sPodForAgent1.getPodName()));
     }
 
     @Test
@@ -146,13 +148,19 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         Agent agent5 = new Agent(agentId5, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled); //idle just created
         Agent agent6 = new Agent(agentId6, Agent.AgentState.Building, Agent.BuildState.Building, Agent.ConfigState.Enabled); //running time elapsed
 
-        KubernetesInstance k8sPodForAgent1 = new KubernetesInstance(Instant.now().minus(100, MINUTES), null, agentId1, Collections.emptyMap(), 1L, PodState.Running);
-        KubernetesInstance k8sPodForAgent2 = new KubernetesInstance(Instant.now(), null, agentId2, Collections.emptyMap(), 2L, PodState.Running);
-        KubernetesInstance k8sPodForAgent3 = new KubernetesInstance(Instant.now().minus(100, MINUTES), null, agentId3, Collections.emptyMap(), 3L, PodState.Running);
+        KubernetesInstance k8sPodForAgent1 = KubernetesInstance.builder()
+                .createdAt(Instant.now().minus(100, MINUTES)).environment("test").podName(agentId1).jobId(1L).podState(PodState.Running).build();
+        KubernetesInstance k8sPodForAgent2 = KubernetesInstance.builder()
+                .createdAt(Instant.now()).environment("test").podName(agentId2).jobId(2L).podState(PodState.Running).build();
+        KubernetesInstance k8sPodForAgent3 = KubernetesInstance.builder()
+                .createdAt(Instant.now().minus(100, MINUTES)).environment("test").podName(agentId3).jobId(3L).podState(PodState.Running).build();
 
-        KubernetesInstance k8sPodForAgent4 = new KubernetesInstance(Instant.now().minus(100, MINUTES), null, agentId4, Collections.emptyMap(), 1L, PodState.Running);
-        KubernetesInstance k8sPodForAgent5 = new KubernetesInstance(Instant.now(), null, agentId5, Collections.emptyMap(), 2L, PodState.Running);
-        KubernetesInstance k8sPodForAgent6 = new KubernetesInstance(Instant.now().minus(100, MINUTES), null, agentId6, Collections.emptyMap(), 3L, PodState.Running);
+        KubernetesInstance k8sPodForAgent4 = KubernetesInstance.builder()
+                .createdAt(Instant.now().minus(100, MINUTES)).environment("test").podName(agentId4).jobId(1L).podState(PodState.Running).build();
+        KubernetesInstance k8sPodForAgent5 = KubernetesInstance.builder()
+                .createdAt(Instant.now()).environment("test").podName(agentId5).jobId(2L).podState(PodState.Running).build();
+        KubernetesInstance k8sPodForAgent6 = KubernetesInstance.builder()
+                .createdAt(Instant.now().minus(100, MINUTES)).environment("test").podName(agentId6).jobId(3L).podState(PodState.Running).build();
 
         final Agents allAgentsInitially = new Agents(Arrays.asList(agent1, agent2, agent3, agent4, agent5, agent6));
         final Agents allAgentsAfterDisablingIdleAgentsFromCluster1 = new Agents(Arrays.asList(agent1AfterDisabling, agent2, agent3, agent4, agent5, agent6));
@@ -181,10 +189,10 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
         when(pluginRequest.listAgents()).thenReturn(allAgentsInitially, allAgentsAfterDisablingIdleAgentsFromCluster1, allAgentsAfterTerminatingIdleAgentsFromCluster1, allAgentsAfterDisablingIdleAgentsFromCluster2, allAgentsAfterTerminatingIdleAgentsFromCluster2, new Agents());
 
-        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sPodForAgent1.name()));
-        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster2.uuid()).hasInstance(k8sPodForAgent4.name()));
+        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sPodForAgent1.getPodName()));
+        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster2.uuid()).hasInstance(k8sPodForAgent4.getPodName()));
 
-        new ServerPingRequestExecutor(serverPingRequest, clusterSpecificInstances, pluginRequest).execute();
+        new ServerPingRequestExecutor(serverPingRequest.allClusterProfileProperties(), clusterSpecificInstances, pluginRequest).execute();
 
         verify(pluginRequest, atLeastOnce()).disableAgents(Collections.singletonList(agent1));
         verify(pluginRequest, atLeastOnce()).deleteAgents(Collections.singletonList(agent1AfterDisabling));
@@ -192,8 +200,8 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         verify(pluginRequest, atLeastOnce()).disableAgents(Collections.singletonList(agent4));
         verify(pluginRequest, atLeastOnce()).deleteAgents(Collections.singletonList(agent4AfterDisabling));
 
-        assertFalse(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sPodForAgent1.name()));
-        assertFalse(clusterSpecificInstances.get(clusterProfilePropertiesForCluster2.uuid()).hasInstance(k8sPodForAgent4.name()));
+        assertFalse(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sPodForAgent1.getPodName()));
+        assertFalse(clusterSpecificInstances.get(clusterProfilePropertiesForCluster2.uuid()).hasInstance(k8sPodForAgent4.getPodName()));
     }
 
     @Test
@@ -206,7 +214,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         when(mockedOperation.withName(anyString())).thenReturn(podResource);
         when(podResource.get()).thenReturn(mockedPod);
         objectMetadata = new ObjectMeta();
-        objectMetadata.setLabels(Collections.singletonMap(JOB_ID_LABEL_KEY, "20"));
+        objectMetadata.setLabels(Map.of(JOB_ID_LABEL_KEY, "20", ENVIRONMENT_LABEL_KEY, "test"));
         objectMetadata.setName(unregisteredAgentId1);
         objectMetadata.setCreationTimestamp(Constants.KUBERNETES_POD_CREATION_TIME_FORMAT.format(Instant.now().minus(20, MINUTES)));
 
@@ -214,8 +222,10 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
         ClusterProfileProperties clusterProfilePropertiesForCluster1 = new ClusterProfileProperties("https://localhost:8154/go", null, null);
 
-        KubernetesInstance k8sUnregisteredCluster1Pod1 = new KubernetesInstance(Instant.now().minus(100, MINUTES), null, unregisteredAgentId1, Collections.emptyMap(), 3L, PodState.Running);
-        KubernetesInstance k8sUnregisteredCluster1Pod2 = new KubernetesInstance(Instant.now(), null, unregisteredAgentId2, Collections.emptyMap(), 3L, PodState.Running);
+        KubernetesInstance k8sUnregisteredCluster1Pod1 = KubernetesInstance.builder()
+                .createdAt(Instant.now().minus(100, MINUTES)).environment("test").podName(unregisteredAgentId1).jobId(3L).podState(PodState.Running).build();
+        KubernetesInstance k8sUnregisteredCluster1Pod2 = KubernetesInstance.builder()
+                .createdAt(Instant.now()).environment("test").podName(unregisteredAgentId2).jobId(3L).podState(PodState.Running).build();
 
         final Agents allAgentsInitially = new Agents();
 
@@ -233,13 +243,13 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
         when(pluginRequest.listAgents()).thenReturn(allAgentsInitially);
 
-        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sUnregisteredCluster1Pod1.name()));
-        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sUnregisteredCluster1Pod2.name()));
+        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sUnregisteredCluster1Pod1.getPodName()));
+        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sUnregisteredCluster1Pod2.getPodName()));
 
-        new ServerPingRequestExecutor(serverPingRequest, clusterSpecificInstances, pluginRequest).execute();
+        new ServerPingRequestExecutor(serverPingRequest.allClusterProfileProperties(), clusterSpecificInstances, pluginRequest).execute();
 
-        assertFalse(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sUnregisteredCluster1Pod1.name()));
-        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sUnregisteredCluster1Pod2.name()));
+        assertFalse(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sUnregisteredCluster1Pod1.getPodName()));
+        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sUnregisteredCluster1Pod2.getPodName()));
     }
 
     @Test
@@ -263,10 +273,58 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
         when(pluginRequest.listAgents()).thenReturn(allAgents);
 
-        new ServerPingRequestExecutor(serverPingRequest, clusterSpecificInstances, pluginRequest).execute();
+        new ServerPingRequestExecutor(serverPingRequest.allClusterProfileProperties(), clusterSpecificInstances, pluginRequest).execute();
 
         verify(pluginRequest, atLeastOnce()).disableAgents(Arrays.asList(agent2, agent1));
         verify(pluginRequest, atLeastOnce()).deleteAgents(Arrays.asList(agent2, agent1));
     }
-}
 
+    @Test
+    public void shouldRefreshPodsForAllClusters() throws Exception {
+        KubernetesAgentInstances agentInstancesForCluster1 = mock(KubernetesAgentInstances.class);
+        when(agentInstancesForCluster1.listAgentPods(any())).thenReturn(Collections.emptyList());
+
+        KubernetesAgentInstances agentInstancesForCluster2 = mock(KubernetesAgentInstances.class);
+        when(agentInstancesForCluster2.listAgentPods(any())).thenReturn(Collections.emptyList());
+
+        ClusterProfileProperties clusterProfilePropertiesForCluster1 = new ClusterProfileProperties("https://localhost:8154/go", "https://cluster1", null);
+        ClusterProfileProperties clusterProfilePropertiesForCluster2 = new ClusterProfileProperties("https://localhost:8154/go", "https://cluster2", null);
+
+        Map<String, KubernetesAgentInstances> clusterSpecificInstances = Map.of(
+                clusterProfilePropertiesForCluster1.uuid(), agentInstancesForCluster1,
+                clusterProfilePropertiesForCluster2.uuid(), agentInstancesForCluster2
+        );
+
+        List<ClusterProfileProperties> allClusterProps = List.of(clusterProfilePropertiesForCluster1, clusterProfilePropertiesForCluster2);
+
+        PluginRequest pluginRequest = mock(PluginRequest.class);
+
+        // Use spy to disable methods we're not testing
+        ServerPingRequestExecutor spy = spy(new ServerPingRequestExecutor(allClusterProps, clusterSpecificInstances, pluginRequest));
+        doNothing().when(spy).performCleanupForACluster(any(), any());
+        doNothing().when(spy).checkForPossiblyMissingAgents();
+        spy.execute();
+        verify(agentInstancesForCluster1, times(1)).refreshAll(clusterProfilePropertiesForCluster1);
+        verify(agentInstancesForCluster2, times(1)).refreshAll(clusterProfilePropertiesForCluster2);
+    }
+
+    @Test
+    public void shouldInitializeInstancesAndRefreshPodsForNewClusters() throws Exception {
+        ClusterProfileProperties clusterProfilePropertiesForCluster1 = new ClusterProfileProperties("https://localhost:8154/go", "https://cluster1", null);
+        List<ClusterProfileProperties> allClusterProps = List.of(clusterProfilePropertiesForCluster1);
+        Map<String, KubernetesAgentInstances> clusterSpecificInstances = new HashMap<>();
+        KubernetesAgentInstances agentInstancesForCluster1 = mock(KubernetesAgentInstances.class);
+        PluginRequest pluginRequest = mock(PluginRequest.class);
+
+        // Use spy to disable methods we're not testing
+        ServerPingRequestExecutor spy = spy(new ServerPingRequestExecutor(allClusterProps, clusterSpecificInstances, pluginRequest));
+        doNothing().when(spy).performCleanupForACluster(any(), any());
+        doNothing().when(spy).checkForPossiblyMissingAgents();
+        when(spy.newKubernetesInstances()).thenReturn(agentInstancesForCluster1);
+        spy.execute();
+
+        verify(spy, times(1)).newKubernetesInstances();
+        assertThat(clusterSpecificInstances).isEqualTo(Map.of(clusterProfilePropertiesForCluster1.uuid(), agentInstancesForCluster1));
+        verify(agentInstancesForCluster1, times(1)).refreshAll(clusterProfilePropertiesForCluster1);
+    }
+}
