@@ -20,62 +20,67 @@ import cd.go.contrib.elasticagent.*;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
 import cd.go.contrib.elasticagent.requests.JobCompletionRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InOrder;
-import org.mockito.Mock;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.MockitoAnnotations.openMocks;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 public class JobCompletionRequestExecutorTest {
 
-    @Mock
-    private PluginRequest mockPluginRequest;
-    @Mock
-    private AgentInstances<KubernetesInstance> mockAgentInstances;
+    @Test
+    public void withAgentReuseDisabledShouldTerminateAgent() throws Exception {
+        String elasticAgentId = "agent-1";
+        JobIdentifier jobIdentifier = new JobIdentifier(100L);
 
-    @Captor
-    private ArgumentCaptor<List<Agent>> agentsArgumentCaptor;
+        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
+        clusterProfileProperties.setEnableAgentReuse(false);
 
-    @BeforeEach
-    public void setUp() {
-        openMocks(this);
+        Agent agent = new Agent();
+        agent.setElasticAgentId(elasticAgentId);
+        List<Agent> agents = List.of(agent);
+
+        KubernetesAgentInstances agentInstances = mock(KubernetesAgentInstances.class);
+        PluginRequest pluginRequest = mock(PluginRequest.class);
+        JobCompletionRequest request = new JobCompletionRequest(elasticAgentId, jobIdentifier, Collections.emptyMap(), clusterProfileProperties);
+        JobCompletionRequestExecutor executor = new JobCompletionRequestExecutor(request, agentInstances, pluginRequest);
+        GoPluginApiResponse response = executor.execute();
+
+        verify(pluginRequest, times(1)).disableAgents(agents);
+        verify(pluginRequest, times(1)).deleteAgents(agents);
+        verify(agentInstances, times(1)).terminate(elasticAgentId, clusterProfileProperties);
+        assertEquals(200, response.responseCode());
+        assertTrue(response.responseBody().isEmpty());
     }
 
     @Test
-    public void shouldTerminateElasticAgentOnJobCompletion() throws Exception {
-        JobIdentifier jobIdentifier = new JobIdentifier(100L);
-        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
+    public void withAgentReuseEnabledShouldMarkInstanceIdle() throws Exception {
         String elasticAgentId = "agent-1";
-        JobCompletionRequest request = new JobCompletionRequest(elasticAgentId, jobIdentifier, new HashMap<>(), clusterProfileProperties);
-        JobCompletionRequestExecutor executor = new JobCompletionRequestExecutor(request, mockAgentInstances, mockPluginRequest);
+        JobIdentifier jobIdentifier = new JobIdentifier(100L);
 
+        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
+        clusterProfileProperties.setEnableAgentReuse(true);
+
+        JobCompletionRequest request = new JobCompletionRequest(elasticAgentId, jobIdentifier, Collections.emptyMap(), clusterProfileProperties);
+
+        KubernetesInstance instance = KubernetesInstance.builder().agentState(KubernetesInstance.AgentState.Building).build();
+        KubernetesAgentInstances instances = new KubernetesAgentInstances(
+                mock(KubernetesClientFactory.class),
+                mock(KubernetesInstanceFactory.class),
+                Map.of(elasticAgentId, instance));
+        assertEquals(instances.find(elasticAgentId).getAgentState(), KubernetesInstance.AgentState.Building);
+        PluginRequest pluginRequest = mock(PluginRequest.class);
+        JobCompletionRequestExecutor executor = new JobCompletionRequestExecutor(request, instances, pluginRequest);
         GoPluginApiResponse response = executor.execute();
 
-        InOrder inOrder = inOrder(mockPluginRequest, mockAgentInstances);
-
-        inOrder.verify(mockPluginRequest).disableAgents(agentsArgumentCaptor.capture());
-        List<Agent> agentsToDisabled = agentsArgumentCaptor.getValue();
-        assertEquals(1, agentsToDisabled.size());
-        assertEquals(elasticAgentId, agentsToDisabled.get(0).elasticAgentId());
-        inOrder.verify(mockAgentInstances).terminate(elasticAgentId, clusterProfileProperties);
-        inOrder.verify(mockPluginRequest).deleteAgents(agentsArgumentCaptor.capture());
-        List<Agent> agentsToDelete = agentsArgumentCaptor.getValue();
-
-        assertEquals(agentsToDisabled, agentsToDelete);
-
+        assertEquals(instances.find(elasticAgentId).getAgentState(), KubernetesInstance.AgentState.Idle);
         assertEquals(200, response.responseCode());
         assertTrue(response.responseBody().isEmpty());
-
-        verifyNoMoreInteractions(mockPluginRequest);
     }
 }
