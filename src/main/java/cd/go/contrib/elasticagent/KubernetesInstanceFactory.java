@@ -231,7 +231,7 @@ public class KubernetesInstanceFactory {
     private KubernetesInstance createUsingPodYaml(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         String podYaml = request.properties().get(POD_CONFIGURATION.getKey());
-        String templatizedPodYaml = getTemplatizedPodSpec(podYaml);
+        String templatizedPodYaml = getTemplatedPodSpec(podYaml);
 
         Pod elasticAgentPod = new Pod();
         try {
@@ -267,8 +267,8 @@ public class KubernetesInstanceFactory {
             Files.copy(downloadStream, podSpecFile);
             LOG.debug(format("Finished downloading %s to %s", fileToDownload, podSpecFile));
             String spec = Files.readString(podSpecFile, UTF_8);
-            String templatizedPodSpec = getTemplatizedPodSpec(spec);
-            elasticAgentPod = mapper.readValue(templatizedPodSpec, Pod.class);
+            String templatedPodSpec = getTemplatedPodSpec(spec);
+            elasticAgentPod = mapper.readValue(templatedPodSpec, Pod.class);
             setPodNameIfNecessary(elasticAgentPod, spec);
             Files.deleteIfExists(podSpecFile);
             LOG.debug(format("Deleted %s", podSpecFile));
@@ -282,13 +282,13 @@ public class KubernetesInstanceFactory {
 
     private void setPodNameIfNecessary(Pod elasticAgentPod, String spec) {
         if (!spec.contains(POD_POSTFIX)) {
-            String newPodName = elasticAgentPod.getMetadata().getName().concat(String.format("-%s", UUID.randomUUID().toString()));
+            String newPodName = elasticAgentPod.getMetadata().getName().concat(String.format("-%s", UUID.randomUUID()));
             elasticAgentPod.getMetadata().setName(newPodName);
         }
     }
 
 
-    public static String getTemplatizedPodSpec(String podSpec) {
+    public static String getTemplatedPodSpec(String podSpec) {
         StringWriter writer = new StringWriter();
         MustacheFactory mf = new DefaultMustacheFactory();
         Mustache mustache = mf.compile(new StringReader(podSpec), "templatePod");
@@ -297,11 +297,11 @@ public class KubernetesInstanceFactory {
     }
 
     private static Map<String, String> getJinJavaContext() {
-        HashMap<String, String> context = new HashMap<>();
+        Map<String, String> context = new HashMap<>();
         context.put(POD_POSTFIX, UUID.randomUUID().toString());
         context.put(CONTAINER_POSTFIX, UUID.randomUUID().toString());
         context.put(GOCD_AGENT_IMAGE, "gocd/gocd-agent-wolfi");
-        context.put(LATEST_VERSION, "v24.1.0");
+        context.put(LATEST_VERSION, "v24.3.0");
         return context;
     }
 }
