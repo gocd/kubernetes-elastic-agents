@@ -75,7 +75,7 @@ dependencies {
         }
     }
 
-    runtimeOnly group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.78.1'
+    runtimeOnly group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.79'
     implementation group: 'com.github.spullara.mustache.java', name: 'compiler', version: '0.9.14'
     implementation group: 'org.freemarker', name: 'freemarker', version: '2.3.33'
 
