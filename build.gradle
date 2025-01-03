@@ -76,7 +76,7 @@ dependencies {
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
     testRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-launcher'
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.27.1'
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.14.2'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.15.2'
     testImplementation group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.3'
     testImplementation group: 'org.jsoup', name: 'jsoup', version: '1.18.3'
     testImplementation group: 'uk.org.webcompere', name: 'system-stubs-jupiter', version: '2.1.7'
