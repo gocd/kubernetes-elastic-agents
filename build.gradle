@@ -54,7 +54,7 @@ java {
 
 ext {
     deps = [
-        gocdPluginApi: 'cd.go.plugin:go-plugin-api:24.4.0',
+        gocdPluginApi: 'cd.go.plugin:go-plugin-api:25.1.0',
         kubernetesClientApi: 'io.fabric8:kubernetes-client-api:7.1.0',
     ]
 
