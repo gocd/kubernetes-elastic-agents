@@ -70,7 +70,7 @@ dependencies {
     implementation group: 'org.freemarker', name: 'freemarker', version: '2.3.34'
 
     testImplementation project.deps.gocdPluginApi
-    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation platform('org.junit:junit-bom:5.12.0')
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params'
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
