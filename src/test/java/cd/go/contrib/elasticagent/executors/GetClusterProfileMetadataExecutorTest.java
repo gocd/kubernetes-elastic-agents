@@ -98,6 +98,13 @@ public class GetClusterProfileMetadataExecutorTest {
                 "      \"required\": false,\n" +
                 "      \"secure\": false\n" +
                 "    }\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"key\": \"enable_agent_reuse\",\n" +
+                "    \"metadata\": {\n" +
+                "      \"required\": false,\n" +
+                "      \"secure\": false\n" +
+                "    }\n" +
                 "  }\n" +
                 "]";
 
