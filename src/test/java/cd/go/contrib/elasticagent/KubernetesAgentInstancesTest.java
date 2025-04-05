@@ -26,6 +26,7 @@ import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Answers;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 
@@ -43,7 +44,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 public class KubernetesAgentInstancesTest {
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     KubernetesClientFactory factory;
 
     @Mock
@@ -79,7 +80,7 @@ public class KubernetesAgentInstancesTest {
         when(mockCreateAgentRequest.properties()).thenReturn(testProperties);
         when(mockPluginSettings.getMaxPendingPods()).thenReturn(10);
         when(mockPluginSettings.getClusterRequestTimeout()).thenReturn(10000);
-        when(factory.client(mockPluginSettings)).thenReturn(mockKubernetesClient);
+        when(factory.client(mockPluginSettings).get()).thenReturn(mockKubernetesClient);
         JobIdentifier jobId = new JobIdentifier("test", 1L, "Test pipeline", "test name", "1", "test job", 100L);
         when(mockCreateAgentRequest.jobIdentifier()).thenReturn(jobId);
 

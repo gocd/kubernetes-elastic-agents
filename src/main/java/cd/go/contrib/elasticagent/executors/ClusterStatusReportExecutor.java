@@ -25,7 +25,6 @@ import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import freemarker.template.Template;
-import io.fabric8.kubernetes.client.KubernetesClient;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 
@@ -49,8 +48,10 @@ public class ClusterStatusReportExecutor {
     public GoPluginApiResponse execute() {
         try {
             LOG.info("[status-report] Generating status report.");
-            KubernetesClient client = factory.client(request.clusterProfileProperties());
-            final KubernetesCluster kubernetesCluster = new KubernetesCluster(client);
+            final KubernetesCluster kubernetesCluster;
+            try (KubernetesClientFactory.CachedClient client = factory.client(request.clusterProfileProperties())) {
+                kubernetesCluster = new KubernetesCluster(client.get());
+            }
             final Template template = statusReportViewBuilder.getTemplate("status-report.template.ftlh");
             final String statusReportView = statusReportViewBuilder.build(template, kubernetesCluster);
 

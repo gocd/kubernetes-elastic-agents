@@ -35,20 +35,28 @@ import io.fabric8.kubernetes.client.dsl.PodResource;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 
 public class ClusterStatusReportExecutorTest {
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private KubernetesClientFactory kubernetesClientFactory;
+
+    @Mock
     private ClusterStatusReportRequest request;
+
+    @Mock
     private ClusterProfileProperties clusterProfileProperties;
+
+    @Mock
     private KubernetesClient kubernetesClient;
 
     @Mock
@@ -59,14 +67,9 @@ public class ClusterStatusReportExecutorTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        MockitoAnnotations.openMocks(this);
-        kubernetesClientFactory = mock(KubernetesClientFactory.class);
-        request = mock(ClusterStatusReportRequest.class);
-        clusterProfileProperties = mock(ClusterProfileProperties.class);
-        kubernetesClient = mock(KubernetesClient.class);
-
+        openMocks(this);
         when(request.clusterProfileProperties()).thenReturn(clusterProfileProperties);
-        when(kubernetesClientFactory.client(clusterProfileProperties)).thenReturn(kubernetesClient);
+        when(kubernetesClientFactory.client(clusterProfileProperties).get()).thenReturn(kubernetesClient);
     }
 
     @Test

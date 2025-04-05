@@ -21,6 +21,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static cd.go.contrib.elasticagent.KubernetesPlugin.LOG;
 import static cd.go.contrib.elasticagent.utils.Util.isBlank;
@@ -29,12 +30,12 @@ import static java.text.MessageFormat.format;
 
 public class KubernetesClientFactory {
     private static final KubernetesClientFactory KUBERNETES_CLIENT_FACTORY = new KubernetesClientFactory();
-    private final Clock clock;
-    private KubernetesClient client;
-    private PluginSettings clusterProfileConfigurations;
-    private long clientCreatedTime;
-    private long kubernetesClientRecycleIntervalInMinutes = -1;
     public static final String CLIENT_RECYCLE_SYSTEM_PROPERTY_KEY = "go.kubernetes.elastic-agent.plugin.client.recycle.interval.in.minutes";
+
+    private final Clock clock;
+
+    private volatile CachedClient client;
+    private volatile long kubernetesClientRecycleIntervalInMinutes = -1;
 
     KubernetesClientFactory() {
         this(Clock.DEFAULT);
@@ -50,32 +51,30 @@ public class KubernetesClientFactory {
         return KUBERNETES_CLIENT_FACTORY;
     }
 
-    public synchronized KubernetesClient client(PluginSettings clusterProfileConfigurations) {
+    public synchronized CachedClient client(PluginSettings clusterProfileConfigurations) {
         clearOutClientOnTimer();
-        if (clusterProfileConfigurations.equals(this.clusterProfileConfigurations) && this.client != null) {
+        if (this.client != null && clusterProfileConfigurations.equals(this.client.clusterProfileConfigurations)) {
             LOG.debug("Using previously created client.");
+            this.client.leases.incrementAndGet();
             return this.client;
         }
 
         LOG.debug(format("Creating a new client because {0}.", (client == null) ? "client is null" : "cluster profile configurations has changed"));
-        this.clusterProfileConfigurations = clusterProfileConfigurations;
+        clearOutExistingClient();
         this.client = createClientFor(clusterProfileConfigurations);
-        this.clientCreatedTime = this.clock.now().toEpochMilli();
         LOG.debug("New client is created.");
 
         return this.client;
     }
 
     private void clearOutClientOnTimer() {
-        long currentTime = this.clock.now().toEpochMilli();
-        long differenceInMinutes = TimeUnit.MILLISECONDS.toMinutes(currentTime - this.clientCreatedTime);
-        if (differenceInMinutes > getKubernetesClientRecycleInterval()) {
+        if (client != null && TimeUnit.MILLISECONDS.toMinutes(this.clock.now().toEpochMilli() - this.client.clientCreatedTime) > getKubernetesClientRecycleInterval()) {
             LOG.info("Recycling kubernetes client on timer...");
             clearOutExistingClient();
         }
     }
 
-    private KubernetesClient createClientFor(PluginSettings pluginSettings) {
+    private CachedClient createClientFor(PluginSettings pluginSettings) {
         Config config = Config.autoConfigure(null);
 
         setIfNotBlank(config::setMasterUrl, pluginSettings.getClusterUrl());
@@ -84,13 +83,12 @@ public class KubernetesClientFactory {
         setIfNotBlank(config::setCaCertData, pluginSettings.getCaCertData());
         config.setRequestTimeout(pluginSettings.getClusterRequestTimeout());
 
-        return new KubernetesClientBuilder().withConfig(config).build();
+        return new CachedClient(new KubernetesClientBuilder().withConfig(config).build(), pluginSettings);
     }
 
-    public void clearOutExistingClient() {
+    public synchronized void clearOutExistingClient() {
         if (this.client != null) {
-            LOG.debug("Terminating existing kubernetes client...");
-            this.client.close();
+            this.client.closeIfUnused();
             this.client = null;
         }
     }
@@ -109,12 +107,63 @@ public class KubernetesClientFactory {
         }
 
         try {
-            this.kubernetesClientRecycleIntervalInMinutes = Integer.valueOf(property);
+            this.kubernetesClientRecycleIntervalInMinutes = Integer.parseInt(property);
         } catch (Exception e) {
             //set default value to 10 minutes when parsing user input fails
             this.kubernetesClientRecycleIntervalInMinutes = 10;
         }
 
         return this.kubernetesClientRecycleIntervalInMinutes;
+    }
+
+    public class CachedClient implements AutoCloseable {
+
+        private final KubernetesClient client;
+        private final PluginSettings clusterProfileConfigurations;
+        private final AtomicInteger leases = new AtomicInteger(1);
+        private final long clientCreatedTime;
+        private volatile boolean closed;
+
+        CachedClient(KubernetesClient client, PluginSettings clusterProfileConfigurations) {
+            this.client = client;
+            this.clusterProfileConfigurations = clusterProfileConfigurations;
+            this.clientCreatedTime = KubernetesClientFactory.this.clock.now().toEpochMilli();
+        }
+
+        public KubernetesClient get() {
+            return client;
+        }
+
+        public int leases() {
+            return leases.get();
+        }
+
+        public boolean isClosed() {
+            return closed;
+        }
+
+        @Override
+        public void close() {
+            releaseLease();
+        }
+
+        private void releaseLease() {
+            // Close the client only if it is not the same as the one we have cached
+            if (leases.decrementAndGet() == 0 && this != KubernetesClientFactory.this.client && !closed) {
+                closeUnderlyingClient();
+            }
+        }
+
+        public void closeIfUnused() {
+            if (leases() == 0 && !closed) {
+                closeUnderlyingClient();
+            }
+        }
+
+        private void closeUnderlyingClient() {
+            LOG.debug("Terminating existing kubernetes client...");
+            client.close();
+            closed = true;
+        }
     }
 }

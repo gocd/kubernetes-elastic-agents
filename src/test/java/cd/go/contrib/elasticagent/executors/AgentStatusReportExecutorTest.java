@@ -59,7 +59,7 @@ public class AgentStatusReportExecutorTest {
     @Mock
     private PluginRequest pluginRequest;
 
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private KubernetesClientFactory kubernetesClientFactory;
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -122,7 +122,7 @@ public class AgentStatusReportExecutorTest {
         ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
 
         when(statusReportRequest.clusterProfileProperties()).thenReturn(clusterProfileProperties);
-        when(kubernetesClientFactory.client(clusterProfileProperties)).thenReturn(client);
+        when(kubernetesClientFactory.client(clusterProfileProperties).get()).thenReturn(client);
 
         when(builder.getTemplate("agent-status-report.template.ftlh")).thenReturn(template);
         when(builder.build(eq(template), any(KubernetesElasticAgent.class))).thenReturn("my-view");
@@ -143,7 +143,7 @@ public class AgentStatusReportExecutorTest {
         ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
 
         when(statusReportRequest.clusterProfileProperties()).thenReturn(clusterProfileProperties);
-        when(kubernetesClientFactory.client(clusterProfileProperties)).thenReturn(client);
+        when(kubernetesClientFactory.client(clusterProfileProperties).get()).thenReturn(client);
 
         when(builder.getTemplate("error.template.ftlh")).thenReturn(template);
         when(builder.build(eq(template), any(StatusReportGenerationError.class))).thenReturn("my-error-view");
@@ -165,7 +165,7 @@ public class AgentStatusReportExecutorTest {
         ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
 
         when(statusReportRequest.clusterProfileProperties()).thenReturn(clusterProfileProperties);
-        when(kubernetesClientFactory.client(clusterProfileProperties)).thenReturn(client);
+        when(kubernetesClientFactory.client(clusterProfileProperties).get()).thenReturn(client);
 
         when(builder.getTemplate("error.template.ftlh")).thenReturn(template);
         when(builder.build(eq(template), any(StatusReportGenerationError.class))).thenReturn("my-error-view");

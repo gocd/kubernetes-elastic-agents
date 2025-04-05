@@ -87,13 +87,13 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
             return null;
         }
 
-        KubernetesClient client = factory.client(settings);
-        KubernetesInstance instance = kubernetesInstanceFactory.create(request, settings, client, pluginRequest);
-        consoleLogAppender.accept(String.format("Creating pod: %s", instance.name()));
-        register(instance);
-        consoleLogAppender.accept(String.format("Agent pod %s created. Waiting for it to register to the GoCD server.", instance.name()));
-
-        return instance;
+        try (KubernetesClientFactory.CachedClient client = factory.client(settings)) {
+            KubernetesInstance instance = kubernetesInstanceFactory.create(request, settings, client.get(), pluginRequest);
+            consoleLogAppender.accept(String.format("Creating pod: %s", instance.name()));
+            register(instance);
+            consoleLogAppender.accept(String.format("Agent pod %s created. Waiting for it to register to the GoCD server.", instance.name()));
+            return instance;
+        }
     }
 
     private boolean isAgentCreatedForJob(Long jobId) {
@@ -110,8 +110,9 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     public void terminate(String agentId, PluginSettings settings) {
         KubernetesInstance instance = instances.get(agentId);
         if (instance != null) {
-            KubernetesClient client = factory.client(settings);
-            instance.terminate(client);
+            try (KubernetesClientFactory.CachedClient client = factory.client(settings)) {
+                instance.terminate(client.get());
+            }
         } else {
             LOG.warn(format("Requested to terminate an instance that does not exist {0}.", agentId));
         }
@@ -152,16 +153,18 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         LOG.debug("[Refresh Instances] Syncing k8s elastic agent pod information for cluster {}.", properties);
         PodList list = null;
         try {
-            KubernetesClient client = factory.client(properties);
-            list = client.pods().list();
+            try (KubernetesClientFactory.CachedClient client = factory.client(properties)) {
+                list = client.get().pods().list();
+            }
         } catch (Exception e) {
             LOG.error("Error occurred while trying to list kubernetes pods:", e);
 
             if (e.getCause() instanceof SocketTimeoutException) {
                 LOG.error("Error caused due to SocketTimeoutException. This generally happens due to stale kubernetes client. Clearing out existing kubernetes client and creating a new one!");
                 factory.clearOutExistingClient();
-                KubernetesClient client = factory.client(properties);
-                list = client.pods().list();
+                try (KubernetesClientFactory.CachedClient client = factory.client(properties)) {
+                    list = client.get().pods().list();
+                }
             }
         }
 
@@ -195,23 +198,23 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     private KubernetesAgentInstances unregisteredAfterTimeout(PluginSettings settings, Agents knownAgents) throws Exception {
         Duration period = settings.getAutoRegisterPeriod();
         KubernetesAgentInstances unregisteredInstances = new KubernetesAgentInstances();
-        KubernetesClient client = factory.client(settings);
+        try (KubernetesClientFactory.CachedClient client = factory.client(settings)) {
+            for (String instanceName : instances.keySet()) {
+                if (knownAgents.containsAgentWithId(instanceName)) {
+                    continue;
+                }
 
-        for (String instanceName : instances.keySet()) {
-            if (knownAgents.containsAgentWithId(instanceName)) {
-                continue;
-            }
+                Pod pod = getPod(client.get(), instanceName);
+                if (pod == null) {
+                    LOG.debug(String.format("[server-ping] Pod with name %s is already deleted.", instanceName));
+                    continue;
+                }
 
-            Pod pod = getPod(client, instanceName);
-            if (pod == null) {
-                LOG.debug(String.format("[server-ping] Pod with name %s is already deleted.", instanceName));
-                continue;
-            }
+                Instant createdAt = Constants.KUBERNETES_POD_CREATION_TIME_FORMAT.parse(pod.getMetadata().getCreationTimestamp(), Instant::from);
 
-            Instant createdAt = Constants.KUBERNETES_POD_CREATION_TIME_FORMAT.parse(pod.getMetadata().getCreationTimestamp(), Instant::from);
-
-            if (clock.now().isAfter(createdAt.plus(period))) {
-                unregisteredInstances.register(kubernetesInstanceFactory.fromKubernetesPod(pod));
+                if (clock.now().isAfter(createdAt.plus(period))) {
+                    unregisteredInstances.register(kubernetesInstanceFactory.fromKubernetesPod(pod));
+                }
             }
         }
 

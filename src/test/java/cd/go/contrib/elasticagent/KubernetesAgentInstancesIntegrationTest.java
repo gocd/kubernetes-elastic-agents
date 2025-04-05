@@ -24,9 +24,9 @@ import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ import static org.mockito.MockitoAnnotations.openMocks;
 
 public class KubernetesAgentInstancesIntegrationTest {
 
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private KubernetesClientFactory mockedKubernetesClientFactory;
 
     @Mock
@@ -72,7 +72,7 @@ public class KubernetesAgentInstancesIntegrationTest {
     public void setUp() {
         openMocks(this);
         kubernetesAgentInstances = new KubernetesAgentInstances(mockedKubernetesClientFactory);
-        when(mockedKubernetesClientFactory.client(any())).thenReturn(mockKubernetesClient);
+        when(mockedKubernetesClientFactory.client(any()).get()).thenReturn(mockKubernetesClient);
 
         when(pods.resource(any(Pod.class))).thenAnswer((Answer<PodResource>) invocation -> {
             Object[] args = invocation.getArguments();
