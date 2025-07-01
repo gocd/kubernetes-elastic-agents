@@ -70,7 +70,7 @@ dependencies {
     implementation group: 'org.freemarker', name: 'freemarker', version: '2.3.34'
 
     testImplementation project.deps.gocdPluginApi
-    testImplementation platform('org.junit:junit-bom:5.13.0')
+    testImplementation platform('org.junit:junit-bom:5.13.2')
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params'
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
@@ -78,7 +78,7 @@ dependencies {
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.27.3'
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.18.0'
     testImplementation group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.3'
-    testImplementation group: 'org.jsoup', name: 'jsoup', version: '1.20.1'
+    testImplementation group: 'org.jsoup', name: 'jsoup', version: '1.21.1'
     testImplementation group: 'uk.org.webcompere', name: 'system-stubs-jupiter', version: '2.1.8'
 }
 
