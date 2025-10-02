@@ -15,7 +15,9 @@
  */
 
 
-apply plugin: 'java'
+plugins {
+  id 'java'
+}
 apply from: "https://raw.githubusercontent.com/gocd/gocd-plugin-gradle-task-helpers/master/helper.gradle?_=${(int) (Instant.now().epochSecond / 60)}"
 
 gocdPlugin {
