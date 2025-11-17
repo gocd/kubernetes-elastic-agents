@@ -72,6 +72,7 @@ dependencies {
     compileOnly project.deps.gocdPluginApi
     implementation 'com.google.code.gson:gson:2.13.2'
     implementation project.deps.kubernetesClientApi
+    implementation platform('io.netty:netty-bom:4.1.128.Final') // Upgrade transitive version within fabric kubernetes-client
     runtimeOnly "io.fabric8:kubernetes-client:${project.versions.kubernetesClientApi}"
     implementation 'com.github.spullara.mustache.java:compiler:0.9.14'
     implementation 'org.freemarker:freemarker:2.3.34'
