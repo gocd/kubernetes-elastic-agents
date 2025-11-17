@@ -42,7 +42,7 @@ public class KubernetesClusterTest {
     private MixedOperation<Pod, PodList, PodResource> pods;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 

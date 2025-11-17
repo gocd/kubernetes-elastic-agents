@@ -20,8 +20,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,7 +42,7 @@ public class ServerPingRequestTest {
 
         HashMap<String, String> clusterProfileConfigurations = new HashMap<>();
         clusterProfileConfigurations.put("go_server_url", "https://go-server/go");
-        ServerPingRequest expected = new ServerPingRequest(Arrays.asList(clusterProfileConfigurations));
+        ServerPingRequest expected = new ServerPingRequest(List.of(clusterProfileConfigurations));
 
         assertThat(serverPingRequest).isEqualTo(expected);
     }

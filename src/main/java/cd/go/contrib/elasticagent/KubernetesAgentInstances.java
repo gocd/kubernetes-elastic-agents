@@ -59,7 +59,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         final Integer maxAllowedContainers = settings.getMaxPendingPods();
         synchronized (instances) {
             refreshAll(settings);
-            doWithLockOnSemaphore(new SetupSemaphore(maxAllowedContainers, instances, semaphore));
+            new SetupSemaphore(maxAllowedContainers, instances, semaphore).run();
             consoleLogAppender.accept("Waiting to create agent pod.");
             if (semaphore.tryAcquire()) {
                 return createKubernetesInstance(request, settings, pluginRequest, consoleLogAppender);
@@ -69,12 +69,6 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
                 consoleLogAppender.accept(message);
                 return null;
             }
-        }
-    }
-
-    private void doWithLockOnSemaphore(Runnable runnable) {
-        synchronized (semaphore) {
-            runnable.run();
         }
     }
 
@@ -120,7 +114,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     }
 
     @Override
-    public void terminateUnregisteredInstances(PluginSettings settings, Agents agents) throws Exception {
+    public void terminateUnregisteredInstances(PluginSettings settings, Agents agents) {
         KubernetesAgentInstances toTerminate = unregisteredAfterTimeout(settings, agents);
         if (toTerminate.instances.isEmpty()) {
             return;
@@ -195,7 +189,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         instances.put(instance.name(), instance);
     }
 
-    private KubernetesAgentInstances unregisteredAfterTimeout(PluginSettings settings, Agents knownAgents) throws Exception {
+    private KubernetesAgentInstances unregisteredAfterTimeout(PluginSettings settings, Agents knownAgents) {
         Duration period = settings.getAutoRegisterPeriod();
         KubernetesAgentInstances unregisteredInstances = new KubernetesAgentInstances();
         try (KubernetesClientFactory.CachedClient client = factory.client(settings)) {

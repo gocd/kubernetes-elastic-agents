@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class MemoryMetadataTest {
 
     @Test
-    public void shouldValidateMemoryBytes() throws Exception {
+    public void shouldValidateMemoryBytes() {
         assertTrue(new MemoryMetadata("Disk", false).validate("100mb").isEmpty());
 
         Map<String, String> validate = new MemoryMetadata("Disk", false).validate("xxx");
@@ -38,7 +38,7 @@ public class MemoryMetadataTest {
     }
 
     @Test
-    public void shouldValidateMemoryBytesWhenRequireField() throws Exception {
+    public void shouldValidateMemoryBytesWhenRequireField() {
         Map<String, String> validate = new MemoryMetadata("Disk", true).validate(null);
         assertThat(validate.size()).isEqualTo(2);
         assertThat(validate).containsEntry("message", "Disk must not be blank.");

@@ -22,7 +22,6 @@ import cd.go.contrib.elasticagent.executors.ClusterStatusReportExecutor;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
@@ -48,7 +47,7 @@ public class ClusterStatusReportRequest {
         return GSON.fromJson(json, ClusterStatusReportRequest.class);
     }
 
-    public ClusterStatusReportExecutor executor() throws IOException {
+    public ClusterStatusReportExecutor executor() {
         return new ClusterStatusReportExecutor(this, PluginStatusReportViewBuilder.instance());
     }
 

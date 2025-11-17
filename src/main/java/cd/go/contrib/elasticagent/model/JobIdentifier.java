@@ -19,6 +19,8 @@ package cd.go.contrib.elasticagent.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
 import static java.text.MessageFormat.format;
 
@@ -129,19 +131,17 @@ public class JobIdentifier {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof JobIdentifier)) return false;
+        if (!(o instanceof JobIdentifier that)) return false;
 
-        JobIdentifier that = (JobIdentifier) o;
-
-        if (pipelineName != null ? !pipelineName.equals(that.pipelineName) : that.pipelineName != null) return false;
-        if (pipelineCounter != null ? !pipelineCounter.equals(that.pipelineCounter) : that.pipelineCounter != null)
+        if (!Objects.equals(pipelineName, that.pipelineName)) return false;
+        if (!Objects.equals(pipelineCounter, that.pipelineCounter))
             return false;
-        if (pipelineLabel != null ? !pipelineLabel.equals(that.pipelineLabel) : that.pipelineLabel != null)
+        if (!Objects.equals(pipelineLabel, that.pipelineLabel))
             return false;
-        if (stageName != null ? !stageName.equals(that.stageName) : that.stageName != null) return false;
-        if (stageCounter != null ? !stageCounter.equals(that.stageCounter) : that.stageCounter != null) return false;
-        if (jobName != null ? !jobName.equals(that.jobName) : that.jobName != null) return false;
-        return jobId != null ? jobId.equals(that.jobId) : that.jobId == null;
+        if (!Objects.equals(stageName, that.stageName)) return false;
+        if (!Objects.equals(stageCounter, that.stageCounter)) return false;
+        if (!Objects.equals(jobName, that.jobName)) return false;
+        return Objects.equals(jobId, that.jobId);
     }
 
     @Override

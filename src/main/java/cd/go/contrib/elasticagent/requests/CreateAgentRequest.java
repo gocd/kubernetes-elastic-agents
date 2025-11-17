@@ -67,8 +67,7 @@ public class CreateAgentRequest {
     }
 
     public static CreateAgentRequest fromJSON(String json) {
-        CreateAgentRequest createAgentRequest = GSON.fromJson(json, CreateAgentRequest.class);
-        return createAgentRequest;
+        return GSON.fromJson(json, CreateAgentRequest.class);
     }
 
     public String autoRegisterKey() {

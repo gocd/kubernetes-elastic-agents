@@ -91,7 +91,7 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
             }
         } else {
 
-            boolean isSpecifiedUsingPodYaml = Boolean.valueOf(new HashMap<>(request.getProperties()).get(SPECIFIED_USING_POD_CONFIGURATION.getKey()));
+            boolean isSpecifiedUsingPodYaml = Boolean.parseBoolean(new HashMap<>(request.getProperties()).get(SPECIFIED_USING_POD_CONFIGURATION.getKey()));
 
             if (isSpecifiedUsingPodYaml) {
                 validatePodYaml(new HashMap<>(request.getProperties()), result);
@@ -126,17 +126,16 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
             addNotBlankError(result, key, "Pod Configuration");
             return;
         }
-        Pod pod = new Pod();
+
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         try {
-            pod = mapper.readValue(KubernetesInstanceFactory.getTemplatedPodSpec(podYaml), Pod.class);
+            Pod pod = mapper.readValue(KubernetesInstanceFactory.getTemplatedPodSpec(podYaml), Pod.class);
+
+            if (!isBlank(pod.getMetadata().getGenerateName())) {
+                addError(result, key, "Invalid Pod Yaml. generateName field is not supported by GoCD. Please use {{ POD_POSTFIX }} instead.");
+            }
         } catch (IOException e) {
             addError(result, key, "Invalid Pod Yaml.");
-            return;
-        }
-
-        if (!isBlank(pod.getMetadata().getGenerateName())) {
-            addError(result, key, "Invalid Pod Yaml. generateName field is not supported by GoCD. Please use {{ POD_POSTFIX }} instead.");
         }
     }
 

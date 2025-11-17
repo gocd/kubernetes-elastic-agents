@@ -38,8 +38,8 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static cd.go.contrib.elasticagent.Constants.JOB_IDENTIFIER_LABEL_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -101,7 +101,7 @@ public class AgentStatusReportExecutorTest {
 
         when(client.pods()).thenReturn(mockedOperation);
         when(mockedOperation.list()).thenReturn(podList);
-        when(podList.getItems()).thenReturn(Arrays.asList(pod));
+        when(podList.getItems()).thenReturn(List.of(pod));
 
         when(mockedOperation.withName(elasticAgentId)).thenReturn(podresource);
         when(podresource.inContainer("test-container")).thenReturn(containerResource);
@@ -180,10 +180,10 @@ public class AgentStatusReportExecutorTest {
         Pod pod = new Pod();
         pod.setMetadata(new ObjectMeta());
         PodSpec spec = new PodSpec();
-        spec.setContainers(Arrays.asList(aContainer()));
+        spec.setContainers(List.of(aContainer()));
         pod.setSpec(spec);
         PodStatus status = new PodStatus();
-        status.setContainerStatuses(Arrays.asList(aContainerStatus()));
+        status.setContainerStatuses(List.of(aContainerStatus()));
         pod.setStatus(status);
         pod.getMetadata().setAnnotations(Collections.singletonMap(JOB_IDENTIFIER_LABEL_KEY, "{}"));
         return pod;

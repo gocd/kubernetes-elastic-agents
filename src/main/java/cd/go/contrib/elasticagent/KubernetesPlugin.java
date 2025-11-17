@@ -117,13 +117,13 @@ public class KubernetesPlugin implements GoPlugin {
         }
     }
 
-    private void refreshInstancesForAllClusters(List<ClusterProfileProperties> listOfClusterProfileProperties) throws Exception {
+    private void refreshInstancesForAllClusters(List<ClusterProfileProperties> listOfClusterProfileProperties) {
         for (ClusterProfileProperties clusterProfileProperties : listOfClusterProfileProperties) {
             refreshInstancesForCluster(clusterProfileProperties);
         }
     }
 
-    private AgentInstances<KubernetesInstance> getAgentInstancesFor(ClusterProfileProperties clusterProfileProperties) throws Exception {
+    private AgentInstances<KubernetesInstance> getAgentInstancesFor(ClusterProfileProperties clusterProfileProperties) {
         KubernetesAgentInstances agentInstances = clusterSpecificAgentInstances.get(clusterProfileProperties.uuid());
 
         //initialize agent instances if those are null
@@ -135,7 +135,7 @@ public class KubernetesPlugin implements GoPlugin {
         return agentInstances;
     }
 
-    private void refreshInstancesForCluster(ClusterProfileProperties clusterProfileProperties) throws Exception {
+    private void refreshInstancesForCluster(ClusterProfileProperties clusterProfileProperties) {
         KubernetesAgentInstances kubernetesInstances = clusterSpecificAgentInstances.getOrDefault(clusterProfileProperties.uuid(), new KubernetesAgentInstances());
         kubernetesInstances.refreshAll(clusterProfileProperties);
 

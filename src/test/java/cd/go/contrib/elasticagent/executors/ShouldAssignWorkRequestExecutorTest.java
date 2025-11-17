@@ -70,7 +70,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     private String environment = "QA";
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         openMocks(this);
         when(factory.client(any()).get()).thenReturn(mockedClient);
         when(mockedClient.pods()).thenReturn(mockedOperation);
@@ -95,7 +95,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     }
 
     @Test
-    public void shouldAssignWorkWhenJobIdMatchesPodId() throws Exception {
+    public void shouldAssignWorkWhenJobIdMatchesPodId() {
         JobIdentifier jobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", 100L);
         ShouldAssignWorkRequest request = new ShouldAssignWorkRequest(new Agent(instance.name(), null, null, null), environment, properties, jobIdentifier);
         GoPluginApiResponse response = new ShouldAssignWorkRequestExecutor(request, agentInstances).execute();
@@ -104,7 +104,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     }
 
     @Test
-    public void shouldNotAssignWorkWhenJobIdDiffersFromPodId() throws Exception {
+    public void shouldNotAssignWorkWhenJobIdDiffersFromPodId() {
         long mismatchingJobId = 200L;
         JobIdentifier jobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", mismatchingJobId);
         ShouldAssignWorkRequest request = new ShouldAssignWorkRequest(new Agent(instance.name(), null, null, null), "FooEnv", properties, jobIdentifier);

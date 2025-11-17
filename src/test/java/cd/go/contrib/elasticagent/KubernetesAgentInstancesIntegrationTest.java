@@ -220,8 +220,7 @@ public class KubernetesAgentInstancesIntegrationTest {
 
         assertNotNull(elasticAgentPod.getMetadata());
 
-        Map<String, String> expectedAnnotations = new HashMap<>();
-        expectedAnnotations.putAll(createAgentRequest.properties());
+        Map<String, String> expectedAnnotations = new HashMap<>(createAgentRequest.properties());
         expectedAnnotations.put(Constants.JOB_IDENTIFIER_LABEL_KEY, new Gson().toJson(createAgentRequest.jobIdentifier()));
         assertThat(elasticAgentPod.getMetadata().getAnnotations()).isEqualTo(expectedAnnotations);
 
@@ -350,8 +349,7 @@ public class KubernetesAgentInstancesIntegrationTest {
 
         assertNotNull(elasticAgentPod.getMetadata());
 
-        HashMap<String, String> expectedAnnotations = new HashMap<>();
-        expectedAnnotations.putAll(createAgentRequest.properties());
+        HashMap<String, String> expectedAnnotations = new HashMap<>(createAgentRequest.properties());
         expectedAnnotations.put("annotation-key", "my-fancy-annotation-value");
         expectedAnnotations.put(Constants.JOB_IDENTIFIER_LABEL_KEY, new Gson().toJson(createAgentRequest.jobIdentifier()));
 
@@ -486,8 +484,7 @@ public class KubernetesAgentInstancesIntegrationTest {
 
         assertNotNull(elasticAgentPod.getMetadata());
 
-        HashMap<String, String> expectedAnnotations = new HashMap<>();
-        expectedAnnotations.putAll(createAgentRequest.properties());
+        HashMap<String, String> expectedAnnotations = new HashMap<>(createAgentRequest.properties());
         expectedAnnotations.put("annotation-key", "my-fancy-annotation-value");
         expectedAnnotations.put(Constants.JOB_IDENTIFIER_LABEL_KEY, new Gson().toJson(createAgentRequest.jobIdentifier()));
 

@@ -139,7 +139,6 @@ public class KubernetesElasticAgent {
         try {
             return mapper.writeValueAsString(pod);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
             return "Failed to get Pod Configuration!";
         }
     }

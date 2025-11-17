@@ -228,7 +228,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         clusterSpecificInstances.put(clusterProfilePropertiesForCluster1.uuid(), agentInstancesForCluster1);
 
         ServerPingRequest serverPingRequest = mock(ServerPingRequest.class);
-        when(serverPingRequest.allClusterProfileProperties()).thenReturn(Arrays.asList(clusterProfilePropertiesForCluster1));
+        when(serverPingRequest.allClusterProfileProperties()).thenReturn(List.of(clusterProfilePropertiesForCluster1));
 
         PluginRequest pluginRequest = mock(PluginRequest.class);
 
@@ -258,7 +258,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         clusterSpecificInstances.put(clusterProfilePropertiesForCluster1.uuid(), agentInstancesForCluster1);
 
         ServerPingRequest serverPingRequest = mock(ServerPingRequest.class);
-        when(serverPingRequest.allClusterProfileProperties()).thenReturn(Arrays.asList(clusterProfilePropertiesForCluster1));
+        when(serverPingRequest.allClusterProfileProperties()).thenReturn(List.of(clusterProfilePropertiesForCluster1));
 
         PluginRequest pluginRequest = mock(PluginRequest.class);
 

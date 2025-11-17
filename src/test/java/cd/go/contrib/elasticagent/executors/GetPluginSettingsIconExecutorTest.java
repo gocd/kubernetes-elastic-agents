@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GetPluginSettingsIconExecutorTest {
 
     @Test
-    public void rendersIconInBase64() throws Exception {
+    public void rendersIconInBase64() {
         GoPluginApiResponse response = new GetPluginSettingsIconExecutor().execute();
         HashMap<String, String> hashMap = new Gson().fromJson(response.responseBody(), new TypeToken<HashMap<String, String>>(){}.getType());
         assertThat(hashMap.size()).isEqualTo(2);

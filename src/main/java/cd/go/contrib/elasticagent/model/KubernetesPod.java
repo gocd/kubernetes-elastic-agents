@@ -21,6 +21,7 @@ import io.fabric8.kubernetes.api.model.Pod;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.Objects;
 
 public class KubernetesPod {
     private final String podName;
@@ -81,18 +82,16 @@ public class KubernetesPod {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof KubernetesPod)) return false;
+        if (!(o instanceof KubernetesPod that)) return false;
 
-        KubernetesPod that = (KubernetesPod) o;
-
-        if (podName != null ? !podName.equals(that.podName) : that.podName != null) return false;
-        if (nodeName != null ? !nodeName.equals(that.nodeName) : that.nodeName != null) return false;
-        if (image != null ? !image.equals(that.image) : that.image != null) return false;
-        if (creationTimestamp != null ? !creationTimestamp.equals(that.creationTimestamp) : that.creationTimestamp != null)
+        if (!Objects.equals(podName, that.podName)) return false;
+        if (!Objects.equals(nodeName, that.nodeName)) return false;
+        if (!Objects.equals(image, that.image)) return false;
+        if (!Objects.equals(creationTimestamp, that.creationTimestamp))
             return false;
-        if (podIP != null ? !podIP.equals(that.podIP) : that.podIP != null) return false;
-        if (status != null ? !status.equals(that.status) : that.status != null) return false;
-        return jobIdentifier != null ? jobIdentifier.equals(that.jobIdentifier) : that.jobIdentifier == null;
+        if (!Objects.equals(podIP, that.podIP)) return false;
+        if (!Objects.equals(status, that.status)) return false;
+        return Objects.equals(jobIdentifier, that.jobIdentifier);
     }
 
     @Override

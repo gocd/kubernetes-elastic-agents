@@ -28,7 +28,7 @@ import static cd.go.contrib.elasticagent.utils.Util.GSON;
 
 public class GetPluginSettingsIconExecutor implements RequestExecutor {
     @Override
-    public GoPluginApiResponse execute() throws Exception {
+    public GoPluginApiResponse execute() {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("content_type", "image/svg+xml");
         jsonObject.addProperty("data", Base64.getEncoder().encodeToString(Util.readResourceBytes("/kubernetes_logo.svg")));

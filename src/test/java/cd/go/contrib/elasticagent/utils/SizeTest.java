@@ -28,8 +28,8 @@ public class SizeTest {
     @Test
     public void shouldParseTheGivenSize() {
         Size parse = Size.parse("24000ki");
-        assertEquals(parse.getUnit(), SizeUnit.KILOBYTES);
-        assertEquals(parse.getQuantity(), 24000, 0);
+        assertEquals(SizeUnit.KILOBYTES, parse.getUnit());
+        assertEquals(24000, parse.getQuantity(), 0);
     }
 
     @Test
@@ -55,44 +55,44 @@ public class SizeTest {
     @Test
     public void defaultSizeUnitIsBytes() {
         Size oneKB = Size.parse("1024");
-        assertEquals(oneKB.toBytes(), 1024, 0);
+        assertEquals(1024, oneKB.toBytes(), 0);
     }
 
     @Test
     public void toBytes() {
         Size oneKB = Size.parse("1Ki");
-        assertEquals(oneKB.toBytes(), 1024, 0);
+        assertEquals(1024, oneKB.toBytes(), 0);
     }
 
     @Test
     public void toKilobytes() {
         Size size = Size.parse("12000B");
-        assertEquals(size.toKilobytes(), 11.72, 0.01);
+        assertEquals(11.72, size.toKilobytes(), 0.01);
     }
 
     @Test
     public void toMegabytes() {
         Size size = Size.parse("12000KiB");
-        assertEquals(size.toMegabytes(), 11.72, 0.01);
+        assertEquals(11.72, size.toMegabytes(), 0.01);
     }
 
     @Test
     public void toGigabytes() {
         Size size = Size.parse("1200000KiB");
-        assertEquals(size.toGigabytes(), 1.14, 0.01);
+        assertEquals(1.14, size.toGigabytes(), 0.01);
     }
 
     @Test
     public void toTerabytes() {
         Size size = Size.parse("1456823212Mi");
-        assertEquals(size.toTerabytes(), 1389.33, 0.01);
+        assertEquals(1389.33, size.toTerabytes(), 0.01);
     }
 
     @Test
     public void readableSize() {
         Size size = Size.parse("1024Mi");
         Size sizeInKB = Size.parse("10256KiB");
-        assertEquals(size.readableSize(), "1 GB");
-        assertEquals(sizeInKB.readableSize(), "10.02 MB");
+        assertEquals("1 GB", size.readableSize());
+        assertEquals("10.02 MB", sizeInKB.readableSize());
     }
 }

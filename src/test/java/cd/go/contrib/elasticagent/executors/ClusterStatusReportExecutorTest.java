@@ -66,7 +66,7 @@ public class ClusterStatusReportExecutorTest {
     private MixedOperation<Pod, PodList, PodResource> pods;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         openMocks(this);
         when(request.clusterProfileProperties()).thenReturn(clusterProfileProperties);
         when(kubernetesClientFactory.client(clusterProfileProperties).get()).thenReturn(kubernetesClient);

@@ -24,6 +24,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import static cd.go.contrib.elasticagent.utils.Util.GSON;
 
@@ -105,7 +106,7 @@ public class Agent {
 
         Agent agent = (Agent) o;
 
-        if (agentId != null ? !agentId.equals(agent.agentId) : agent.agentId != null) return false;
+        if (!Objects.equals(agentId, agent.agentId)) return false;
         if (agentState != agent.agentState) return false;
         if (buildState != agent.buildState) return false;
         return configState == agent.configState;

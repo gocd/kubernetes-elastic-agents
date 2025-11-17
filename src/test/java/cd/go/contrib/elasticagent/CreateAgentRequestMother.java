@@ -41,24 +41,25 @@ public class CreateAgentRequestMother {
     }
 
     public static CreateAgentRequest createAgentRequestUsingPodYaml() {
-        String podYaml = "apiVersion: v1\n" +
-                "kind: Pod\n" +
-                "metadata:\n" +
-                "  name: test-pod-yaml\n" +
-                "  labels:\n" +
-                "    app: gocd-agent\n" +
-                "  annotations:\n" +
-                "    annotation-key: my-fancy-annotation-value\n" +
-                "spec:\n" +
-                "  containers:\n" +
-                "  - name: gocd-agent-container\n" +
-                "    image: gocd/gocd-agent-alpine-3.5:v17.12.0\n" +
-                "    imagePullPolicy: Always\n" +
-                "    env:\n" +
-                "    - name: DEMO_ENV\n" +
-                "      value: DEMO_FANCY_VALUE\n" +
-                "    ports:\n" +
-                "    - containerPort: 80";
+        String podYaml = """
+                apiVersion: v1
+                kind: Pod
+                metadata:
+                  name: test-pod-yaml
+                  labels:
+                    app: gocd-agent
+                  annotations:
+                    annotation-key: my-fancy-annotation-value
+                spec:
+                  containers:
+                  - name: gocd-agent-container
+                    image: gocd/gocd-agent-alpine-3.5:v17.12.0
+                    imagePullPolicy: Always
+                    env:
+                    - name: DEMO_ENV
+                      value: DEMO_FANCY_VALUE
+                    ports:
+                    - containerPort: 80""";
 
         String autoRegisterKey = UUID.randomUUID().toString();
         HashMap<String, String> properties = new HashMap<>();

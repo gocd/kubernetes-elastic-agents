@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GetClusterProfileMetadataExecutorTest {
     @Test
-    public void shouldSerializeAllFields() throws Exception {
+    public void shouldSerializeAllFields() {
         GoPluginApiResponse response = new GetClusterProfileMetadataExecutor().execute();
         List<Metadata> list = new Gson().fromJson(response.responseBody(), new TypeToken<List<Metadata>>() {
         }.getType());
@@ -42,64 +42,65 @@ public class GetClusterProfileMetadataExecutorTest {
         GoPluginApiResponse response = new GetClusterProfileMetadataExecutor().execute();
 
         assertThat(response.responseCode()).isEqualTo(200);
-        String expectedJSON = "[\n" +
-                "  {\n" +
-                "    \"key\": \"go_server_url\",\n" +
-                "    \"metadata\": {\n" +
-                "      \"required\": true,\n" +
-                "      \"secure\": false\n" +
-                "    }\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"key\": \"auto_register_timeout\",\n" +
-                "    \"metadata\": {\n" +
-                "      \"required\": false,\n" +
-                "      \"secure\": false\n" +
-                "    }\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"key\": \"pending_pods_count\",\n" +
-                "    \"metadata\": {\n" +
-                "      \"required\": false,\n" +
-                "      \"secure\": false\n" +
-                "    }\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"key\": \"kubernetes_cluster_url\",\n" +
-                "    \"metadata\": {\n" +
-                "      \"required\": false,\n" +
-                "      \"secure\": false\n" +
-                "    }\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"key\": \"namespace\",\n" +
-                "    \"metadata\": {\n" +
-                "      \"required\": false,\n" +
-                "      \"secure\": false\n" +
-                "    }\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"key\": \"security_token\",\n" +
-                "    \"metadata\": {\n" +
-                "      \"required\": false,\n" +
-                "      \"secure\": true\n" +
-                "    }\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"key\": \"kubernetes_cluster_ca_cert\",\n" +
-                "    \"metadata\": {\n" +
-                "      \"required\": false,\n" +
-                "      \"secure\": true\n" +
-                "    }\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"key\": \"cluster_request_timeout\",\n" +
-                "    \"metadata\": {\n" +
-                "      \"required\": false,\n" +
-                "      \"secure\": false\n" +
-                "    }\n" +
-                "  }\n" +
-                "]";
+        String expectedJSON = """
+                [
+                  {
+                    "key": "go_server_url",
+                    "metadata": {
+                      "required": true,
+                      "secure": false
+                    }
+                  },
+                  {
+                    "key": "auto_register_timeout",
+                    "metadata": {
+                      "required": false,
+                      "secure": false
+                    }
+                  },
+                  {
+                    "key": "pending_pods_count",
+                    "metadata": {
+                      "required": false,
+                      "secure": false
+                    }
+                  },
+                  {
+                    "key": "kubernetes_cluster_url",
+                    "metadata": {
+                      "required": false,
+                      "secure": false
+                    }
+                  },
+                  {
+                    "key": "namespace",
+                    "metadata": {
+                      "required": false,
+                      "secure": false
+                    }
+                  },
+                  {
+                    "key": "security_token",
+                    "metadata": {
+                      "required": false,
+                      "secure": true
+                    }
+                  },
+                  {
+                    "key": "kubernetes_cluster_ca_cert",
+                    "metadata": {
+                      "required": false,
+                      "secure": true
+                    }
+                  },
+                  {
+                    "key": "cluster_request_timeout",
+                    "metadata": {
+                      "required": false,
+                      "secure": false
+                    }
+                  }
+                ]""";
 
         JSONAssert.assertEquals(expectedJSON, response.responseBody(), true);
     }

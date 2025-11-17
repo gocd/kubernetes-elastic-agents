@@ -26,7 +26,7 @@ import static cd.go.contrib.elasticagent.utils.Util.GSON;
 
 public class GetProfileViewExecutor implements RequestExecutor {
     @Override
-    public GoPluginApiResponse execute() throws Exception {
+    public GoPluginApiResponse execute() {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("template", Util.readResource("/profile.template.html"));
         return DefaultGoPluginApiResponse.success(GSON.toJson(jsonObject));

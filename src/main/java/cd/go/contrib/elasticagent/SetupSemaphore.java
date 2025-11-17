@@ -34,19 +34,21 @@ class SetupSemaphore implements Runnable {
 
     @Override
     public void run() {
-        List<KubernetesInstance> pendingInstances = getPendingInstances(instances);
-        int totalPendingPods = pendingInstances.size();
-        int availablePermits = maxAllowedPendingPods - totalPendingPods;
+        synchronized (semaphore) {
+            List<KubernetesInstance> pendingInstances = getPendingInstances(instances);
+            int totalPendingPods = pendingInstances.size();
+            int availablePermits = maxAllowedPendingPods - totalPendingPods;
 
-        if (availablePermits <= 0) {
-            // no more capacity available.
-            semaphore.drainPermits();
-        } else {
-            int semaphoreValueDifference = availablePermits - semaphore.availablePermits();
-            if (semaphoreValueDifference > 0) {
-                semaphore.release(semaphoreValueDifference);
-            } else if (semaphoreValueDifference < 0) {
-                semaphore.tryAcquire(Math.abs(semaphoreValueDifference));
+            if (availablePermits <= 0) {
+                // no more capacity available.
+                semaphore.drainPermits();
+            } else {
+                int semaphoreValueDifference = availablePermits - semaphore.availablePermits();
+                if (semaphoreValueDifference > 0) {
+                    semaphore.release(semaphoreValueDifference);
+                } else if (semaphoreValueDifference < 0) {
+                    semaphore.tryAcquire(Math.abs(semaphoreValueDifference));
+                }
             }
         }
     }

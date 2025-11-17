@@ -41,7 +41,7 @@ public class ServerPingRequest {
 
     public ServerPingRequest(List<Map<String, String>> allClusterProfileProperties) {
         this.allClusterProfileProperties = allClusterProfileProperties.stream()
-                .map(clusterProfile -> ClusterProfileProperties.fromConfiguration(clusterProfile))
+                .map(ClusterProfileProperties::fromConfiguration)
                 .collect(Collectors.toList());
     }
 

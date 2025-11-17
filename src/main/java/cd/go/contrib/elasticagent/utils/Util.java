@@ -89,7 +89,7 @@ public class Util {
         }
     }
 
-    public static TypeAdapter<Number> IntTypeAdapter = new TypeAdapter<Number>() {
+    public static TypeAdapter<Number> IntTypeAdapter = new TypeAdapter<>() {
 
         @Override
         public void write(JsonWriter out, Number value)

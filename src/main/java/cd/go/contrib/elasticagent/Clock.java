@@ -25,7 +25,7 @@ public interface Clock {
 
     class TestClock implements Clock {
 
-        Instant time = null;
+        Instant time;
 
         public TestClock(Instant time) {
             this.time = time;

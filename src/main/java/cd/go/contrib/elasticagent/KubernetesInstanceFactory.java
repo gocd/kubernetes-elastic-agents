@@ -50,16 +50,12 @@ public class KubernetesInstanceFactory {
     public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
         String podSpecType = request.properties().get(POD_SPEC_TYPE.getKey());
         if (podSpecType != null) {
-            switch (podSpecType) {
-                case "properties":
-                    return createUsingProperties(request, settings, client, pluginRequest);
-                case "remote":
-                    return createUsingRemoteFile(request, settings, client, pluginRequest);
-                case "yaml":
-                    return createUsingPodYaml(request, settings, client, pluginRequest);
-                default:
-                    throw new IllegalArgumentException(String.format("Unsupported value for `PodSpecType`: %s", podSpecType));
-            }
+            return switch (podSpecType) {
+                case "properties" -> createUsingProperties(request, settings, client, pluginRequest);
+                case "remote" -> createUsingRemoteFile(request, settings, client, pluginRequest);
+                case "yaml" -> createUsingPodYaml(request, settings, client, pluginRequest);
+                default -> throw new IllegalArgumentException(String.format("Unsupported value for `PodSpecType`: %s", podSpecType));
+            };
         }
         else {
             if (Boolean.parseBoolean(request.properties().get(SPECIFIED_USING_POD_CONFIGURATION.getKey()))) {
@@ -85,7 +81,7 @@ public class KubernetesInstanceFactory {
         podMetadata.setName(containerName);
 
         PodSpec podSpec = new PodSpec();
-        podSpec.setContainers(Arrays.asList(container));
+        podSpec.setContainers(List.of(container));
 
         Pod elasticAgentPod = new Pod("v1", "Pod", podMetadata, podSpec, new PodStatus());
 
@@ -265,13 +261,13 @@ public class KubernetesInstanceFactory {
         Path podSpecFile = Path.of(String.format("pod_spec_%s", UUID.randomUUID()));
         try (InputStream downloadStream = new URL(fileToDownload).openStream()){
             Files.copy(downloadStream, podSpecFile);
-            LOG.debug(format("Finished downloading %s to %s", fileToDownload, podSpecFile));
+            LOG.debug(format("Finished downloading {0} to {1}", fileToDownload, podSpecFile));
             String spec = Files.readString(podSpecFile, UTF_8);
             String templatedPodSpec = getTemplatedPodSpec(spec);
             elasticAgentPod = mapper.readValue(templatedPodSpec, Pod.class);
             setPodNameIfNecessary(elasticAgentPod, spec);
             Files.deleteIfExists(podSpecFile);
-            LOG.debug(format("Deleted %s", podSpecFile));
+            LOG.debug(format("Deleted {0}", podSpecFile));
         } catch (IOException e) {
             //ignore error here, handle this inside validate profile!
             LOG.error(e.getMessage());
