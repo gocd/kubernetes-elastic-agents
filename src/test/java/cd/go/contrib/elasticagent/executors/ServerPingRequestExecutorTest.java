@@ -26,6 +26,7 @@ import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.stubbing.Answer;
 
@@ -42,7 +43,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 public class ServerPingRequestExecutorTest extends BaseTest {
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     KubernetesClientFactory factory;
     @Mock
     private KubernetesClient mockedClient;
@@ -57,7 +58,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
     @BeforeEach
     public void setUp() {
         openMocks(this);
-        when(factory.client(any())).thenReturn(mockedClient);
+        when(factory.client(any()).get()).thenReturn(mockedClient);
         when(mockedClient.pods()).thenReturn(mockedOperation);
         when(mockedOperation.resource(any(Pod.class))).thenAnswer((Answer<PodResource>) invocation -> {
             Object[] args = invocation.getArguments();
@@ -237,7 +238,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         clusterSpecificInstances.put(clusterProfilePropertiesForCluster1.uuid(), agentInstancesForCluster1);
 
         ServerPingRequest serverPingRequest = mock(ServerPingRequest.class);
-        when(serverPingRequest.allClusterProfileProperties()).thenReturn(Arrays.asList(clusterProfilePropertiesForCluster1));
+        when(serverPingRequest.allClusterProfileProperties()).thenReturn(List.of(clusterProfilePropertiesForCluster1));
 
         PluginRequest pluginRequest = mock(PluginRequest.class);
 
@@ -267,7 +268,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         clusterSpecificInstances.put(clusterProfilePropertiesForCluster1.uuid(), agentInstancesForCluster1);
 
         ServerPingRequest serverPingRequest = mock(ServerPingRequest.class);
-        when(serverPingRequest.allClusterProfileProperties()).thenReturn(Arrays.asList(clusterProfilePropertiesForCluster1));
+        when(serverPingRequest.allClusterProfileProperties()).thenReturn(List.of(clusterProfilePropertiesForCluster1));
 
         PluginRequest pluginRequest = mock(PluginRequest.class);
 

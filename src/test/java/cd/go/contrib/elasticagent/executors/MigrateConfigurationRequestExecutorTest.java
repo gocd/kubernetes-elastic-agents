@@ -36,7 +36,6 @@ public class MigrateConfigurationRequestExecutorTest {
     private PluginSettings pluginSettings;
     private ClusterProfile clusterProfile;
     private ElasticAgentProfile elasticAgentProfile;
-    private HashMap<String, String> properties;
 
     @BeforeEach
     public void setUp() {
@@ -51,14 +50,14 @@ public class MigrateConfigurationRequestExecutorTest {
         elasticAgentProfile.setId("profile_id");
         elasticAgentProfile.setPluginId(Constants.PLUGIN_ID);
         elasticAgentProfile.setClusterProfileId("cluster_profile_id");
-        properties = new HashMap<>();
+        HashMap<String, String> properties = new HashMap<>();
         properties.put("some_key", "some_value");
         properties.put("some_key2", "some_value2");
         elasticAgentProfile.setProperties(properties);
     }
 
     @Test
-    public void shouldNotMigrateConfigWhenNoPluginSettingsAreConfigured() throws Exception {
+    public void shouldNotMigrateConfigWhenNoPluginSettingsAreConfigured() {
         MigrateConfigurationRequest request = new MigrateConfigurationRequest(new PluginSettings(), Collections.singletonList(clusterProfile), Collections.singletonList(elasticAgentProfile));
         MigrateConfigurationRequestExecutor executor = new MigrateConfigurationRequestExecutor(request);
 
@@ -72,7 +71,7 @@ public class MigrateConfigurationRequestExecutorTest {
     }
 
     @Test
-    public void shouldNotMigrateConfigWhenClusterProfileIsAlreadyConfigured() throws Exception {
+    public void shouldNotMigrateConfigWhenClusterProfileIsAlreadyConfigured() {
         MigrateConfigurationRequest request = new MigrateConfigurationRequest(pluginSettings, Collections.singletonList(clusterProfile), Collections.singletonList(elasticAgentProfile));
         MigrateConfigurationRequestExecutor executor = new MigrateConfigurationRequestExecutor(request);
 
@@ -86,7 +85,7 @@ public class MigrateConfigurationRequestExecutorTest {
     }
 
     @Test
-    public void shouldPopulateNoOpClusterProfileWithPluginSettingsConfigurations() throws Exception {
+    public void shouldPopulateNoOpClusterProfileWithPluginSettingsConfigurations() {
         ClusterProfile emptyClusterProfile = new ClusterProfile(String.format("no-op-cluster-for-%s", Constants.PLUGIN_ID), Constants.PLUGIN_ID, new PluginSettings());
         elasticAgentProfile.setClusterProfileId(emptyClusterProfile.getId());
         MigrateConfigurationRequest request = new MigrateConfigurationRequest(pluginSettings, Collections.singletonList(emptyClusterProfile), Collections.singletonList(elasticAgentProfile));
@@ -110,7 +109,7 @@ public class MigrateConfigurationRequestExecutorTest {
     }
 
     @Test
-    public void shouldPopulateNoOpClusterProfileWithPluginSettingsConfigurations_WithoutChangingClusterProfileIdIfItsNotNoOp() throws Exception {
+    public void shouldPopulateNoOpClusterProfileWithPluginSettingsConfigurations_WithoutChangingClusterProfileIdIfItsNotNoOp() {
         String clusterProfileId = "i-renamed-no-op-cluster-to-something-else";
         ClusterProfile emptyClusterProfile = new ClusterProfile(clusterProfileId, Constants.PLUGIN_ID, new PluginSettings());
         elasticAgentProfile.setClusterProfileId(emptyClusterProfile.getId());
@@ -135,7 +134,7 @@ public class MigrateConfigurationRequestExecutorTest {
     }
 
     @Test
-    public void shouldMigratePluginSettingsToClusterProfile_WhenNoElasticAgentProfilesAreConfigured() throws Exception {
+    public void shouldMigratePluginSettingsToClusterProfile_WhenNoElasticAgentProfilesAreConfigured() {
         MigrateConfigurationRequest request = new MigrateConfigurationRequest(pluginSettings, Collections.emptyList(), Collections.emptyList());
         MigrateConfigurationRequestExecutor executor = new MigrateConfigurationRequestExecutor(request);
 
@@ -153,7 +152,7 @@ public class MigrateConfigurationRequestExecutorTest {
     }
 
     @Test
-    public void ShouldMigrateEmptyClusterProfiles_WhenMultipleEmptyClusterProfilesExists() throws Exception {
+    public void ShouldMigrateEmptyClusterProfiles_WhenMultipleEmptyClusterProfilesExists() {
         ClusterProfile emptyCluster1 = new ClusterProfile("cluster_profile_1", Constants.PLUGIN_ID, new PluginSettings());
         ClusterProfile emptyCluster2 = new ClusterProfile("cluster_profile_2", Constants.PLUGIN_ID, new PluginSettings());
 
@@ -187,7 +186,7 @@ public class MigrateConfigurationRequestExecutorTest {
     }
 
     @Test
-    public void ShouldNotMigrateEmptyAndUnassociatedClusterProfiles() throws Exception {
+    public void ShouldNotMigrateEmptyAndUnassociatedClusterProfiles() {
         ClusterProfile emptyCluster1 = new ClusterProfile("cluster_profile_1", Constants.PLUGIN_ID, new PluginSettings());
         ClusterProfile emptyCluster2 = new ClusterProfile("cluster_profile_2", Constants.PLUGIN_ID, new PluginSettings());
 
@@ -221,7 +220,7 @@ public class MigrateConfigurationRequestExecutorTest {
     }
 
     @Test
-    public void shouldNotMigrateConfigWhenMultipleClusterProfilesAreAlreadyMigrated() throws Exception {
+    public void shouldNotMigrateConfigWhenMultipleClusterProfilesAreAlreadyMigrated() {
         ClusterProfile cluster1 = new ClusterProfile("cluster_profile_1", Constants.PLUGIN_ID, pluginSettings);
         ClusterProfile cluster2 = new ClusterProfile("cluster_profile_2", Constants.PLUGIN_ID, pluginSettings);
 

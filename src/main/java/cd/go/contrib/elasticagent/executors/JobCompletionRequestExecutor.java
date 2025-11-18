@@ -37,7 +37,7 @@ public class JobCompletionRequestExecutor implements RequestExecutor {
     }
 
     @Override
-    public GoPluginApiResponse execute() throws Exception {
+    public GoPluginApiResponse execute() {
         String elasticAgentId = jobCompletionRequest.getElasticAgentId();
         ClusterProfileProperties clusterProfileProperties = jobCompletionRequest.clusterProfileProperties();
         if (!clusterProfileProperties.getEnableAgentReuse()) {

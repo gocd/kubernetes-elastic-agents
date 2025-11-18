@@ -67,16 +67,17 @@ public class ProfileValidateRequestExecutorTest {
     public void shouldAllowPodYamlConfiguration() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("PodSpecType", "yaml");
-        String podYaml = "apiVersion: v1\n" +
-                "kind: Pod\n" +
-                "metadata:\n" +
-                "  name: pod-name\n" +
-                "  labels:\n" +
-                "    app: web\n" +
-                "spec:\n" +
-                "  containers:\n" +
-                "    - name: gocd-agent-container\n" +
-                "      image: gocd/fancy-agent-image:latest";
+        String podYaml = """
+                apiVersion: v1
+                kind: Pod
+                metadata:
+                  name: pod-name
+                  labels:
+                    app: web
+                spec:
+                  containers:
+                    - name: gocd-agent-container
+                      image: gocd/fancy-agent-image:latest""";
 
         properties.put("PodConfiguration", podYaml);
         ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties));
@@ -88,16 +89,17 @@ public class ProfileValidateRequestExecutorTest {
     public void shouldNotAllowPodYamlConfigurationWhenGenerateNameIsSpecified() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("PodSpecType", "yaml");
-        String podYaml = "apiVersion: v1\n" +
-                "kind: Pod\n" +
-                "metadata:\n" +
-                "  generateName: pod-name\n" +
-                "  labels:\n" +
-                "    app: web\n" +
-                "spec:\n" +
-                "  containers:\n" +
-                "    - name: gocd-agent-container\n" +
-                "      image: gocd/fancy-agent-image:latest";
+        String podYaml = """
+                apiVersion: v1
+                kind: Pod
+                metadata:
+                  generateName: pod-name
+                  labels:
+                    app: web
+                spec:
+                  containers:
+                    - name: gocd-agent-container
+                      image: gocd/fancy-agent-image:latest""";
 
         properties.put("PodConfiguration", podYaml);
         ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties));
@@ -109,16 +111,17 @@ public class ProfileValidateRequestExecutorTest {
     public void shouldAllowJinjaTemplatedPodYaml() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("PodSpecType", "yaml");
-        String podYaml = "apiVersion: v1\n" +
-                "kind: Pod\n" +
-                "metadata:\n" +
-                "  name: pod-name-prefix-{{ POD_POSTFIX }}\n" +
-                "  labels:\n" +
-                "    app: web\n" +
-                "spec:\n" +
-                "  containers:\n" +
-                "    - name: gocd-agent-container-{{ CONTAINER_POSTFIX }}\n" +
-                "      image: {{ GOCD_AGENT_IMAGE }}:{{ LATEST_VERSION }}";
+        String podYaml = """
+                apiVersion: v1
+                kind: Pod
+                metadata:
+                  name: pod-name-prefix-{{ POD_POSTFIX }}
+                  labels:
+                    app: web
+                spec:
+                  containers:
+                    - name: gocd-agent-container-{{ CONTAINER_POSTFIX }}
+                      image: {{ GOCD_AGENT_IMAGE }}:{{ LATEST_VERSION }}""";
 
         properties.put("PodConfiguration", podYaml);
         ProfileValidateRequestExecutor executor = new ProfileValidateRequestExecutor(new ProfileValidateRequest(properties));

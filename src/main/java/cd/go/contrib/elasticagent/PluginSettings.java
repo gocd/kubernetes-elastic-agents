@@ -22,6 +22,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.time.Duration;
+import java.util.Objects;
 
 import static cd.go.contrib.elasticagent.utils.Util.IntTypeAdapter;
 import static cd.go.contrib.elasticagent.utils.Util.isBlank;
@@ -146,25 +147,23 @@ public class PluginSettings {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof PluginSettings)) return false;
+        if (!(o instanceof PluginSettings that)) return false;
 
-        PluginSettings that = (PluginSettings) o;
-
-        if (goServerUrl != null ? !goServerUrl.equals(that.goServerUrl) : that.goServerUrl != null)
+        if (!Objects.equals(goServerUrl, that.goServerUrl))
             return false;
-        if (autoRegisterTimeout != null ? !autoRegisterTimeout.equals(that.autoRegisterTimeout) : that.autoRegisterTimeout != null)
+        if (!Objects.equals(autoRegisterTimeout, that.autoRegisterTimeout))
             return false;
-        if (maxPendingPods != null ? !maxPendingPods.equals(that.maxPendingPods) : that.maxPendingPods != null)
+        if (!Objects.equals(maxPendingPods, that.maxPendingPods))
             return false;
-        if (clusterUrl != null ? !clusterUrl.equals(that.clusterUrl) : that.clusterUrl != null)
+        if (!Objects.equals(clusterUrl, that.clusterUrl))
             return false;
-        if (securityToken != null ? !securityToken.equals(that.securityToken) : that.securityToken != null)
+        if (!Objects.equals(securityToken, that.securityToken))
             return false;
-        if (clusterCACertData != null ? !clusterCACertData.equals(that.clusterCACertData) : that.clusterCACertData != null)
+        if (!Objects.equals(clusterCACertData, that.clusterCACertData))
             return false;
-        if (clusterRequestTimeout != null ? !clusterRequestTimeout.equals(that.clusterRequestTimeout) : that.clusterRequestTimeout != null)
+        if (!Objects.equals(clusterRequestTimeout, that.clusterRequestTimeout))
             return false;
-        return namespace != null ? namespace.equals(that.namespace) : that.namespace == null;
+        return Objects.equals(namespace, that.namespace);
     }
 
     @Override

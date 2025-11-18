@@ -20,7 +20,6 @@ package cd.go.contrib.elasticagent.model;
 import cd.go.contrib.elasticagent.utils.Size;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,7 +31,7 @@ public class MemoryMetadata extends Metadata {
 
     @Override
     protected String doValidate(String input) {
-        List<String> errors = new ArrayList<>(Arrays.asList(super.doValidate(input)));
+        List<String> errors = new ArrayList<>(Collections.singletonList(super.doValidate(input)));
 
         try {
             Size.parse(input);

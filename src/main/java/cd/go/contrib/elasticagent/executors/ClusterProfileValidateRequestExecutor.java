@@ -41,7 +41,7 @@ public class ClusterProfileValidateRequestExecutor implements RequestExecutor {
     }
 
     @Override
-    public GoPluginApiResponse execute() throws Exception {
+    public GoPluginApiResponse execute() {
         ArrayList<Map<String, String>> result = new ArrayList<>();
 
         List<String> knownFields = new ArrayList<>();

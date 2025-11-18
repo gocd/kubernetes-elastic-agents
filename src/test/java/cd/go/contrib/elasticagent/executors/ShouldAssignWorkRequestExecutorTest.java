@@ -28,6 +28,7 @@ import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.stubbing.Answer;
 
@@ -43,7 +44,7 @@ import static org.mockito.MockitoAnnotations.openMocks;
 
 public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
 
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private KubernetesClientFactory factory;
 
     private AgentInstances<KubernetesInstance> agentInstances;
@@ -69,9 +70,9 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     private String environment = "QA";
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         openMocks(this);
-        when(factory.client(any())).thenReturn(mockedClient);
+        when(factory.client(any()).get()).thenReturn(mockedClient);
         when(mockedClient.pods()).thenReturn(mockedOperation);
 
         final PodList podList = mock(PodList.class);
@@ -94,7 +95,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     }
 
     @Test
-    public void withAgentReuseDisabledShouldAssignWorkWhenJobIdMatchesPodId() throws Exception {
+    public void withAgentReuseDisabledShouldAssignWorkWhenJobIdMatchesPodId() {
         Long jobId = 100L;
         assertThat(jobId).isEqualTo(instance.getJobId());
         ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
@@ -112,7 +113,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     }
 
     @Test
-    public void withAgentReuseDisabledShouldNotAssignWorkWhenJobIdDoesNotMatchPodId() throws Exception {
+    public void withAgentReuseDisabledShouldNotAssignWorkWhenJobIdDoesNotMatchPodId() {
         Long jobId = 333L;
         assertThat(jobId).isNotEqualTo(instance.getJobId());
         ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();

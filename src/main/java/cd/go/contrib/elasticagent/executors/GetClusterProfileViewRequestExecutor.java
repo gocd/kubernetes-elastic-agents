@@ -27,10 +27,9 @@ import static cd.go.contrib.elasticagent.utils.Util.GSON;
 public class GetClusterProfileViewRequestExecutor implements RequestExecutor {
 
     @Override
-    public GoPluginApiResponse execute() throws Exception {
+    public GoPluginApiResponse execute() {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("template", Util.readResource("/plugin-settings.template.html"));
-        DefaultGoPluginApiResponse defaultGoPluginApiResponse = DefaultGoPluginApiResponse.success(GSON.toJson(jsonObject));
-        return defaultGoPluginApiResponse;
+        return DefaultGoPluginApiResponse.success(GSON.toJson(jsonObject));
     }
 }

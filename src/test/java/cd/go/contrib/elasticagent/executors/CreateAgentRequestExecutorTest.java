@@ -43,7 +43,7 @@ public class CreateAgentRequestExecutorTest {
     }
 
     @Test
-    public void shouldLogErrorMessageToConsoleIfAgentCreateFails() throws Exception {
+    public void shouldLogErrorMessageToConsoleIfAgentCreateFails() {
         final HashMap<String, String> elasticAgentProfileProperties = new HashMap<>();
         elasticAgentProfileProperties.put("Image", "image1");
         ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties("http://go-server", "http://k8ssvc.url", "");

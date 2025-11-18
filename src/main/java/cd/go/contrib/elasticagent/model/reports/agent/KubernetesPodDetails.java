@@ -78,8 +78,9 @@ public class KubernetesPodDetails {
     }
 
     public String getConditions() {
-        return String.join(", ", conditions.stream()
-                .map(Condition::toString).collect(Collectors.toList()));
+        return conditions.stream()
+                .map(Condition::toString)
+                .collect(Collectors.joining(", "));
     }
 
     private static class Condition {

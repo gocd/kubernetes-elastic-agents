@@ -20,7 +20,6 @@ import cd.go.contrib.elasticagent.Constants;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -32,14 +31,14 @@ public class KubernetesCluster {
     private final List<KubernetesNode> nodes;
     private final String pluginId;
 
-    public KubernetesCluster(KubernetesClient client) throws ParseException {
+    public KubernetesCluster(KubernetesClient client) {
         pluginId = Constants.PLUGIN_ID;
-        nodes = client.nodes().list().getItems().stream().map(node -> new KubernetesNode(node)).collect(toList());
+        nodes = client.nodes().list().getItems().stream().map(KubernetesNode::new).collect(toList());
         LOG.info("Running kubernetes nodes " + nodes.size());
         fetchPods(client);
     }
 
-    private void fetchPods(KubernetesClient dockerClient) throws ParseException {
+    private void fetchPods(KubernetesClient dockerClient) {
         final Map<String, KubernetesNode> dockerNodeMap = nodes.stream().distinct().collect(toMap(KubernetesNode::getName, node -> node));
 
         final List<Pod> pods = dockerClient.pods()

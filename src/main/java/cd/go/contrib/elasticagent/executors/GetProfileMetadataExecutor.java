@@ -52,7 +52,7 @@ public class GetProfileMetadataExecutor implements RequestExecutor {
     );
 
     @Override
-    public GoPluginApiResponse execute() throws Exception {
+    public GoPluginApiResponse execute() {
         return DefaultGoPluginApiResponse.success(GSON.toJson(FIELDS));
     }
 }

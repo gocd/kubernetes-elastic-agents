@@ -18,7 +18,6 @@ package cd.go.contrib.elasticagent;
 
 import com.google.gson.Gson;
 import io.fabric8.kubernetes.client.Config;
-import io.fabric8.kubernetes.client.KubernetesClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -30,7 +29,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
 import java.util.Map;
 
 import static cd.go.contrib.elasticagent.KubernetesClientFactory.CLIENT_RECYCLE_SYSTEM_PROPERTY_KEY;
@@ -54,26 +52,26 @@ public class KubernetesClientFactoryTest {
         Files.writeString(tempTokenFile, "some-other-token");
 
         System.clearProperty(CLIENT_RECYCLE_SYSTEM_PROPERTY_KEY);
-        final Map<String, Object> pluginSettingsMap = new HashMap<>();
-        pluginSettingsMap.put("go_server_url", "https://foo.go.cd/go");
-        pluginSettingsMap.put("auto_register_timeout", "13");
-        pluginSettingsMap.put("pending_pods_count", "14");
-        pluginSettingsMap.put("kubernetes_cluster_url", "https://cloud.example.com");
-        pluginSettingsMap.put("security_token", "foo-token");
-        pluginSettingsMap.put("namespace", "gocd");
-        pluginSettingsMap.put("kubernetes_cluster_ca_cert", "ca-cert-data");
-        pluginSettingsMap.put("cluster_request_timeout", "10000");
 
         clock = new Clock.TestClock();
         factory = new KubernetesClientFactory(clock);
-        populatedSettings = PluginSettings.fromJSON(new Gson().toJson(pluginSettingsMap));
+        populatedSettings = PluginSettings.fromJSON(new Gson().toJson(Map.<String, Object>of(
+                "go_server_url", "https://foo.go.cd/go",
+                "auto_register_timeout", "13",
+                "pending_pods_count", "14",
+                "kubernetes_cluster_url", "https://cloud.example.com",
+                "security_token", "foo-token",
+                "namespace", "gocd",
+                "kubernetes_cluster_ca_cert", "ca-cert-data",
+                "cluster_request_timeout", "10000"
+        )));
         emptySettings = PluginSettings.fromJSON("{}");
     }
 
     @Test
     public void shouldInitializeClientWithAllValuesSet() {
-        try (KubernetesClient client = factory.client(populatedSettings)) {
-            assertThat(client.getConfiguration())
+        try (KubernetesClientFactory.CachedClient client = factory.client(populatedSettings)) {
+            assertThat(client.get().getConfiguration())
                     .satisfies(config -> {
                         assertThat(config.getMasterUrl()).isEqualTo("https://cloud.example.com/");
                         assertThat(config.getAutoOAuthToken()).isNull();
@@ -88,8 +86,8 @@ public class KubernetesClientFactoryTest {
     @Test
     public void shouldAutoConfigureClientWithDefaults() throws Exception {
         withAutoConfigurationValuesAvailable().execute(() -> {
-            try (KubernetesClient client = factory.client(emptySettings)) {
-                assertThat(client.getConfiguration())
+            try (KubernetesClientFactory.CachedClient client = factory.client(emptySettings)) {
+                assertThat(client.get().getConfiguration())
                         .satisfies(config -> {
                             assertThat(config.getMasterUrl()).isEqualTo("https://default.cluster:8443/");
                             assertThat(config.getAutoOAuthToken()).isEqualTo("some-other-token");
@@ -105,8 +103,8 @@ public class KubernetesClientFactoryTest {
     @Test
     public void shouldInitializeClientWithOverridesForAutoConfiguredValues() throws Exception {
         withAutoConfigurationValuesAvailable().execute(() -> {
-            try (KubernetesClient client = factory.client(populatedSettings)) {
-                assertThat(client.getConfiguration())
+            try (KubernetesClientFactory.CachedClient client = factory.client(populatedSettings)) {
+                assertThat(client.get().getConfiguration())
                         .satisfies(config -> {
                             assertThat(config.getMasterUrl()).isEqualTo("https://cloud.example.com/");
 
@@ -135,79 +133,170 @@ public class KubernetesClientFactoryTest {
 
     @Test
     public void shouldReuseTheExistingClientIfNotTimeElapsed() {
-        KubernetesClient client = factory.client(populatedSettings);
+        KubernetesClientFactory.CachedClient client = factory.client(populatedSettings);
+        assertThat(client.leases()).isEqualTo(1);
+        client.close();
+        assertThat(client.leases()).isEqualTo(0);
 
         clock.set(Instant.now().plus(1, ChronoUnit.MINUTES));
-        KubernetesClient client2 = factory.client(populatedSettings);
+        KubernetesClientFactory.CachedClient client2 = factory.client(populatedSettings);
         assertEquals(client, client2);
+        client2.close();
 
         clock.set(Instant.now().plus(2, ChronoUnit.MINUTES));
-        KubernetesClient client3 = factory.client(populatedSettings);
+        KubernetesClientFactory.CachedClient client3 = factory.client(populatedSettings);
         assertEquals(client, client3);
+        client3.close();
 
         clock.set(Instant.now().plus(5, ChronoUnit.MINUTES));
-        KubernetesClient client4 = factory.client(populatedSettings);
+        KubernetesClientFactory.CachedClient client4 = factory.client(populatedSettings);
         assertEquals(client, client4);
+        client4.close();
 
         clock.set(Instant.now().plus(9, ChronoUnit.MINUTES));
-        KubernetesClient client5 = factory.client(populatedSettings);
+        KubernetesClientFactory.CachedClient client5 = factory.client(populatedSettings);
         assertEquals(client, client5);
+        client5.close();
     }
 
     @Test
     public void shouldRecycleClientOnTimer() {
-        KubernetesClient client = factory.client(populatedSettings);
+        KubernetesClientFactory.CachedClient client = factory.client(populatedSettings);
+        assertThat(client.leases()).isEqualTo(1);
+        client.close();
+        assertThat(client.leases()).isEqualTo(0);
 
         clock.set(Instant.now().plus(9, ChronoUnit.MINUTES));
-
-        KubernetesClient client2 = factory.client(populatedSettings);
+        KubernetesClientFactory.CachedClient client2 = factory.client(populatedSettings);
         assertEquals(client, client2);
+        client.close();
+        assertThat(client.leases()).isEqualTo(0);
 
         clock.set(Instant.now().plus(11, ChronoUnit.MINUTES));
-
-        KubernetesClient clientAfterTimeElapse = factory.client(populatedSettings);
+        KubernetesClientFactory.CachedClient clientAfterTimeElapse = factory.client(populatedSettings);
         assertNotEquals(client, clientAfterTimeElapse);
+        clientAfterTimeElapse.close();
+        assertThat(client.leases()).isEqualTo(0);
+        assertThat(client.isClosed()).isTrue();
+        assertThat(clientAfterTimeElapse.leases()).isEqualTo(0);
+        assertThat(clientAfterTimeElapse.isClosed()).isFalse();
     }
 
     @Test
     public void shouldReadClientRecycleIntervalFromSystemProperty() {
         System.setProperty(CLIENT_RECYCLE_SYSTEM_PROPERTY_KEY, "2");
 
-        KubernetesClient client = factory.client(populatedSettings);
+        KubernetesClientFactory.CachedClient client = factory.client(populatedSettings);
+        client.close();
 
         clock.set(Instant.now().plus(1, ChronoUnit.MINUTES));
-        KubernetesClient client2 = factory.client(populatedSettings);
+        KubernetesClientFactory.CachedClient client2 = factory.client(populatedSettings);
         assertEquals(client, client2);
+        client.close();
 
         clock.set(Instant.now().plus(3, ChronoUnit.MINUTES));
-        KubernetesClient client3 = factory.client(populatedSettings);
-        assertNotEquals(client, client3);
+        KubernetesClientFactory.CachedClient clientAfterTimeElapse = factory.client(populatedSettings);
+        assertNotEquals(client, clientAfterTimeElapse);
+        clientAfterTimeElapse.close();
+        assertThat(client.leases()).isEqualTo(0);
+        assertThat(client.isClosed()).isTrue();
+        assertThat(clientAfterTimeElapse.leases()).isEqualTo(0);
+        assertThat(clientAfterTimeElapse.isClosed()).isFalse();
+    }
+
+    private void changeCluster() {
+        populatedSettings = PluginSettings.fromJSON(new Gson().toJson(Map.<String, Object>of(
+                "go_server_url", "https://foo.go.cd/go",
+                "auto_register_timeout", "13",
+                "pending_pods_count", "14",
+                "kubernetes_cluster_url", "https://cloud.example.com/" + Math.random(),
+                "security_token", "foo-token",
+                "namespace", "gocd",
+                "kubernetes_cluster_ca_cert", "ca-cert-data",
+                "cluster_request_timeout", "10000"
+        )));
     }
 
     @Test
     public void shouldSetClientRecycleIntervalToDefaultValueWhenInvalidValueForSystemPropertyIsProvided() {
         System.setProperty(CLIENT_RECYCLE_SYSTEM_PROPERTY_KEY, "two");
 
-        KubernetesClient client = factory.client(populatedSettings);
+        KubernetesClientFactory.CachedClient client = factory.client(populatedSettings);
+        client.close();
 
         clock.set(Instant.now().plus(1, ChronoUnit.MINUTES));
-        KubernetesClient client2 = factory.client(populatedSettings);
+        KubernetesClientFactory.CachedClient client2 = factory.client(populatedSettings);
         assertEquals(client, client2);
+        client.close();
 
         clock.set(Instant.now().plus(9, ChronoUnit.MINUTES));
-        KubernetesClient client3 = factory.client(populatedSettings);
+        KubernetesClientFactory.CachedClient client3 = factory.client(populatedSettings);
         assertEquals(client, client3);
+        client.close();
 
         clock.set(Instant.now().plus(11, ChronoUnit.MINUTES));
-        KubernetesClient client4 = factory.client(populatedSettings);
-        assertNotEquals(client, client4);
+        KubernetesClientFactory.CachedClient clientAfterTimeElapse = factory.client(populatedSettings);
+        assertNotEquals(client, clientAfterTimeElapse);
+        clientAfterTimeElapse.close();
     }
 
     @Test
     public void shouldAllowExplicitlyClearingClient() {
-        KubernetesClient client = factory.client(populatedSettings);
+        KubernetesClientFactory.CachedClient client = factory.client(populatedSettings);
         factory.clearOutExistingClient();
-        KubernetesClient client2 = factory.client(populatedSettings);
+        KubernetesClientFactory.CachedClient client2 = factory.client(populatedSettings);
         assertNotEquals(client, client2);
+        assertThat(client.isClosed()).isFalse();
+    }
+
+    @Test
+    public void shouldNotCloseStaleClientWhenLeasesAreZeroIfCurrentCachedClient() {
+        KubernetesClientFactory.CachedClient client = factory.client(populatedSettings);
+        assertThat(client.leases()).isEqualTo(1);
+        KubernetesClientFactory.CachedClient client2 = factory.client(populatedSettings);
+        assertEquals(client, client2);
+        assertThat(client.leases()).isEqualTo(2);
+        client.close();
+        client.close();
+        assertThat(client.leases()).isEqualTo(0);
+        assertThat(client.isClosed()).isFalse();
+    }
+
+    @Test
+    public void shouldCloseStaleClientWhenLeasesAreZeroIfNotCurrentCachedClient() {
+        KubernetesClientFactory.CachedClient client = factory.client(populatedSettings);
+        assertThat(client.leases()).isEqualTo(1);
+        assertEquals(client, factory.client(populatedSettings));
+        assertThat(client.leases()).isEqualTo(2);
+        client.close();
+        assertThat(client.leases()).isEqualTo(1);
+        client.close();
+        assertThat(client.isClosed()).isFalse();
+    }
+
+    @Test
+    public void shouldCloseStaleClientWhenSwappingClientImmediatelyIfLeasesAreZero() {
+        KubernetesClientFactory.CachedClient client = factory.client(populatedSettings);
+        client.close();
+        assertThat(client.leases()).isEqualTo(0);
+        assertThat(client.isClosed()).isFalse();
+
+        changeCluster();
+        assertNotEquals(client, factory.client(populatedSettings));
+        assertThat(client.isClosed()).isTrue();
+    }
+
+    @Test
+    public void shouldCloseStaleClientWhenSwappingClientOnlyWhenLeasesLaterBecomeZero() {
+        KubernetesClientFactory.CachedClient client = factory.client(populatedSettings);
+        assertThat(client.leases()).isEqualTo(1);
+        assertThat(client.isClosed()).isFalse();
+
+        changeCluster();
+        assertNotEquals(client, factory.client(populatedSettings));
+        assertThat(client.isClosed()).isFalse();
+
+        client.close();
+        assertThat(client.isClosed()).isTrue();
     }
 }

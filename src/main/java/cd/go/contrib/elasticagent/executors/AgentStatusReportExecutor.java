@@ -55,26 +55,26 @@ public class AgentStatusReportExecutor {
         String elasticAgentId = request.getElasticAgentId();
         JobIdentifier jobIdentifier = request.getJobIdentifier();
         LOG.info(format("[status-report] Generating status report for agent: {0} with job: {1}", elasticAgentId, jobIdentifier));
-        KubernetesClient client = factory.client(request.clusterProfileProperties());
+        try (KubernetesClientFactory.CachedClient client = factory.client(request.clusterProfileProperties())) {
+            try {
+                Pod pod;
+                if (!isBlank(elasticAgentId)) {
+                    pod = findPodUsingElasticAgentId(elasticAgentId, client.get());
+                } else {
+                    pod = findPodUsingJobIdentifier(jobIdentifier, client.get());
+                }
 
-        try {
-            Pod pod;
-            if (!isBlank(elasticAgentId)) {
-                pod = findPodUsingElasticAgentId(elasticAgentId, client);
-            } else {
-                pod = findPodUsingJobIdentifier(jobIdentifier, client);
+                KubernetesElasticAgent elasticAgent = KubernetesElasticAgent.fromPod(client.get(), pod, jobIdentifier);
+
+                final String statusReportView = statusReportViewBuilder.build(statusReportViewBuilder.getTemplate("agent-status-report.template.ftlh"), elasticAgent);
+
+                final JsonObject responseJSON = new JsonObject();
+                responseJSON.addProperty("view", statusReportView);
+
+                return DefaultGoPluginApiResponse.success(responseJSON.toString());
+            } catch (Exception e) {
+                return StatusReportGenerationErrorHandler.handle(statusReportViewBuilder, e);
             }
-
-            KubernetesElasticAgent elasticAgent = KubernetesElasticAgent.fromPod(client, pod, jobIdentifier);
-
-            final String statusReportView = statusReportViewBuilder.build(statusReportViewBuilder.getTemplate("agent-status-report.template.ftlh"), elasticAgent);
-
-            final JsonObject responseJSON = new JsonObject();
-            responseJSON.addProperty("view", statusReportView);
-
-            return DefaultGoPluginApiResponse.success(responseJSON.toString());
-        } catch (Exception e) {
-            return StatusReportGenerationErrorHandler.handle(statusReportViewBuilder, e);
         }
     }
 

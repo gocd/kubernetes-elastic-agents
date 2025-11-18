@@ -81,14 +81,14 @@ public class ServerPingRequestExecutor implements RequestExecutor {
         kubernetesAgentInstances.terminateUnregisteredInstances(clusterProfileProperties, allAgents);
     }
 
-    public void checkForPossiblyMissingAgents() throws Exception {
+    public void checkForPossiblyMissingAgents() {
         Collection<Agent> allAgents = pluginRequest.listAgents().agents();
 
         List<Agent> missingAgents = allAgents.stream().filter(agent -> clusterSpecificAgentInstances.values().stream()
                 .noneMatch(instances -> instances.hasInstance(agent.elasticAgentId()))).collect(Collectors.toList());
 
         if (!missingAgents.isEmpty()) {
-            List<String> missingAgentIds = missingAgents.stream().map(Agent::elasticAgentId).collect(Collectors.toList());
+            List<String> missingAgentIds = missingAgents.stream().map(Agent::elasticAgentId).toList();
             LOG.warn("[Server Ping] Was expecting a containers with IDs " + missingAgentIds + ", but it was missing! Removing missing agents from config.");
             pluginRequest.disableAgents(missingAgents);
             pluginRequest.deleteAgents(missingAgents);
@@ -102,11 +102,11 @@ public class ServerPingRequestExecutor implements RequestExecutor {
         }
     }
 
-    private void terminateDisabledAgents(Agents agents, ClusterProfileProperties clusterProfileProperties, KubernetesAgentInstances instances) throws Exception {
+    private void terminateDisabledAgents(Agents agents, ClusterProfileProperties clusterProfileProperties, KubernetesAgentInstances dockerContainers) {
         Collection<Agent> toBeDeleted = agents.findInstancesToTerminate();
 
         for (Agent agent : toBeDeleted) {
-            instances.terminate(agent.elasticAgentId(), clusterProfileProperties);
+            dockerContainers.terminate(agent.elasticAgentId(), clusterProfileProperties);
         }
 
         pluginRequest.deleteAgents(toBeDeleted);

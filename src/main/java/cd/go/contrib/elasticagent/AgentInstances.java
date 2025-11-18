@@ -38,7 +38,7 @@ public interface AgentInstances<T> {
      * @param pluginRequest the plugin request object
      * @param consoleLogAppender
      */
-    Optional<T> requestCreateAgent(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest, ConsoleLogAppender consoleLogAppender) throws Exception;
+    Optional<T> requestCreateAgent(CreateAgentRequest request, PluginSettings settings, PluginRequest pluginRequest, ConsoleLogAppender consoleLogAppender);
 
     /**
      * This message is sent when the plugin needs to terminate the agent instance.
@@ -46,7 +46,7 @@ public interface AgentInstances<T> {
      * @param agentId  the elastic agent id
      * @param settings the plugin settings object
      */
-    void terminate(String agentId, PluginSettings settings) throws Exception;
+    void terminate(String agentId, PluginSettings settings);
 
     /**
      * This message is sent from the {@link ServerPingRequestExecutor}
@@ -56,7 +56,7 @@ public interface AgentInstances<T> {
      * @param settings the plugin settings object
      * @param agents   the list of all the agents
      */
-    void terminateUnregisteredInstances(PluginSettings settings, Agents agents) throws Exception;
+    void terminateUnregisteredInstances(PluginSettings settings, Agents agents);
 
     /**
      * This message is sent from the {@link ServerPingRequestExecutor}
@@ -77,7 +77,7 @@ public interface AgentInstances<T> {
      *
      * @param pluginSettings the plugin settings object
      */
-    void refreshAll(PluginSettings pluginSettings) throws Exception;
+    void refreshAll(PluginSettings pluginSettings);
 
     /**
      * This

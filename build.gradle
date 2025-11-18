@@ -15,13 +15,15 @@
  */
 
 
-apply plugin: 'java'
+plugins {
+  id 'java'
+}
 apply from: "https://raw.githubusercontent.com/gocd/gocd-plugin-gradle-task-helpers/master/helper.gradle?_=${(int) (Instant.now().epochSecond / 60)}"
 
 gocdPlugin {
   id = 'cd.go.contrib.elasticagent.kubernetes'
-  pluginVersion = '4.2.0'
-  goCdVersion = '21.4.0'
+  pluginVersion = '5.0.0'
+  goCdVersion = '22.1.0'
   name = 'Kubernetes Elastic Agent Plugin'
   description = 'Kubernetes Based Elastic Agent Plugins for GoCD'
   vendorName = 'Thoughtworks, Inc.'
@@ -36,6 +38,7 @@ gocdPlugin {
   pluginProject = project
 
   prerelease = !"No".equalsIgnoreCase(System.getenv('PRERELEASE'))
+  prereleaseDryrun = !"Yes".equalsIgnoreCase(System.getenv('PRERELEASE'))
   assetsToRelease = [project.tasks.jar]
 }
 
@@ -48,14 +51,18 @@ repositories {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
 }
 
 ext {
     deps = [
-        gocdPluginApi: 'cd.go.plugin:go-plugin-api:24.4.0',
-        kubernetesClientApi: 'io.fabric8:kubernetes-client-api:6.13.4',
+        gocdPluginApi: 'cd.go.plugin:go-plugin-api:25.3.0',
+        kubernetesClientApi: 'io.fabric8:kubernetes-client-api:7.4.0',
     ]
 
     versions = project.ext.deps.collectEntries { lib, libGav -> [lib, libGav.split(':').last()] }
@@ -63,33 +70,26 @@ ext {
 
 dependencies {
     compileOnly project.deps.gocdPluginApi
-    implementation group: 'com.google.code.gson', name: 'gson', version: '2.11.0'
+    implementation 'com.google.code.gson:gson:2.13.2'
     implementation project.deps.kubernetesClientApi
-    runtimeOnly group: 'io.fabric8', name: 'kubernetes-client', version: project.versions.kubernetesClientApi
     constraints {
-        implementation('com.squareup.okhttp3:okhttp:3.14.9') {
-            because 'Fabric Client uses an older version with vulnerable dependencies'
-        }
-        implementation('com.squareup.okio:okio:1.17.6') {
-            because 'Fabric Client uses an older version with vulnerable dependencies'
-        }
+        implementation 'io.vertx:vertx-web-client:4.5.22' // Upgrade transitive version within fabric kubernetes-client
     }
-
-    runtimeOnly group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.79'
-    implementation group: 'com.github.spullara.mustache.java', name: 'compiler', version: '0.9.14'
-    implementation group: 'org.freemarker', name: 'freemarker', version: '2.3.33'
+    runtimeOnly "io.fabric8:kubernetes-client:${project.versions.kubernetesClientApi}"
+    implementation 'com.github.spullara.mustache.java:compiler:0.9.14'
+    implementation 'org.freemarker:freemarker:2.3.34'
 
     testImplementation project.deps.gocdPluginApi
-    testImplementation platform('org.junit:junit-bom:5.11.3')
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params'
-    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
-    testRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-launcher'
-    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.26.3'
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.14.2'
-    testImplementation group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.3'
-    testImplementation group: 'org.jsoup', name: 'jsoup', version: '1.18.1'
-    testImplementation group: 'uk.org.webcompere', name: 'system-stubs-jupiter', version: '2.1.7'
+    testImplementation platform('org.junit:junit-bom:6.0.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.assertj:assertj-core:3.27.6'
+    testImplementation 'org.mockito:mockito-core:5.20.0'
+    testImplementation 'org.skyscreamer:jsonassert:1.5.3'
+    testImplementation 'org.jsoup:jsoup:1.21.2'
+    testImplementation 'uk.org.webcompere:system-stubs-jupiter:2.1.8'
 }
 
 test {
