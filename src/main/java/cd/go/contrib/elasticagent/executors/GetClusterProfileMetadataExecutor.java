@@ -38,19 +38,19 @@ public class GetClusterProfileMetadataExecutor implements RequestExecutor {
     public static final Metadata SECURITY_TOKEN = new Metadata("security_token", false, true);
     public static final Metadata CLUSTER_CA_CERT = new Metadata("kubernetes_cluster_ca_cert", false, true);
     public static final Metadata CLUSTER_REQUEST_TIMEOUT = new Metadata("cluster_request_timeout", false, false);
+    public static final Metadata ENABLE_AGENT_REUSE = new Metadata("enable_agent_reuse", false, false);
 
-    public static final List<Metadata> FIELDS = new ArrayList<>();
-
-    static {
-        FIELDS.add(GO_SERVER_URL);
-        FIELDS.add(AUTO_REGISTER_TIMEOUT);
-        FIELDS.add(MAX_PENDING_PODS);
-        FIELDS.add(CLUSTER_URL);
-        FIELDS.add(NAMESPACE);
-        FIELDS.add(SECURITY_TOKEN);
-        FIELDS.add(CLUSTER_CA_CERT);
-        FIELDS.add(CLUSTER_REQUEST_TIMEOUT);
-    }
+    public static final List<Metadata> FIELDS = List.of(
+        GO_SERVER_URL,
+        AUTO_REGISTER_TIMEOUT,
+        MAX_PENDING_PODS,
+        CLUSTER_URL,
+        NAMESPACE,
+        SECURITY_TOKEN,
+        CLUSTER_CA_CERT,
+        CLUSTER_REQUEST_TIMEOUT,
+        ENABLE_AGENT_REUSE
+    );
 
     @Override
     public GoPluginApiResponse execute() {

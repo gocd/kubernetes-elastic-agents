@@ -18,6 +18,7 @@ package cd.go.contrib.elasticagent;
 
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagent.utils.Size;
+import cd.go.contrib.elasticagent.utils.Util;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -48,7 +49,7 @@ import static java.text.MessageFormat.format;
 
 public class KubernetesInstanceFactory {
     public KubernetesInstance create(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
-        String podSpecType = request.properties().get(POD_SPEC_TYPE.getKey());
+        String podSpecType = request.elasticProfileProperties().get(POD_SPEC_TYPE.getKey());
         if (podSpecType != null) {
             return switch (podSpecType) {
                 case "properties" -> createUsingProperties(request, settings, client, pluginRequest);
@@ -58,7 +59,7 @@ public class KubernetesInstanceFactory {
             };
         }
         else {
-            if (Boolean.parseBoolean(request.properties().get(SPECIFIED_USING_POD_CONFIGURATION.getKey()))) {
+            if (Boolean.parseBoolean(request.elasticProfileProperties().get(SPECIFIED_USING_POD_CONFIGURATION.getKey()))) {
                 return createUsingPodYaml(request, settings, client, pluginRequest);
             } else {
                 return createUsingProperties(request, settings, client, pluginRequest);
@@ -71,7 +72,7 @@ public class KubernetesInstanceFactory {
 
         Container container = new Container();
         container.setName(containerName);
-        container.setImage(image(request.properties()));
+        container.setImage(image(request.elasticProfileProperties()));
         container.setImagePullPolicy("IfNotPresent");
         container.setSecurityContext(new SecurityContextBuilder().withPrivileged(privileged(request)).build());
 
@@ -91,7 +92,7 @@ public class KubernetesInstanceFactory {
     }
 
     private Boolean privileged(CreateAgentRequest request) {
-        final String privilegedMode = request.properties().get(PRIVILEGED.getKey());
+        final String privilegedMode = request.elasticProfileProperties().get(PRIVILEGED.getKey());
         if (isBlank(privilegedMode)) {
             return false;
         }
@@ -110,7 +111,7 @@ public class KubernetesInstanceFactory {
         ResourceRequirements resources = new ResourceRequirements();
         HashMap<String, Quantity> limits = new HashMap<>();
 
-        String maxMemory = request.properties().get("MaxMemory");
+        String maxMemory = request.elasticProfileProperties().get("MaxMemory");
         if (!isBlank(maxMemory)) {
             Size mem = Size.parse(maxMemory);
             LOG.debug(format("[Create Agent] Setting memory resource limit on k8s pod: {0}.", new Quantity(valueOf((long) mem.toMegabytes()), "M")));
@@ -118,7 +119,7 @@ public class KubernetesInstanceFactory {
             limits.put("memory", new Quantity(valueOf(memory)));
         }
 
-        String maxCPU = request.properties().get("MaxCPU");
+        String maxCPU = request.elasticProfileProperties().get("MaxCPU");
         if (!isBlank(maxCPU)) {
             LOG.debug(format("[Create Agent] Setting cpu resource limit on k8s pod: {0}.", new Quantity(maxCPU)));
             limits.put("cpu", new Quantity(maxCPU));
@@ -135,10 +136,32 @@ public class KubernetesInstanceFactory {
         pod.getMetadata().setLabels(existingLabels);
     }
 
+    /**
+     * Compute a string that uniquely identifies the configuration that was used to launch an agent pod.
+     * @param clusterProfileProperties Cluster profile properties of the agent
+     * @param elasticProfileProperties Elastic profile properties of the agent
+     * @return The unique identifier string.
+     */
+    public static String agentConfigHash(ClusterProfileProperties clusterProfileProperties, Map<String, String> elasticProfileProperties) {
+        return Util.GSON.toJson(Map.of(
+                "cluster_profile_properties", Util.objectUUID(clusterProfileProperties),
+                "elastic_profile_properties", Util.objectUUID(elasticProfileProperties)
+        ));
+    }
+
+    public static boolean isSameConfigHash(String hashA, String hashB) {
+        return hashA != null && hashA.equals(hashB);
+    }
+
     private static void setAnnotations(Pod pod, CreateAgentRequest request) {
         Map<String, String> existingAnnotations = (pod.getMetadata().getAnnotations() != null) ? pod.getMetadata().getAnnotations() : new HashMap<>();
-        existingAnnotations.putAll(request.properties());
+        existingAnnotations.putAll(request.elasticProfileProperties());
         existingAnnotations.put(JOB_IDENTIFIER_LABEL_KEY, request.jobIdentifier().toJson());
+        Map<String, String> annotationsForAgentReuse = Map.of(
+            KubernetesInstance.ELASTIC_CONFIG_HASH, agentConfigHash(request.clusterProfileProperties(), request.elasticProfileProperties())
+        );
+        LOG.debug("[reuse] Annotating newly-created pod {} with {}", pod.getMetadata().getName(), annotationsForAgentReuse);
+        existingAnnotations.putAll(annotationsForAgentReuse);
         pod.getMetadata().setAnnotations(existingAnnotations);
     }
 
@@ -149,7 +172,6 @@ public class KubernetesInstanceFactory {
     }
 
     KubernetesInstance fromKubernetesPod(Pod elasticAgentPod) {
-        KubernetesInstance kubernetesInstance;
         try {
             ObjectMeta metadata = elasticAgentPod.getMetadata();
             Instant createdAt = Instant.now();
@@ -158,18 +180,24 @@ public class KubernetesInstanceFactory {
             }
             String environment = metadata.getLabels().get(ENVIRONMENT_LABEL_KEY);
             Long jobId = Long.valueOf(metadata.getLabels().get(JOB_ID_LABEL_KEY));
-            kubernetesInstance = new KubernetesInstance(createdAt, environment, metadata.getName(), metadata.getAnnotations(), jobId, PodState.fromPod(elasticAgentPod));
+            return KubernetesInstance.builder()
+                    .createdAt(createdAt)
+                    .environment(environment)
+                    .podName(metadata.getName())
+                    .podAnnotations(metadata.getAnnotations())
+                    .jobId(jobId)
+                    .podState(PodState.fromPod(elasticAgentPod))
+                    .build();
         } catch (DateTimeParseException e) {
             throw new RuntimeException(e);
         }
-        return kubernetesInstance;
     }
 
     private static List<EnvVar> environmentFrom(CreateAgentRequest request, PluginSettings settings, String podName, PluginRequest pluginRequest) {
         ArrayList<EnvVar> env = new ArrayList<>();
         String goServerUrl = isBlank(settings.getGoServerUrl()) ? pluginRequest.getSeverInfo().getSecureSiteUrl() : settings.getGoServerUrl();
         env.add(new EnvVar("GO_EA_SERVER_URL", goServerUrl, null));
-        String environment = request.properties().get("Environment");
+        String environment = request.elasticProfileProperties().get("Environment");
         if (!isBlank(environment)) {
             env.addAll(parseEnvironments(environment));
         }
@@ -226,7 +254,7 @@ public class KubernetesInstanceFactory {
 
     private KubernetesInstance createUsingPodYaml(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        String podYaml = request.properties().get(POD_CONFIGURATION.getKey());
+        String podYaml = request.elasticProfileProperties().get(POD_CONFIGURATION.getKey());
         String templatizedPodYaml = getTemplatedPodSpec(podYaml);
 
         Pod elasticAgentPod = new Pod();
@@ -243,8 +271,8 @@ public class KubernetesInstanceFactory {
     }
 
     private KubernetesInstance createUsingRemoteFile(CreateAgentRequest request, PluginSettings settings, KubernetesClient client, PluginRequest pluginRequest) {
-        String fileToDownload = request.properties().get(REMOTE_FILE.getKey());
-        String fileType = request.properties().get(REMOTE_FILE_TYPE.getKey());
+        String fileToDownload = request.elasticProfileProperties().get(REMOTE_FILE.getKey());
+        String fileType = request.elasticProfileProperties().get(REMOTE_FILE_TYPE.getKey());
 
         Pod elasticAgentPod = new Pod();
         ObjectMapper mapper;

@@ -38,20 +38,18 @@ public class GetProfileMetadataExecutor implements RequestExecutor {
     public static final Metadata REMOTE_FILE = new Metadata("RemoteFile", false, false);
     public static final Metadata REMOTE_FILE_TYPE = new Metadata("RemoteFileType", false, false);
     public static final Metadata PRIVILEGED = new Metadata("Privileged", false, false);
-    public static final List<Metadata> FIELDS = new ArrayList<>();
-
-    static {
-        FIELDS.add(IMAGE);
-        FIELDS.add(MAX_MEMORY);
-        FIELDS.add(MAX_CPU);
-        FIELDS.add(ENVIRONMENT);
-        FIELDS.add(POD_CONFIGURATION);
-        FIELDS.add(SPECIFIED_USING_POD_CONFIGURATION);
-        FIELDS.add(POD_SPEC_TYPE);
-        FIELDS.add(REMOTE_FILE);
-        FIELDS.add(REMOTE_FILE_TYPE);
-        FIELDS.add(PRIVILEGED);
-    }
+    public static final List<Metadata> FIELDS = List.of(
+        IMAGE,
+        MAX_MEMORY,
+        MAX_CPU,
+        ENVIRONMENT,
+        POD_CONFIGURATION,
+        SPECIFIED_USING_POD_CONFIGURATION,
+        POD_SPEC_TYPE,
+        REMOTE_FILE,
+        REMOTE_FILE_TYPE,
+        PRIVILEGED
+    );
 
     @Override
     public GoPluginApiResponse execute() {
