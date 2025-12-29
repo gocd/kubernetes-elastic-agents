@@ -22,7 +22,7 @@ apply from: "https://raw.githubusercontent.com/gocd/gocd-plugin-gradle-task-help
 
 gocdPlugin {
   id = 'cd.go.contrib.elasticagent.kubernetes'
-  pluginVersion = '5.0.0'
+  pluginVersion = '5.0.1'
   goCdVersion = '22.1.0'
   name = 'Kubernetes Elastic Agent Plugin'
   description = 'Kubernetes Based Elastic Agent Plugins for GoCD'
@@ -76,6 +76,8 @@ dependencies {
         implementation 'io.vertx:vertx-web-client:4.5.22' // Upgrade transitive version within fabric kubernetes-client
     }
     runtimeOnly "io.fabric8:kubernetes-client:${project.versions.kubernetesClientApi}"
+    implementation platform('org.slf4j:slf4j-bom:2.0.17')
+    runtimeOnly 'org.slf4j:slf4j-simple'
     implementation 'com.github.spullara.mustache.java:compiler:0.9.14'
     implementation 'org.freemarker:freemarker:2.3.34'
 
