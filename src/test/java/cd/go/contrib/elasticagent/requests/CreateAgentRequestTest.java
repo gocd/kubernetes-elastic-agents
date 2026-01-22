@@ -56,7 +56,7 @@ public class CreateAgentRequestTest {
         HashMap<String, String> expectedElasticAgentProperties = new HashMap<>();
         expectedElasticAgentProperties.put("key1", "value1");
         expectedElasticAgentProperties.put("key2", "value2");
-        assertThat(request.properties()).isEqualTo(expectedElasticAgentProperties);
+        assertThat(request.elasticProfileProperties()).isEqualTo(expectedElasticAgentProperties);
 
         HashMap<String, String> clusterProfileConfigurations = new HashMap<>();
         clusterProfileConfigurations.put("go_server_url", "go-server-url");

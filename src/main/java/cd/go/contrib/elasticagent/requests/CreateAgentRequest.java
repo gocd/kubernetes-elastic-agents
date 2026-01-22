@@ -36,7 +36,7 @@ public class CreateAgentRequest {
     private String autoRegisterKey;
     @Expose
     @SerializedName("elastic_agent_profile_properties")
-    private Map<String, String> properties;
+    private Map<String, String> elasticProfileProperties;
     @Expose
     @SerializedName("environment")
     private String environment;
@@ -50,19 +50,19 @@ public class CreateAgentRequest {
     public CreateAgentRequest() {
     }
 
-    private CreateAgentRequest(String autoRegisterKey, Map<String, String> properties, String environment) {
+    private CreateAgentRequest(String autoRegisterKey, Map<String, String> elasticProfileProperties, String environment) {
         this.autoRegisterKey = autoRegisterKey;
-        this.properties = properties;
+        this.elasticProfileProperties = elasticProfileProperties;
         this.environment = environment;
     }
 
-    public CreateAgentRequest(String autoRegisterKey, Map<String, String> properties, String environment, JobIdentifier identifier) {
-        this(autoRegisterKey, properties, environment);
+    public CreateAgentRequest(String autoRegisterKey, Map<String, String> elasticProfileProperties, String environment, JobIdentifier identifier) {
+        this(autoRegisterKey, elasticProfileProperties, environment);
         this.jobIdentifier = identifier;
     }
 
-    public CreateAgentRequest(String autoRegisterKey, Map<String, String> properties, String environment, JobIdentifier identifier, ClusterProfileProperties clusterProfileProperties) {
-        this(autoRegisterKey, properties, environment, identifier);
+    public CreateAgentRequest(String autoRegisterKey, Map<String, String> elasticProfileProperties, String environment, JobIdentifier identifier, ClusterProfileProperties clusterProfileProperties) {
+        this(autoRegisterKey, elasticProfileProperties, environment, identifier);
         this.clusterProfileProperties = clusterProfileProperties;
     }
 
@@ -74,8 +74,8 @@ public class CreateAgentRequest {
         return autoRegisterKey;
     }
 
-    public Map<String, String> properties() {
-        return properties;
+    public Map<String, String> elasticProfileProperties() {
+        return elasticProfileProperties;
     }
 
     public String environment() {
@@ -111,7 +111,7 @@ public class CreateAgentRequest {
     public String toString() {
         return "CreateAgentRequest{" +
                 "autoRegisterKey='" + autoRegisterKey + '\'' +
-                ", properties=" + properties +
+                ", properties=" + elasticProfileProperties +
                 ", environment='" + environment + '\'' +
                 ", jobIdentifier=" + jobIdentifier +
                 ", clusterProfileProperties=" + clusterProfileProperties +

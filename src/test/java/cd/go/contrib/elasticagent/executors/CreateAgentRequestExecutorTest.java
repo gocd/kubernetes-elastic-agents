@@ -39,7 +39,7 @@ public class CreateAgentRequestExecutorTest {
         new CreateAgentRequestExecutor(request, agentInstances, pluginRequest).execute();
 
         verify(pluginRequest).appendToConsoleLog(eq(jobIdentifier), contains("Received request to create a pod for job"));
-        verify(agentInstances).create(eq(request), eq(request.clusterProfileProperties()), eq(pluginRequest), any(ConsoleLogAppender.class));
+        verify(agentInstances).requestCreateAgent(eq(request), eq(request.clusterProfileProperties()), eq(pluginRequest), any(ConsoleLogAppender.class));
     }
 
     @Test
@@ -52,7 +52,7 @@ public class CreateAgentRequestExecutorTest {
         AgentInstances<KubernetesInstance> agentInstances = mock(KubernetesAgentInstances.class);
         PluginRequest pluginRequest = mock(PluginRequest.class);
 
-        when(agentInstances.create(any(), any(), any(), any())).thenThrow(new RuntimeException("Ouch!"));
+        when(agentInstances.requestCreateAgent(any(), any(), any(), any())).thenThrow(new RuntimeException("Ouch!"));
 
         assertThrows(Exception.class, () -> new CreateAgentRequestExecutor(request, agentInstances, pluginRequest).execute());
 

@@ -99,7 +99,14 @@ public class GetClusterProfileMetadataExecutorTest {
                       "required": false,
                       "secure": false
                     }
-                  }
+                  },
+                  {
+                    "key": "enable_agent_reuse",
+                    "metadata": {
+                      "required": false,
+                      "secure": false
+                    }
+                  }  
                 ]""";
 
         JSONAssert.assertEquals(expectedJSON, response.responseBody(), true);

@@ -22,7 +22,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 import static cd.go.contrib.elasticagent.utils.Util.IntTypeAdapter;
@@ -61,6 +60,10 @@ public class PluginSettings {
     @SerializedName("cluster_request_timeout")
     private String clusterRequestTimeout;
 
+    @Expose
+    @SerializedName("enable_agent_reuse")
+    private boolean enableAgentReuse;
+
     private Duration autoRegisterPeriod;
 
     public PluginSettings() {
@@ -81,7 +84,7 @@ public class PluginSettings {
 
     public Duration getAutoRegisterPeriod() {
         if (this.autoRegisterPeriod == null) {
-            this.autoRegisterPeriod = Duration.of(getAutoRegisterTimeout(), ChronoUnit.MINUTES);
+            this.autoRegisterPeriod = Duration.ofMinutes(getAutoRegisterTimeout());
         }
         return this.autoRegisterPeriod;
     }
@@ -119,6 +122,14 @@ public class PluginSettings {
 
     public String getNamespace() {
         return getOrDefault(this.namespace, null);
+    }
+
+    public boolean getEnableAgentReuse() {
+        return enableAgentReuse;
+    }
+
+    public void setEnableAgentReuse(boolean enableAgentReuse) {
+        this.enableAgentReuse = enableAgentReuse;
     }
 
     private <T> T getOrDefault(T t, T defaultValue) {

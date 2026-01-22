@@ -39,7 +39,9 @@ public enum Request {
 
     REQUEST_GET_CAPABILITIES(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".get-capabilities"),
     REQUEST_ELASTIC_AGENT_STATUS_REPORT(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".agent-status-report"),
-    REQUEST_CLUSTER_STATUS_REPORT(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".cluster-status-report");
+    REQUEST_CLUSTER_STATUS_REPORT(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".cluster-status-report"),
+
+    REQUEST_PLUGIN_SETTINGS(Constants.GO_PLUGIN_SETTINGS_PREFIX + ".get-configuration");
 
     private final String requestName;
 
