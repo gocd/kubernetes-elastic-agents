@@ -73,7 +73,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.13.2'
     implementation project.deps.kubernetesClientApi
     constraints {
-        implementation 'io.vertx:vertx-web-client:4.5.23' // Upgrade transitive version within fabric kubernetes-client
+        implementation 'io.vertx:vertx-web-client:4.5.24' // Upgrade transitive version within fabric kubernetes-client
     }
     runtimeOnly "io.fabric8:kubernetes-client:${project.versions.kubernetesClientApi}"
     implementation platform('org.slf4j:slf4j-bom:2.0.17')
