@@ -297,7 +297,7 @@ public class KubernetesInstanceFactory {
         context.put(POD_POSTFIX, UUID.randomUUID().toString());
         context.put(CONTAINER_POSTFIX, UUID.randomUUID().toString());
         context.put(GOCD_AGENT_IMAGE, "gocd/gocd-agent-wolfi");
-        context.put(LATEST_VERSION, "v24.3.0");
+        context.put(LATEST_VERSION, "v25.4.0");
         return context;
     }
 }
