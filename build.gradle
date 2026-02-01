@@ -62,7 +62,7 @@ tasks.withType(JavaCompile).configureEach {
 ext {
     deps = [
         gocdPluginApi: 'cd.go.plugin:go-plugin-api:25.4.0',
-        kubernetesClientApi: 'io.fabric8:kubernetes-client-api:7.5.1',
+        kubernetesClientApi: 'io.fabric8:kubernetes-client-api:7.5.2',
     ]
 
     versions = project.ext.deps.collectEntries { lib, libGav -> [lib, libGav.split(':').last()] }
