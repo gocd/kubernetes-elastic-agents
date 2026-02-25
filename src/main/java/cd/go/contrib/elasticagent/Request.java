@@ -37,6 +37,7 @@ public enum Request {
     REQUEST_VALIDATE_ELASTIC_AGENT_PROFILE(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".validate-elastic-agent-profile"),
     REQUEST_GET_ELASTIC_AGENT_PROFILE_VIEW(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".get-elastic-agent-profile-view"),
 
+    REQUEST_PLUGIN_SETTINGS(Constants.GO_PLUGIN_SETTINGS_PREFIX + ".get-configuration"),
     REQUEST_GET_CAPABILITIES(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".get-capabilities"),
     REQUEST_ELASTIC_AGENT_STATUS_REPORT(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".agent-status-report"),
     REQUEST_CLUSTER_STATUS_REPORT(Constants.ELASTIC_AGENT_REQUEST_PREFIX + ".cluster-status-report");
