@@ -70,10 +70,13 @@ ext {
 
 dependencies {
     compileOnly project.deps.gocdPluginApi
-    implementation 'com.google.code.gson:gson:2.13.2'
+    implementation('com.google.code.gson:gson:2.13.2') {
+        exclude(module: 'error_prone_annotations') // Not needed at runtime
+    }
     implementation project.deps.kubernetesClientApi
     runtimeOnly "io.fabric8:kubernetes-client:${project.versions.kubernetesClientApi}"
-    implementation platform('org.slf4j:slf4j-bom:2.0.17')
+    implementation platform('com.fasterxml.jackson:jackson-bom:2.21.1') // Control Jackson version used by kubernetes client
+    implementation platform('org.slf4j:slf4j-bom:2.0.17') // Control SLF4J version used by client Jackson version used by kubernetes client
     runtimeOnly 'org.slf4j:slf4j-simple'
     implementation 'com.github.spullara.mustache.java:compiler:0.9.14'
     implementation 'org.freemarker:freemarker:2.3.34'
