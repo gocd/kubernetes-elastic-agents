@@ -108,6 +108,8 @@ public class KubernetesPlugin implements GoPlugin {
                     return new DefaultGoPluginApiResponse(200);
                 case REQUEST_MIGRATE_CONFIGURATION:
                     return MigrateConfigurationRequest.fromJSON(request.requestBody()).executor().execute();
+                case REQUEST_PLUGIN_SETTINGS:
+                    return DefaultGoPluginApiResponse.success("{}");
                 default:
                     throw new UnhandledRequestTypeException(request.requestName());
             }
