@@ -120,7 +120,7 @@ public class KubernetesAgentInstancesIntegrationTest {
 
     @Test
     public void shouldCreateKubernetesPodWithPrivilegedMod() {
-        createAgentRequest.properties().put(PRIVILEGED.getKey(), "true");
+        createAgentRequest.elasticProfileProperties().put(PRIVILEGED.getKey(), "true");
         ArgumentCaptor<Pod> argumentCaptor = ArgumentCaptor.forClass(Pod.class);
         KubernetesInstance instance = kubernetesAgentInstances.create(createAgentRequest, settings, mockedPluginRequest, consoleLogAppender);
         verify(pods).resource(argumentCaptor.capture());
@@ -220,7 +220,7 @@ public class KubernetesAgentInstancesIntegrationTest {
 
         assertNotNull(elasticAgentPod.getMetadata());
 
-        Map<String, String> expectedAnnotations = new HashMap<>(createAgentRequest.properties());
+        Map<String, String> expectedAnnotations = new HashMap<>(createAgentRequest.elasticProfileProperties());
         expectedAnnotations.put(Constants.JOB_IDENTIFIER_LABEL_KEY, new Gson().toJson(createAgentRequest.jobIdentifier()));
         assertThat(elasticAgentPod.getMetadata().getAnnotations()).isEqualTo(expectedAnnotations);
 
@@ -349,7 +349,7 @@ public class KubernetesAgentInstancesIntegrationTest {
 
         assertNotNull(elasticAgentPod.getMetadata());
 
-        HashMap<String, String> expectedAnnotations = new HashMap<>(createAgentRequest.properties());
+        HashMap<String, String> expectedAnnotations = new HashMap<>(createAgentRequest.elasticProfileProperties());
         expectedAnnotations.put("annotation-key", "my-fancy-annotation-value");
         expectedAnnotations.put(Constants.JOB_IDENTIFIER_LABEL_KEY, new Gson().toJson(createAgentRequest.jobIdentifier()));
 
@@ -484,7 +484,7 @@ public class KubernetesAgentInstancesIntegrationTest {
 
         assertNotNull(elasticAgentPod.getMetadata());
 
-        HashMap<String, String> expectedAnnotations = new HashMap<>(createAgentRequest.properties());
+        HashMap<String, String> expectedAnnotations = new HashMap<>(createAgentRequest.elasticProfileProperties());
         expectedAnnotations.put("annotation-key", "my-fancy-annotation-value");
         expectedAnnotations.put(Constants.JOB_IDENTIFIER_LABEL_KEY, new Gson().toJson(createAgentRequest.jobIdentifier()));
 
