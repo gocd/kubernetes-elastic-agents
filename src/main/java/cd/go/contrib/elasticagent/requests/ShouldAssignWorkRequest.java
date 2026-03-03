@@ -53,12 +53,11 @@ public class ShouldAssignWorkRequest {
     public ShouldAssignWorkRequest() {
     }
 
-    public ShouldAssignWorkRequest(
-            Agent agent,
-            String environment,
-            Map<String, String> elasticProfileProperties,
-            JobIdentifier jobIdentifier,
-            ClusterProfileProperties clusterProfileProperties) {
+    public ShouldAssignWorkRequest(Agent agent, String environment, Map<String, String> elasticProfileProperties, JobIdentifier jobIdentifier) {
+        this(agent, environment, elasticProfileProperties, jobIdentifier, null);
+    }
+
+    public ShouldAssignWorkRequest(Agent agent, String environment, Map<String, String> elasticProfileProperties, JobIdentifier jobIdentifier, ClusterProfileProperties clusterProfileProperties) {
         this.agent = agent;
         this.environment = environment;
         this.elasticProfileProperties = elasticProfileProperties;
@@ -99,7 +98,7 @@ public class ShouldAssignWorkRequest {
         return "ShouldAssignWorkRequest{" +
                 "agent=" + agent +
                 ", environment='" + environment + '\'' +
-                ", properties=" + elasticProfileProperties +
+                ", elasticProfileProperties=" + elasticProfileProperties +
                 ", jobIdentifier=" + jobIdentifier +
                 ", clusterProfileProperties=" + clusterProfileProperties +
                 '}';
