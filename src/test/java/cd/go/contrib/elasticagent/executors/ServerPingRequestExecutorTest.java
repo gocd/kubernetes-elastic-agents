@@ -117,13 +117,13 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
         when(pluginRequest.listAgents()).thenReturn(allAgentsInitially, allAgentsAfterDisablingIdleAgents, new Agents());
 
-        assertTrue(clusterSpecificInstances.get(clusterProfileProperties.uuid()).hasInstance(k8sPodForAgent1.getPodName()));
+        assertTrue(clusterSpecificInstances.get(clusterProfileProperties.uuid()).hasInstance(k8sPodForAgent1.podName()));
 
         new ServerPingRequestExecutor(serverPingRequest.allClusterProfileProperties(), clusterSpecificInstances, pluginRequest).execute();
 
         verify(pluginRequest, atLeastOnce()).disableAgents(Collections.singletonList(agent1));
         verify(pluginRequest, atLeastOnce()).deleteAgents(Collections.singletonList(agent1AfterDisabling));
-        assertFalse(clusterSpecificInstances.get(clusterProfileProperties.uuid()).hasInstance(k8sPodForAgent1.getPodName()));
+        assertFalse(clusterSpecificInstances.get(clusterProfileProperties.uuid()).hasInstance(k8sPodForAgent1.podName()));
     }
 
     @Test
@@ -190,8 +190,8 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
         when(pluginRequest.listAgents()).thenReturn(allAgentsInitially, allAgentsAfterDisablingIdleAgentsFromCluster1, allAgentsAfterTerminatingIdleAgentsFromCluster1, allAgentsAfterDisablingIdleAgentsFromCluster2, allAgentsAfterTerminatingIdleAgentsFromCluster2, new Agents());
 
-        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sPodForAgent1.getPodName()));
-        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster2.uuid()).hasInstance(k8sPodForAgent4.getPodName()));
+        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sPodForAgent1.podName()));
+        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster2.uuid()).hasInstance(k8sPodForAgent4.podName()));
 
         new ServerPingRequestExecutor(serverPingRequest.allClusterProfileProperties(), clusterSpecificInstances, pluginRequest).execute();
 
@@ -201,8 +201,8 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         verify(pluginRequest, atLeastOnce()).disableAgents(Collections.singletonList(agent4));
         verify(pluginRequest, atLeastOnce()).deleteAgents(Collections.singletonList(agent4AfterDisabling));
 
-        assertFalse(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sPodForAgent1.getPodName()));
-        assertFalse(clusterSpecificInstances.get(clusterProfilePropertiesForCluster2.uuid()).hasInstance(k8sPodForAgent4.getPodName()));
+        assertFalse(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sPodForAgent1.podName()));
+        assertFalse(clusterSpecificInstances.get(clusterProfilePropertiesForCluster2.uuid()).hasInstance(k8sPodForAgent4.podName()));
     }
 
     @Test
@@ -244,13 +244,13 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
         when(pluginRequest.listAgents()).thenReturn(allAgentsInitially);
 
-        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sUnregisteredCluster1Pod1.getPodName()));
-        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sUnregisteredCluster1Pod2.getPodName()));
+        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sUnregisteredCluster1Pod1.podName()));
+        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sUnregisteredCluster1Pod2.podName()));
 
         new ServerPingRequestExecutor(serverPingRequest.allClusterProfileProperties(), clusterSpecificInstances, pluginRequest).execute();
 
-        assertFalse(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sUnregisteredCluster1Pod1.getPodName()));
-        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sUnregisteredCluster1Pod2.getPodName()));
+        assertFalse(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sUnregisteredCluster1Pod1.podName()));
+        assertTrue(clusterSpecificInstances.get(clusterProfilePropertiesForCluster1.uuid()).hasInstance(k8sUnregisteredCluster1Pod2.podName()));
     }
 
     @Test

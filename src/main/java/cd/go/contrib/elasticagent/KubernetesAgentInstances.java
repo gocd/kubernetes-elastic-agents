@@ -83,28 +83,28 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         List<KubernetesInstance> eligiblePods = new ArrayList<>();
 
         for (KubernetesInstance instance : instances.values()) {
-            if (instance.getJobId().equals(jobId)) {
+            if (instance.jobId().equals(jobId)) {
                 eligiblePods.add(instance);
                 continue;
             }
 
-            String podElasticConfigHash = instance.getPodAnnotations().get(KubernetesInstance.ELASTIC_CONFIG_HASH);
+            String podElasticConfigHash = instance.podAnnotations().get(KubernetesInstance.ELASTIC_CONFIG_HASH);
             boolean sameElasticConfig = Objects.equals(podElasticConfigHash, jobElasticConfigHash);
-            boolean instanceIsIdle = instance.getAgentState().equals(KubernetesInstance.AgentState.Idle);
-            boolean podIsRunning = instance.getPodState().equals(PodState.Running);
+            boolean instanceIsIdle = instance.agentState().equals(KubernetesInstance.AgentState.Idle);
+            boolean podIsRunning = instance.podState().equals(PodState.Running);
             boolean isReusable = sameElasticConfig && instanceIsIdle && podIsRunning;
 
             LOG.info(
                     "[reuse] Is pod {} reusable for job {}? {}. Job has {}={}; pod has {}={}, agentState={}, podState={}",
-                    instance.getPodName(),
+                    instance.podName(),
                     jobId,
                     isReusable,
                     KubernetesInstance.ELASTIC_CONFIG_HASH,
                     jobElasticConfigHash,
                     KubernetesInstance.ELASTIC_CONFIG_HASH,
                     podElasticConfigHash,
-                    instance.getAgentState(),
-                    instance.getPodState()
+                    instance.agentState(),
+                    instance.podState()
             );
 
             if (isReusable) {
@@ -136,10 +136,10 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
             // No pod created yet for this job ID. Create one.
             try (KubernetesClientFactory.CachedClient client = factory.client(settings)) {
                 KubernetesInstance instance = kubernetesInstanceFactory.create(request, settings, client.get(), pluginRequest);
-                consoleLogAppender.accept(String.format("Creating pod: %s", instance.getPodName()));
-                instance = instance.toBuilder().agentState(AgentState.Building).build();
+                consoleLogAppender.accept(String.format("Creating pod: %s", instance.podName()));
+                instance = instance.withAgentState(AgentState.Building);
                 register(instance);
-                consoleLogAppender.accept(String.format("Agent pod %s created. Waiting for it to register to the GoCD server.", instance.getPodName()));
+                consoleLogAppender.accept(String.format("Agent pod %s created. Waiting for it to register to the GoCD server.", instance.podName()));
                 return Optional.of(instance);
             }
         }
@@ -150,15 +150,15 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         LOG.info("[reuse] Found {} pods eligible for reuse for CreateAgentRequest for job {}: {}",
               reusablePods.size(),
               jobId,
-              reusablePods.stream().map(pod -> pod.getPodName()).collect(Collectors.toList()));
+              reusablePods.stream().map(pod -> pod.podName()).collect(Collectors.toList()));
 
         if (reusablePods.isEmpty()) {
             try (KubernetesClientFactory.CachedClient client = factory.client(settings)) {
                 KubernetesInstance instance = kubernetesInstanceFactory.create(request, settings, client.get(), pluginRequest);
-                consoleLogAppender.accept(String.format("Creating pod: %s", instance.getPodName()));
-                instance = instance.toBuilder().agentState(AgentState.Building).build();
+                consoleLogAppender.accept(String.format("Creating pod: %s", instance.podName()));
+                instance = instance.withAgentState(AgentState.Building);
                 register(instance);
-                consoleLogAppender.accept(String.format("Agent pod %s created. Waiting for it to register to the GoCD server.", instance.getPodName()));
+                consoleLogAppender.accept(String.format("Agent pod %s created. Waiting for it to register to the GoCD server.", instance.podName()));
                 return Optional.of(instance);
             }
         } else {
@@ -171,7 +171,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
 
     private boolean isAgentCreatedForJob(Long jobId) {
         for (KubernetesInstance instance : instances.values()) {
-            if (instance.getJobId().equals(jobId)) {
+            if (instance.jobId().equals(jobId)) {
                 return true;
             }
         }
@@ -184,7 +184,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
         KubernetesInstance instance = instances.get(agentId);
         if (instance != null) {
             try (KubernetesClientFactory.CachedClient client = factory.client(settings)) {
-                client.get().pods().withName(instance.getPodName()).delete();
+                client.get().pods().withName(instance.podName()).delete();
             }
         } else {
             LOG.warn(format("Requested to terminate an instance that does not exist {0}.", agentId));
@@ -214,7 +214,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
                 continue;
             }
 
-            if (clock.now().isAfter(instance.getCreatedAt().plus(settings.getAutoRegisterPeriod()))) {
+            if (clock.now().isAfter(instance.createdAt().plus(settings.getAutoRegisterPeriod()))) {
                 oldAgents.add(agent);
             }
         }
@@ -265,8 +265,8 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
             KubernetesInstance newInstance = kubernetesInstanceFactory.fromKubernetesPod(pod);
             KubernetesInstance oldInstance = oldInstances.get(podName);
             if (oldInstance != null) {
-                AgentState oldAgentState = oldInstances.get(podName).getAgentState();
-                newInstance = newInstance.toBuilder().agentState(oldAgentState).build();
+                AgentState oldAgentState = oldInstances.get(podName).agentState();
+                newInstance = newInstance.withAgentState(oldAgentState);
                 LOG.debug("[reuse] Preserved AgentState {} upon refresh of pod {}", oldAgentState, podName);
             }
             register(newInstance);
@@ -286,7 +286,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     }
 
     public void register(KubernetesInstance instance) {
-        instances.put(instance.getPodName(), instance);
+        instances.put(instance.podName(), instance);
     }
 
     private KubernetesAgentInstances unregisteredAfterTimeout(PluginSettings settings, Agents knownAgents) {

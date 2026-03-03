@@ -110,7 +110,7 @@ public class KubernetesAgentInstancesIntegrationTest {
 
         Container gocdAgentContainer = containers.get(0);
 
-        assertThat(gocdAgentContainer.getName()).isEqualTo(instance.getPodName());
+        assertThat(gocdAgentContainer.getName()).isEqualTo(instance.podName());
 
         assertThat(gocdAgentContainer.getImage()).isEqualTo("gocd/custom-gocd-agent-alpine:latest");
         assertThat(gocdAgentContainer.getImagePullPolicy()).isEqualTo("IfNotPresent");
@@ -132,7 +132,7 @@ public class KubernetesAgentInstancesIntegrationTest {
 
         Container gocdAgentContainer = containers.get(0);
 
-        assertThat(gocdAgentContainer.getName()).isEqualTo(instance.getPodName());
+        assertThat(gocdAgentContainer.getName()).isEqualTo(instance.podName());
         assertThat(gocdAgentContainer.getSecurityContext().getPrivileged()).isEqualTo(true);
 
         verify(mockedPodResource).create();
@@ -167,7 +167,7 @@ public class KubernetesAgentInstancesIntegrationTest {
         Pod elasticAgentPod = argumentCaptor.getValue();
 
         assertNotNull(elasticAgentPod.getMetadata());
-        assertThat(elasticAgentPod.getMetadata().getName()).isEqualTo(instance.getPodName());
+        assertThat(elasticAgentPod.getMetadata().getName()).isEqualTo(instance.podName());
 
         verify(mockedPodResource).create();
     }
@@ -201,7 +201,7 @@ public class KubernetesAgentInstancesIntegrationTest {
 
         expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_KEY", createAgentRequest.autoRegisterKey(), null));
         expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_ENVIRONMENT", createAgentRequest.environment(), null));
-        expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_ELASTIC_AGENT_ID", instance.getPodName(), null));
+        expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_ELASTIC_AGENT_ID", instance.podName(), null));
         expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_ELASTIC_PLUGIN_ID", Constants.PLUGIN_ID, null));
 
         List<Container> containers = elasticAgentPod.getSpec().getContainers();
@@ -297,7 +297,7 @@ public class KubernetesAgentInstancesIntegrationTest {
         assertNotNull(elasticAgentPod.getMetadata());
         assertThat(elasticAgentPod.getMetadata().getName()).contains("test-pod-yaml");
 
-        assertThat(elasticAgentPod.getMetadata().getName()).isEqualTo(instance.getPodName());
+        assertThat(elasticAgentPod.getMetadata().getName()).isEqualTo(instance.podName());
 
         verify(mockedPodResource).create();
     }
@@ -333,7 +333,7 @@ public class KubernetesAgentInstancesIntegrationTest {
         expectedEnvVars.add(new EnvVar("GO_EA_SERVER_URL", settings.getGoServerUrl(), null));
         expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_KEY", createAgentRequest.autoRegisterKey(), null));
         expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_ENVIRONMENT", createAgentRequest.environment(), null));
-        expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_ELASTIC_AGENT_ID", instance.getPodName(), null));
+        expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_ELASTIC_AGENT_ID", instance.podName(), null));
         expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_ELASTIC_PLUGIN_ID", Constants.PLUGIN_ID, null));
 
         List<Container> containers = elasticAgentPod.getSpec().getContainers();
@@ -437,7 +437,7 @@ public class KubernetesAgentInstancesIntegrationTest {
         assertNotNull(elasticAgentPod.getMetadata());
         assertThat(elasticAgentPod.getMetadata().getName()).contains("test-pod-json");
 
-        assertThat(elasticAgentPod.getMetadata().getName()).isEqualTo(instance.getPodName());
+        assertThat(elasticAgentPod.getMetadata().getName()).isEqualTo(instance.podName());
 
         verify(mockedPodResource).create();
     }
@@ -473,7 +473,7 @@ public class KubernetesAgentInstancesIntegrationTest {
         expectedEnvVars.add(new EnvVar("GO_EA_SERVER_URL", settings.getGoServerUrl(), null));
         expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_KEY", createAgentRequest.autoRegisterKey(), null));
         expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_ENVIRONMENT", createAgentRequest.environment(), null));
-        expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_ELASTIC_AGENT_ID", instance.getPodName(), null));
+        expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_ELASTIC_AGENT_ID", instance.podName(), null));
         expectedEnvVars.add(new EnvVar("GO_EA_AUTO_REGISTER_ELASTIC_PLUGIN_ID", Constants.PLUGIN_ID, null));
 
         List<Container> containers = elasticAgentPod.getSpec().getContainers();

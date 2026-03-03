@@ -47,11 +47,11 @@ public class ShouldAssignWorkRequestExecutor implements RequestExecutor {
             // Agent reuse disabled - only assign if the agent pod was created exactly for this job ID.
             if (!request.clusterProfileProperties().getEnableAgentReuse()) {
                 // Job ID matches - assign work and mark the instance as building.
-                if (jobId.equals(instance.getJobId())) {
+                if (jobId.equals(instance.jobId())) {
                     LOG.debug("[should-assign-work] Job with identifier {} can be assigned to pod {}.",
                             request.jobIdentifier(),
-                            instance.getPodName());
-                    return instance.toBuilder().agentState(KubernetesInstance.AgentState.Building).build();
+                            instance.podName());
+                    return instance.withAgentState(KubernetesInstance.AgentState.Building);
                 }
                 // Job ID doesn't match - don't assign work.
                 return null;
@@ -61,19 +61,19 @@ public class ShouldAssignWorkRequestExecutor implements RequestExecutor {
             String jobConfigHash = KubernetesInstanceFactory.agentConfigHash(
                     request.clusterProfileProperties(),
                     request.elasticProfileProperties());
-            String podConfigHash = instance.getPodAnnotations().get(KubernetesInstance.ELASTIC_CONFIG_HASH);
+            String podConfigHash = instance.podAnnotations().get(KubernetesInstance.ELASTIC_CONFIG_HASH);
             boolean assignWork = KubernetesInstanceFactory.isSameConfigHash(jobConfigHash, podConfigHash);
 
             LOG.info("[agent-reuse] Should assign job {} to pod {}? {}. Job has config hash {}; pod has {}={}",
                     jobId,
-                    instance.getPodName(),
+                    instance.podName(),
                     assignWork,
                     jobConfigHash,
                     KubernetesInstance.ELASTIC_CONFIG_HASH,
                     podConfigHash);
 
             if (assignWork) {
-                return instance.toBuilder().agentState(KubernetesInstance.AgentState.Building).build();
+                return instance.withAgentState(KubernetesInstance.AgentState.Building);
             }
 
             LOG.info("[agent-reuse] No KubernetesInstance can handle request {}", request);

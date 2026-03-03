@@ -180,14 +180,14 @@ public class KubernetesInstanceFactory {
             }
             String environment = metadata.getLabels().get(ENVIRONMENT_LABEL_KEY);
             Long jobId = Long.valueOf(metadata.getLabels().get(JOB_ID_LABEL_KEY));
-            return KubernetesInstance.builder()
-                    .createdAt(createdAt)
-                    .environment(environment)
-                    .podName(metadata.getName())
-                    .podAnnotations(metadata.getAnnotations())
-                    .jobId(jobId)
-                    .podState(PodState.fromPod(elasticAgentPod))
-                    .build();
+            return new KubernetesInstance(
+                    createdAt,
+                    environment,
+                    metadata.getName(),
+                    metadata.getAnnotations(),
+                    jobId,
+                    PodState.fromPod(elasticAgentPod),
+                    KubernetesInstance.AgentState.Unknown);
         } catch (DateTimeParseException e) {
             throw new RuntimeException(e);
         }

@@ -55,7 +55,7 @@ public class JobCompletionRequestExecutor implements RequestExecutor {
             // Agent reuse enabled - mark the pod/agent as idle and leave it for reuse by other jobs or eventual cleanup.
             KubernetesInstance updated = agentInstances.updateAgent(
                     elasticAgentId,
-                    instance -> instance.toBuilder().agentState(KubernetesInstance.AgentState.Idle).build());
+                    instance -> instance.withAgentState(KubernetesInstance.AgentState.Idle));
             if (updated != null) {
                 LOG.info("[Job Completion] Received job completion for agent ID {}. It is now marked Idle.", elasticAgentId);
             } else {
