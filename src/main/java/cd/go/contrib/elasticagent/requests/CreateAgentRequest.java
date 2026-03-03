@@ -111,7 +111,7 @@ public class CreateAgentRequest {
     public String toString() {
         return "CreateAgentRequest{" +
                 "autoRegisterKey='" + autoRegisterKey + '\'' +
-                ", properties=" + elasticProfileProperties +
+                ", elasticProfileProperties=" + elasticProfileProperties +
                 ", environment='" + environment + '\'' +
                 ", jobIdentifier=" + jobIdentifier +
                 ", clusterProfileProperties=" + clusterProfileProperties +
