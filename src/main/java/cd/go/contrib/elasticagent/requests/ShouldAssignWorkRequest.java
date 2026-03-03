@@ -40,7 +40,7 @@ public class ShouldAssignWorkRequest {
 
     @Expose
     @SerializedName("elastic_agent_profile_properties")
-    private Map<String, String> properties;
+    private Map<String, String> elasticProfileProperties;
 
     @Expose
     @SerializedName("job_identifier")
@@ -53,15 +53,15 @@ public class ShouldAssignWorkRequest {
     public ShouldAssignWorkRequest() {
     }
 
-    public ShouldAssignWorkRequest(Agent agent, String environment, Map<String, String> properties, JobIdentifier jobIdentifier) {
+    public ShouldAssignWorkRequest(Agent agent, String environment, Map<String, String> elasticProfileProperties, JobIdentifier jobIdentifier) {
         this.agent = agent;
         this.environment = environment;
-        this.properties = properties;
+        this.elasticProfileProperties = elasticProfileProperties;
         this.jobIdentifier = jobIdentifier;
     }
 
-    public ShouldAssignWorkRequest(Agent agent, String environment, Map<String, String> properties, JobIdentifier jobIdentifier, ClusterProfileProperties clusterProfileProperties) {
-        this(agent, environment, properties, jobIdentifier);
+    public ShouldAssignWorkRequest(Agent agent, String environment, Map<String, String> elasticProfileProperties, JobIdentifier jobIdentifier, ClusterProfileProperties clusterProfileProperties) {
+        this(agent, environment, elasticProfileProperties, jobIdentifier);
         this.clusterProfileProperties = clusterProfileProperties;
     }
 
@@ -77,8 +77,8 @@ public class ShouldAssignWorkRequest {
         return environment;
     }
 
-    public Map<String, String> properties() {
-        return properties;
+    public Map<String, String> elasticProfileProperties() {
+        return elasticProfileProperties;
     }
 
     public RequestExecutor executor(AgentInstances<KubernetesInstance> agentInstances) {
@@ -98,7 +98,7 @@ public class ShouldAssignWorkRequest {
         return "ShouldAssignWorkRequest{" +
                 "agent=" + agent +
                 ", environment='" + environment + '\'' +
-                ", properties=" + properties +
+                ", elasticProfileProperties=" + elasticProfileProperties +
                 ", jobIdentifier=" + jobIdentifier +
                 ", clusterProfileProperties=" + clusterProfileProperties +
                 '}';
