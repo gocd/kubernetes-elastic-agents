@@ -21,45 +21,16 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import java.time.Instant;
 import java.util.Map;
 
-public class KubernetesInstance {
-    private final Instant createdAt;
-    private final String environment;
-    private final String name;
-    private final Map<String, String> properties;
-    private final Long jobId;
-    private final PodState state;
-
-    public KubernetesInstance(Instant createdAt, String environment, String name, Map<String, String> properties, Long jobId, PodState state) {
-        this.createdAt = createdAt;
-        this.environment = environment;
-        this.name = name;
-        this.properties = properties;
-        this.jobId = jobId;
-        this.state = state;
-    }
+public record KubernetesInstance(
+        Instant createdAt,
+        String environment,
+        String podName,
+        Map<String, String> properties,
+        Long jobId,
+        PodState state) {
 
     public void terminate(KubernetesClient client) {
-        client.pods().withName(name).delete();
-    }
-
-    public String name() {
-        return name;
-    }
-
-    public Instant createdAt() {
-        return createdAt;
-    }
-
-    public String environment() {
-        return environment;
-    }
-
-    public Map<String, String> getInstanceProperties() {
-        return properties;
-    }
-
-    public Long jobId() {
-        return jobId;
+        client.pods().withName(this.podName).delete();
     }
 
     public boolean isPending() {

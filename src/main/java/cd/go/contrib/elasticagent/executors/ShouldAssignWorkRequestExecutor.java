@@ -38,18 +38,18 @@ public class ShouldAssignWorkRequestExecutor implements RequestExecutor {
 
     @Override
     public GoPluginApiResponse execute() {
-        KubernetesInstance pod = agentInstances.find(request.agent().elasticAgentId());
+        KubernetesInstance instance = agentInstances.find(request.agent().elasticAgentId());
 
-        if (pod == null) {
+        if (instance == null) {
             return DefaultGoPluginApiResponse.success("false");
         }
 
-        if (request.jobIdentifier().getJobId().equals(pod.jobId())) {
-            LOG.debug(format("[should-assign-work] Job with identifier {0} can be assigned to an agent {1}.", request.jobIdentifier(), pod.name()));
+        if (request.jobIdentifier().getJobId().equals(instance.jobId())) {
+            LOG.debug(format("[should-assign-work] Job with identifier {0} can be assigned to an agent {1}.", request.jobIdentifier(), instance.podName()));
             return DefaultGoPluginApiResponse.success("true");
         }
 
-        LOG.debug(format("[should-assign-work] Job with identifier {0} can not be assigned to an agent {1}.", request.jobIdentifier(), pod.name()));
+        LOG.debug(format("[should-assign-work] Job with identifier {0} can not be assigned to an agent {1}.", request.jobIdentifier(), instance.podName()));
         return DefaultGoPluginApiResponse.success("false");
     }
 }
