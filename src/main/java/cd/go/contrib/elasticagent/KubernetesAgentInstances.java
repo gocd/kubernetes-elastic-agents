@@ -83,9 +83,9 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
 
         try (KubernetesClientFactory.CachedClient client = factory.client(settings)) {
             KubernetesInstance instance = kubernetesInstanceFactory.create(request, settings, client.get(), pluginRequest);
-            consoleLogAppender.accept(String.format("Creating pod: %s", instance.name()));
+            consoleLogAppender.accept(String.format("Creating pod: %s", instance.podName()));
             register(instance);
-            consoleLogAppender.accept(String.format("Agent pod %s created. Waiting for it to register to the GoCD server.", instance.name()));
+            consoleLogAppender.accept(String.format("Agent pod %s created. Waiting for it to register to the GoCD server.", instance.podName()));
             return instance;
         }
     }
@@ -186,7 +186,7 @@ public class KubernetesAgentInstances implements AgentInstances<KubernetesInstan
     }
 
     public void register(KubernetesInstance instance) {
-        instances.put(instance.name(), instance);
+        instances.put(instance.podName(), instance);
     }
 
     private KubernetesAgentInstances unregisteredAfterTimeout(PluginSettings settings, Agents knownAgents) {

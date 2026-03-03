@@ -97,7 +97,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     @Test
     public void shouldAssignWorkWhenJobIdMatchesPodId() {
         JobIdentifier jobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", 100L);
-        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest(new Agent(instance.name(), null, null, null), environment, properties, jobIdentifier);
+        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest(new Agent(instance.podName(), null, null, null), environment, properties, jobIdentifier);
         GoPluginApiResponse response = new ShouldAssignWorkRequestExecutor(request, agentInstances).execute();
         assertThat(response.responseCode()).isEqualTo(200);
         assertThat(response.responseBody()).isEqualTo("true");
@@ -107,7 +107,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     public void shouldNotAssignWorkWhenJobIdDiffersFromPodId() {
         long mismatchingJobId = 200L;
         JobIdentifier jobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", mismatchingJobId);
-        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest(new Agent(instance.name(), null, null, null), "FooEnv", properties, jobIdentifier);
+        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest(new Agent(instance.podName(), null, null, null), "FooEnv", properties, jobIdentifier);
         GoPluginApiResponse response = new ShouldAssignWorkRequestExecutor(request, agentInstances).execute();
         assertThat(response.responseCode()).isEqualTo(200);
         assertThat(response.responseBody()).isEqualTo("false");
