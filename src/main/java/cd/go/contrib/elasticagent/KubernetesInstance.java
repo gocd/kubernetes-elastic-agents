@@ -31,6 +31,35 @@ public record KubernetesInstance(
         PodState podState,
         AgentState agentState) {
 
+    /* Constructor for testing.
+     */
+    public KubernetesInstance(Instant createdAt, String environment, String podName, Long jobId, PodState podState) {
+        this(
+                createdAt,
+                environment,
+                podName,
+                Collections.emptyMap(),
+                jobId,
+                podState,
+                AgentState.Unknown
+        );
+    }
+
+    /*
+     * Constructor for testing.
+     */
+    public KubernetesInstance() {
+        this(
+                Instant.now(),
+                "environment",
+                "pod-name",
+                Collections.emptyMap(),
+                1L,
+                PodState.Pending,
+                AgentState.Unknown
+        );
+    }
+
     /**
      * AgentState represents the possible agent states from the
      * GoCD server perspective - whether it is currently running a job,
@@ -77,6 +106,18 @@ public record KubernetesInstance(
                 this.jobId,
                 this.podState,
                 newAgentState
+        );
+    }
+
+    public KubernetesInstance withPodState(PodState newPodState) {
+        return new KubernetesInstance(
+                this.createdAt,
+                this.environment,
+                this.podName,
+                this.podAnnotations,
+                this.jobId,
+                newPodState,
+                this.agentState
         );
     }
 }

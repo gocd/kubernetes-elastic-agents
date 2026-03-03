@@ -69,17 +69,17 @@ public class JobCompletionRequestExecutorTest {
 
         JobCompletionRequest request = new JobCompletionRequest(elasticAgentId, jobIdentifier, Collections.emptyMap(), clusterProfileProperties);
 
-        KubernetesInstance instance = KubernetesInstance.builder().agentState(KubernetesInstance.AgentState.Building).build();
+        KubernetesInstance instance = new KubernetesInstance().withAgentState(KubernetesInstance.AgentState.Building);
         KubernetesAgentInstances instances = new KubernetesAgentInstances(
                 mock(KubernetesClientFactory.class),
                 mock(KubernetesInstanceFactory.class),
                 Map.of(elasticAgentId, instance));
-        assertEquals(instances.find(elasticAgentId).getAgentState(), KubernetesInstance.AgentState.Building);
+        assertEquals(instances.find(elasticAgentId).agentState(), KubernetesInstance.AgentState.Building);
         PluginRequest pluginRequest = mock(PluginRequest.class);
         JobCompletionRequestExecutor executor = new JobCompletionRequestExecutor(request, instances, pluginRequest);
         GoPluginApiResponse response = executor.execute();
 
-        assertEquals(instances.find(elasticAgentId).getAgentState(), KubernetesInstance.AgentState.Idle);
+        assertEquals(instances.find(elasticAgentId).agentState(), KubernetesInstance.AgentState.Idle);
         assertEquals(200, response.responseCode());
         assertTrue(response.responseBody().isEmpty());
     }

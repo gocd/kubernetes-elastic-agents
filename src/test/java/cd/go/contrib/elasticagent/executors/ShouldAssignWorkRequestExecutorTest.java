@@ -98,10 +98,16 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     public void withAgentReuseDisabledShouldAssignWorkWhenJobIdMatchesPodId() {
         Long jobId = 100L;
         assertThat(jobId).isEqualTo(instance.jobId());
+        Map<String, String> elasticProfileProperties = Collections.emptyMap();
         ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
         clusterProfileProperties.setEnableAgentReuse(false);
         JobIdentifier jobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", 100L);
-        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest(new Agent(instance.podName(), null, null, null), environment, properties, jobIdentifier);
+        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest(
+                new Agent(instance.podName(), null, null, null),
+                "environment",
+                elasticProfileProperties,
+                jobIdentifier,
+                clusterProfileProperties);
         GoPluginApiResponse response = new ShouldAssignWorkRequestExecutor(request, agentInstances).execute();
         assertThat(response.responseCode()).isEqualTo(200);
         assertThat(response.responseBody()).isEqualTo("true");
