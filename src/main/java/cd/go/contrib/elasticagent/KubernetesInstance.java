@@ -25,7 +25,7 @@ public record KubernetesInstance(
         Instant createdAt,
         String environment,
         String podName,
-        Map<String, String> properties,
+        Map<String, String> podAnnotations,
         Long jobId,
         PodState state) {
 
