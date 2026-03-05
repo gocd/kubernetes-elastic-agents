@@ -103,7 +103,6 @@ public class KubernetesAgentInstancesTest {
 
     @Test
     public void shouldCreateKubernetesPodAndCacheCreatedInstance() {
-        // KubernetesInstance kubernetesInstance = KubernetesInstance.builder().environment("test").podName("test-agent").jobId(100L).podState(PodState.Running).build();
         KubernetesInstance kubernetesInstance = new KubernetesInstance(Instant.now(), "test", "test-agent", 100L, PodState.Running);
         when(mockKubernetesInstanceFactory.create(mockCreateAgentRequest, mockPluginSettings, mockKubernetesClient, mockPluginRequest)).
                 thenReturn(kubernetesInstance);
