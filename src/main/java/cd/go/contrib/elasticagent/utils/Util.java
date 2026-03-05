@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.function.Consumer;
 
@@ -76,6 +77,10 @@ public class Util {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String objectUUID(Object o) {
+        return Integer.toHexString(Objects.hash(o));
     }
 
     public static String fullVersion() {
