@@ -62,7 +62,7 @@ tasks.withType(JavaCompile).configureEach {
 ext {
     deps = [
         gocdPluginApi: 'cd.go.plugin:go-plugin-api:25.4.0',
-        kubernetesClientApi: 'io.fabric8:kubernetes-client-api:7.5.2',
+        kubernetesClientApi: 'io.fabric8:kubernetes-client-api:7.6.1',
     ]
 
     versions = project.ext.deps.collectEntries { lib, libGav -> [lib, libGav.split(':').last()] }
@@ -75,7 +75,7 @@ dependencies {
     }
     implementation project.deps.kubernetesClientApi
     runtimeOnly "io.fabric8:kubernetes-client:${project.versions.kubernetesClientApi}"
-    implementation platform('com.fasterxml.jackson:jackson-bom:2.21.1') // Control Jackson version used by kubernetes client
+    implementation platform('com.fasterxml.jackson:jackson-bom:2.21.2') // Control Jackson version used by kubernetes client
     implementation platform('org.slf4j:slf4j-bom:2.0.17') // Control SLF4J version used by client Jackson version used by kubernetes client
     runtimeOnly 'org.slf4j:slf4j-simple'
     implementation 'com.github.spullara.mustache.java:compiler:0.9.14'
@@ -88,7 +88,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'org.assertj:assertj-core:3.27.7'
-    testImplementation 'org.mockito:mockito-core:5.22.0'
+    testImplementation 'org.mockito:mockito-core:5.23.0'
     testImplementation 'org.skyscreamer:jsonassert:1.5.3'
     testImplementation 'org.jsoup:jsoup:1.22.1'
     testImplementation 'uk.org.webcompere:system-stubs-jupiter:2.1.8'
