@@ -18,6 +18,7 @@ package cd.go.contrib.elasticagent;
 
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagent.utils.Size;
+import cd.go.contrib.elasticagent.utils.Util;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -135,10 +136,32 @@ public class KubernetesInstanceFactory {
         pod.getMetadata().setLabels(existingLabels);
     }
 
+    /**
+     * Compute a string that uniquely identifies the configuration that was used to launch an agent pod.
+     * @param clusterProfileProperties Cluster profile properties of the agent
+     * @param elasticProfileProperties Elastic profile properties of the agent
+     * @return The unique identifier string.
+     */
+    public static String agentConfigHash(ClusterProfileProperties clusterProfileProperties, Map<String, String> elasticProfileProperties) {
+        return Util.GSON.toJson(Map.of(
+                "cluster_profile_properties", Util.objectUUID(clusterProfileProperties),
+                "elastic_profile_properties", Util.objectUUID(elasticProfileProperties)
+        ));
+    }
+
+    public static boolean isSameConfigHash(String hashA, String hashB) {
+        return hashA != null && hashA.equals(hashB);
+    }
+
     private static void setAnnotations(Pod pod, CreateAgentRequest request) {
         Map<String, String> existingAnnotations = (pod.getMetadata().getAnnotations() != null) ? pod.getMetadata().getAnnotations() : new HashMap<>();
         existingAnnotations.putAll(request.elasticProfileProperties());
         existingAnnotations.put(JOB_IDENTIFIER_LABEL_KEY, request.jobIdentifier().toJson());
+        Map<String, String> annotationsForAgentReuse = Map.of(
+            KubernetesInstance.ELASTIC_CONFIG_HASH, agentConfigHash(request.clusterProfileProperties(), request.elasticProfileProperties())
+        );
+        LOG.debug("[reuse] Annotating newly-created pod {} with {}", pod.getMetadata().getName(), annotationsForAgentReuse);
+        existingAnnotations.putAll(annotationsForAgentReuse);
         pod.getMetadata().setAnnotations(existingAnnotations);
     }
 
@@ -149,7 +172,6 @@ public class KubernetesInstanceFactory {
     }
 
     KubernetesInstance fromKubernetesPod(Pod elasticAgentPod) {
-        KubernetesInstance kubernetesInstance;
         try {
             ObjectMeta metadata = elasticAgentPod.getMetadata();
             Instant createdAt = Instant.now();
@@ -158,11 +180,17 @@ public class KubernetesInstanceFactory {
             }
             String environment = metadata.getLabels().get(ENVIRONMENT_LABEL_KEY);
             Long jobId = Long.valueOf(metadata.getLabels().get(JOB_ID_LABEL_KEY));
-            kubernetesInstance = new KubernetesInstance(createdAt, environment, metadata.getName(), metadata.getAnnotations(), jobId, PodState.fromPod(elasticAgentPod));
+            return new KubernetesInstance(
+                    createdAt,
+                    environment,
+                    metadata.getName(),
+                    metadata.getAnnotations(),
+                    jobId,
+                    PodState.fromPod(elasticAgentPod),
+                    KubernetesInstance.AgentState.Unknown);
         } catch (DateTimeParseException e) {
             throw new RuntimeException(e);
         }
-        return kubernetesInstance;
     }
 
     private static List<EnvVar> environmentFrom(CreateAgentRequest request, PluginSettings settings, String podName, PluginRequest pluginRequest) {
