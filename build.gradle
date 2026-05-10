@@ -75,6 +75,9 @@ dependencies {
     }
     implementation project.deps.kubernetesClientApi
     runtimeOnly "io.fabric8:kubernetes-client:${project.versions.kubernetesClientApi}"
+    constraints {
+        implementation 'io.vertx:vertx-web-client:4.5.27' // Upgrade transitive version within fabric kubernetes-client
+    }
     implementation platform('com.fasterxml.jackson:jackson-bom:2.21.3') // Control Jackson version used by kubernetes client
     implementation platform('org.slf4j:slf4j-bom:2.0.17') // Control SLF4J version used by client Jackson version used by kubernetes client
     runtimeOnly 'org.slf4j:slf4j-simple'
