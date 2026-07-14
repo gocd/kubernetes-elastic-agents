@@ -16,10 +16,11 @@
 
 package cd.go.contrib.elasticagent;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
-
-import java.time.Instant;
+import java.util.Collections;
 import java.util.Map;
+import java.time.Instant;
+
+import io.fabric8.kubernetes.client.KubernetesClient;
 
 public record KubernetesInstance(
         Instant createdAt,
@@ -27,13 +28,96 @@ public record KubernetesInstance(
         String podName,
         Map<String, String> podAnnotations,
         Long jobId,
-        PodState state) {
+        PodState podState,
+        AgentState agentState) {
 
+    /* Constructor for testing.
+     */
+    public KubernetesInstance(Instant createdAt, String environment, String podName, Long jobId, PodState podState) {
+        this(
+                createdAt,
+                environment,
+                podName,
+                Collections.emptyMap(),
+                jobId,
+                podState,
+                AgentState.Unknown
+        );
+    }
+
+    /*
+     * Constructor for testing.
+     */
+    public KubernetesInstance() {
+        this(
+                Instant.now(),
+                "environment",
+                "pod-name",
+                Collections.emptyMap(),
+                1L,
+                PodState.Pending,
+                AgentState.Unknown
+        );
+    }
+
+    /**
+     * AgentState represents the possible agent states from the
+     * GoCD server perspective - whether it is currently running a job,
+     * ready to accept a new job, etc.
+     */
+    public enum AgentState {
+        /**
+         * Unknown means the agent hasn't yet been registered with the plugin.
+         * For example, if the GoCD server restarted while a pod was building,
+         * the state will be Unknown until the pod finishes its job.
+         */
+        Unknown,
+        /**
+         * Idle means the agent has just finished a job.
+         */
+        Idle,
+        /**
+         * Building means the agent has been assigned a job.
+         */
+        Building,
+    }
+
+    /**
+     * ELASTIC_CONFIG_HASH is a pod annotation that contains a hash of the cluster profile
+     * configuration and elastic profile configuration that were used to create the pod.
+     */
+    public static final String ELASTIC_CONFIG_HASH = "go.cd/elastic-config-hash";
+
+    // TODO: static method
     public void terminate(KubernetesClient client) {
         client.pods().withName(this.podName).delete();
     }
 
     public boolean isPending() {
-        return this.state.equals(PodState.Pending);
+        return this.podState.equals(PodState.Pending);
+    }
+
+    public KubernetesInstance withAgentState(AgentState newAgentState) {
+        return new KubernetesInstance(
+                this.createdAt,
+                this.environment,
+                this.podName,
+                this.podAnnotations,
+                this.jobId,
+                this.podState,
+                newAgentState
+        );
+    }
+
+    public KubernetesInstance withPodState(PodState newPodState) {
+        return new KubernetesInstance(
+                this.createdAt,
+                this.environment,
+                this.podName,
+                this.podAnnotations,
+                this.jobId,
+                newPodState,
+                this.agentState
+        );
     }
 }

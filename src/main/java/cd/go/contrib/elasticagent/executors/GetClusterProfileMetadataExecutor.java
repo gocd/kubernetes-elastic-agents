@@ -38,6 +38,7 @@ public class GetClusterProfileMetadataExecutor implements RequestExecutor {
     public static final Metadata SECURITY_TOKEN = new Metadata("security_token", false, true);
     public static final Metadata CLUSTER_CA_CERT = new Metadata("kubernetes_cluster_ca_cert", false, true);
     public static final Metadata CLUSTER_REQUEST_TIMEOUT = new Metadata("cluster_request_timeout", false, false);
+    public static final Metadata ENABLE_AGENT_REUSE = new Metadata("enable_agent_reuse", false, false);
 
     public static final List<Metadata> FIELDS = List.of(
         GO_SERVER_URL,
@@ -47,7 +48,8 @@ public class GetClusterProfileMetadataExecutor implements RequestExecutor {
         NAMESPACE,
         SECURITY_TOKEN,
         CLUSTER_CA_CERT,
-        CLUSTER_REQUEST_TIMEOUT
+        CLUSTER_REQUEST_TIMEOUT,
+        ENABLE_AGENT_REUSE
     );
 
     @Override

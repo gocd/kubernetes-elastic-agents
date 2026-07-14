@@ -61,7 +61,7 @@ public class ServerPingRequest {
     }
 
     public ServerPingRequestExecutor executor(Map<String, KubernetesAgentInstances> clusterSpecificAgentInstances, PluginRequest pluginRequest) {
-        return new ServerPingRequestExecutor(this, clusterSpecificAgentInstances, pluginRequest);
+        return new ServerPingRequestExecutor(this.allClusterProfileProperties(), clusterSpecificAgentInstances, pluginRequest);
     }
 
     @Override
