@@ -52,7 +52,7 @@ public class CreateAgentRequestExecutor implements RequestExecutor {
         LocalDateTime localNow = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
         consoleLogAppender.accept(format("Received request to create a pod for job {0} in cluster {1} at {2}", request.jobIdentifier(), request.clusterProfileProperties().getClusterUrl(), UTC_FORMAT.format(localNow)));
         try {
-            agentInstances.create(request, request.clusterProfileProperties(), pluginRequest, consoleLogAppender);
+            agentInstances.requestCreateAgent(request, request.clusterProfileProperties(), pluginRequest, consoleLogAppender);
         } catch (Exception e) {
             consoleLogAppender.accept(String.format("Failed to create agent pod: %s", e.getMessage()));
             throw e;
