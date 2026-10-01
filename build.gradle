@@ -62,7 +62,7 @@ tasks.withType(JavaCompile).configureEach {
 ext {
     deps = [
         gocdPluginApi: 'cd.go.plugin:go-plugin-api:26.1.0',
-        kubernetesClientApi: 'io.fabric8:kubernetes-client-api:7.8.0',
+        kubernetesClientApi: 'io.fabric8:kubernetes-client-api:7.9.0',
     ]
 
     versions = project.ext.deps.collectEntries { lib, libGav -> [lib, libGav.split(':').last()] }
@@ -76,10 +76,10 @@ dependencies {
     implementation project.deps.kubernetesClientApi
     runtimeOnly "io.fabric8:kubernetes-client:${project.versions.kubernetesClientApi}"
     constraints {
-        implementation 'io.vertx:vertx-web-client:4.5.32' // Upgrade transitive version within fabric kubernetes-client
+        implementation 'io.vertx:vertx-web-client:4.5.34' // Upgrade transitive version within fabric kubernetes-client
     }
-    implementation platform('com.fasterxml.jackson:jackson-bom:2.22.2') // Control Jackson version used by kubernetes client
-    implementation platform('org.slf4j:slf4j-bom:2.0.18') // Control SLF4J version used by client Jackson version used by kubernetes client
+    implementation platform('com.fasterxml.jackson:jackson-bom:2.22.3') // Control Jackson version used by kubernetes client
+    implementation platform('org.slf4j:slf4j-bom:2.0.20') // Control SLF4J version used by client Jackson version used by kubernetes client
     runtimeOnly 'org.slf4j:slf4j-simple'
     implementation 'com.github.spullara.mustache.java:compiler:0.9.14'
     implementation 'org.freemarker:freemarker:2.3.35'
@@ -91,7 +91,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'org.assertj:assertj-core:3.27.7'
-    testImplementation 'org.mockito:mockito-core:5.23.0'
+    testImplementation 'org.mockito:mockito-core:5.24.0'
     testImplementation 'org.skyscreamer:jsonassert:1.5.3'
     testImplementation 'org.jsoup:jsoup:1.23.2'
     testImplementation 'uk.org.webcompere:system-stubs-jupiter:2.1.8'
