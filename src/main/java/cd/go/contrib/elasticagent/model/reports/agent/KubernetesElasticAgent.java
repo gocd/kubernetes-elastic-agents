@@ -18,14 +18,14 @@ package cd.go.contrib.elasticagent.model.reports.agent;
 
 import cd.go.contrib.elasticagent.Constants;
 import cd.go.contrib.elasticagent.model.JobIdentifier;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerStatus;
 import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.dataformat.yaml.YAMLFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,7 +138,7 @@ public class KubernetesElasticAgent {
 
         try {
             return mapper.writeValueAsString(pod);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             return "Failed to get Pod Configuration!";
         }
     }

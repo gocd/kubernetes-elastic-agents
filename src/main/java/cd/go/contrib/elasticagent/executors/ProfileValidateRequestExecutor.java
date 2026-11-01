@@ -20,11 +20,12 @@ import cd.go.contrib.elasticagent.KubernetesInstanceFactory;
 import cd.go.contrib.elasticagent.RequestExecutor;
 import cd.go.contrib.elasticagent.model.Metadata;
 import cd.go.contrib.elasticagent.requests.ProfileValidateRequest;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import io.fabric8.kubernetes.api.model.Pod;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.dataformat.yaml.YAMLFactory;
 
 import java.io.IOException;
 import java.util.*;
@@ -134,7 +135,7 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
             if (!isBlank(pod.getMetadata().getGenerateName())) {
                 addError(result, key, "Invalid Pod Yaml. generateName field is not supported by GoCD. Please use {{ POD_POSTFIX }} instead.");
             }
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             addError(result, key, "Invalid Pod Yaml.");
         }
     }

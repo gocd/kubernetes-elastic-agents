@@ -18,14 +18,14 @@ package cd.go.contrib.elasticagent;
 
 import cd.go.contrib.elasticagent.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagent.utils.Size;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.dataformat.yaml.YAMLFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -233,7 +233,7 @@ public class KubernetesInstanceFactory {
         try {
             elasticAgentPod = mapper.readValue(templatizedPodYaml, Pod.class);
             setPodNameIfNecessary(elasticAgentPod, podYaml);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             //ignore error here, handle this inside validate profile!
             LOG.error(e.getMessage());
         }
@@ -249,7 +249,7 @@ public class KubernetesInstanceFactory {
         Pod elasticAgentPod = new Pod();
         ObjectMapper mapper;
         if ("json".equalsIgnoreCase(fileType)) {
-            mapper = new ObjectMapper(new JsonFactory());
+            mapper = new ObjectMapper();
         }
         else if ("yaml".equalsIgnoreCase(fileType)) {
             mapper = new ObjectMapper(new YAMLFactory());
