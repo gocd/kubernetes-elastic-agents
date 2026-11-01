@@ -22,7 +22,7 @@ apply from: "https://raw.githubusercontent.com/gocd/gocd-plugin-gradle-task-help
 
 gocdPlugin {
   id = 'cd.go.contrib.elasticagent.kubernetes'
-  pluginVersion = '5.0.2'
+  pluginVersion = '5.0.3'
   goCdVersion = '22.1.0'
   name = 'Kubernetes Elastic Agent Plugin'
   description = 'Kubernetes Based Elastic Agent Plugins for GoCD'
@@ -62,7 +62,7 @@ tasks.withType(JavaCompile).configureEach {
 ext {
     deps = [
         gocdPluginApi: 'cd.go.plugin:go-plugin-api:26.1.0',
-        kubernetesClientApi: 'io.fabric8:kubernetes-client-api:7.9.0',
+        kubernetesClientApi: 'io.fabric8:kubernetes-client-api:8.0.0',
     ]
 
     versions = project.ext.deps.collectEntries { lib, libGav -> [lib, libGav.split(':').last()] }
@@ -70,15 +70,11 @@ ext {
 
 dependencies {
     compileOnly project.deps.gocdPluginApi
-    implementation('com.google.code.gson:gson:2.14.0') {
+    implementation('com.google.code.gson:gson:2.15.0') {
         exclude(module: 'error_prone_annotations') // Not needed at runtime
     }
     implementation project.deps.kubernetesClientApi
     runtimeOnly "io.fabric8:kubernetes-client:${project.versions.kubernetesClientApi}"
-    constraints {
-        implementation 'io.vertx:vertx-web-client:4.5.34' // Upgrade transitive version within fabric kubernetes-client
-    }
-    implementation platform('com.fasterxml.jackson:jackson-bom:2.22.3') // Control Jackson version used by kubernetes client
     implementation platform('org.slf4j:slf4j-bom:2.0.20') // Control SLF4J version used by client Jackson version used by kubernetes client
     runtimeOnly 'org.slf4j:slf4j-simple'
     implementation 'com.github.spullara.mustache.java:compiler:0.9.14'
